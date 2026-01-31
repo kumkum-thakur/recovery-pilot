@@ -149,7 +149,7 @@ describe('PhotoCaptureModal', () => {
         />
       );
 
-      const submitButton = screen.getByText('Submit Photo');
+      const submitButton = screen.getByText('Submit Photo').closest('button');
       expect(submitButton).toBeDisabled();
     });
   });
