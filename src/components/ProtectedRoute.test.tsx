@@ -29,7 +29,9 @@ describe('ProtectedRoute', () => {
 
   describe('Unauthenticated Access', () => {
     it('should redirect to /login when user is not authenticated', () => {
-      const { container } = render(
+      window.history.pushState({}, '', '/protected');
+      
+      render(
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<div>Login Page</div>} />
@@ -55,6 +57,8 @@ describe('ProtectedRoute', () => {
         isAuthenticated: true,
         currentUser: null,
       });
+
+      window.history.pushState({}, '', '/protected');
 
       render(
         <BrowserRouter>
@@ -205,6 +209,8 @@ describe('ProtectedRoute', () => {
         },
       });
 
+      window.history.pushState({}, '', '/doctor');
+
       render(
         <BrowserRouter>
           <Routes>
@@ -235,6 +241,8 @@ describe('ProtectedRoute', () => {
           role: UserRole.DOCTOR,
         },
       });
+
+      window.history.pushState({}, '', '/patient');
 
       render(
         <BrowserRouter>
