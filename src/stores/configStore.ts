@@ -82,21 +82,20 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
    * Requirements: 15.1, 15.2
    */
   setDemoScenario: (scenario: DemoScenario) => {
-    const { config } = get();
-    
-    // Update config
-    const updatedConfig: ConfigModel = {
-      ...config,
-      demoScenario: scenario,
-    };
-    
-    // Persist to storage
-    persistenceService.saveConfig(updatedConfig);
-    
-    // Update state
-    set({ config: updatedConfig });
-    
-    console.log(`[ConfigStore] Demo scenario set to: ${scenario}`);
+    // Update state using functional update to ensure we get latest state
+    set((state) => {
+      const updatedConfig: ConfigModel = {
+        ...state.config,
+        demoScenario: scenario,
+      };
+      
+      // Persist to storage
+      persistenceService.saveConfig(updatedConfig);
+      
+      console.log(`[ConfigStore] Demo scenario set to: ${scenario}`);
+      
+      return { config: updatedConfig };
+    });
   },
 
   /**
