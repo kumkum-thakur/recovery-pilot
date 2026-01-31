@@ -1,4 +1,291 @@
 /**
  * ProtectedRoute Tests
  * 
- * Tests for the ProtectedRoute component that guards aut
+ * Tests for the ProtectedRoute component that guards authenticated routes.
+ * 
+ * Requirements: 1.1, 2.1
+ */
+
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './ProtectedRoute';
+import { useUserStore } from '../stores/userStore';
+import { UserRole } from '../types';
+
+// Test component to render inside protected route
+function TestComponent({ text }: { text: string }) {
+  return <div>{text}</div>;
+}
+
+describe('ProtectedRoute', () => {
+  beforeEach(() => {
+    // Reset user store before each test
+    useUserStore.setState({
+      currentUser: null,
+      isAuthenticated: false,
+    });
+  });
+
+  describe('Unauthenticated Access', () => {
+    it('should redirect to /login when user is not authenticated', () => {
+      const { container } = render(
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<div>Login Page</div>} />
+            <Route
+              path="/protected"
+              element={
+                <ProtectedRoute>
+                  <TestComponent text="Protected Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      // Should redirect to login, so we should see "Login Page"
+      expect(screen.getByText('Login Page')).toBeInTheDocument();
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+    });
+
+    it('should redirect to /login when currentUser is null', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: null,
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<div>Login Page</div>} />
+            <Route
+              path="/protected"
+              element={
+                <ProtectedRoute>
+                  <TestComponent text="Protected Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Login Page')).toBeInTheDocument();
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Authenticated Access Without Role Requirement', () => {
+    it('should render children when user is authenticated (patient)', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 0,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <TestComponent text="Protected Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    });
+
+    it('should render children when user is authenticated (doctor)', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Test Doctor',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <TestComponent text="Protected Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    });
+  });
+
+  describe('Role-Based Access Control', () => {
+    it('should render children when patient accesses patient route', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 0,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute requiredRole={UserRole.PATIENT}>
+                  <TestComponent text="Patient Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Patient Content')).toBeInTheDocument();
+    });
+
+    it('should render children when doctor accesses doctor route', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Test Doctor',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute requiredRole={UserRole.DOCTOR}>
+                  <TestComponent text="Doctor Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Doctor Content')).toBeInTheDocument();
+    });
+
+    it('should redirect patient to /patient when accessing doctor route', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 0,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route path="/patient" element={<div>Patient Dashboard</div>} />
+            <Route
+              path="/doctor"
+              element={
+                <ProtectedRoute requiredRole={UserRole.DOCTOR}>
+                  <TestComponent text="Doctor Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      // Should redirect to patient dashboard
+      expect(screen.getByText('Patient Dashboard')).toBeInTheDocument();
+      expect(screen.queryByText('Doctor Content')).not.toBeInTheDocument();
+    });
+
+    it('should redirect doctor to /doctor when accessing patient route', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Test Doctor',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route path="/doctor" element={<div>Doctor Dashboard</div>} />
+            <Route
+              path="/patient"
+              element={
+                <ProtectedRoute requiredRole={UserRole.PATIENT}>
+                  <TestComponent text="Patient Content" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      // Should redirect to doctor dashboard
+      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.queryByText('Patient Content')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle missing requiredRole parameter', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 0,
+        },
+      });
+
+      render(
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <TestComponent text="Content Without Role Check" />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      );
+
+      expect(screen.getByText('Content Without Role Check')).toBeInTheDocument();
+    });
+  });
+});
