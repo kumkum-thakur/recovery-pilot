@@ -1,103 +1,113 @@
 // ============================================================================
-// Core Enums
+// Core Enums (using const objects for erasableSyntaxOnly compatibility)
 // ============================================================================
 
 /**
  * Mission types representing different recovery tasks
  * Requirements: 3.1, 4.1, 4.2, 4.3
  */
-export enum MissionType {
-  PHOTO_UPLOAD = 'photo_upload',
-  MEDICATION_CHECK = 'medication_check',
-  EXERCISE_LOG = 'exercise_log',
-}
+export const MissionType = {
+  PHOTO_UPLOAD: 'photo_upload',
+  MEDICATION_CHECK: 'medication_check',
+  EXERCISE_LOG: 'exercise_log',
+} as const;
+export type MissionType = typeof MissionType[keyof typeof MissionType];
 
 /**
  * Mission status values
  * Requirements: 3.3
  */
-export enum MissionStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  OVERDUE = 'overdue',
-}
+export const MissionStatus = {
+  PENDING: 'pending',
+  COMPLETED: 'completed',
+  OVERDUE: 'overdue',
+} as const;
+export type MissionStatus = typeof MissionStatus[keyof typeof MissionStatus];
 
 /**
  * Action item types for doctor review
  * Requirements: 8.1, 8.2
  */
-export enum ActionItemType {
-  TRIAGE = 'triage',
-  REFILL = 'refill',
-}
+export const ActionItemType = {
+  TRIAGE: 'triage',
+  REFILL: 'refill',
+} as const;
+export type ActionItemType = typeof ActionItemType[keyof typeof ActionItemType];
 
 /**
  * Action item status workflow states
  * Requirements: 9.2, 9.3
  */
-export enum ActionItemStatus {
-  PENDING_AGENT = 'pending_agent',
-  PENDING_DOCTOR = 'pending_doctor',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-}
+export const ActionItemStatus = {
+  PENDING_AGENT: 'pending_agent',
+  PENDING_DOCTOR: 'pending_doctor',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+export type ActionItemStatus = typeof ActionItemStatus[keyof typeof ActionItemStatus];
 
 /**
  * Agent workflow step status
  * Requirements: 7.1, 7.2, 7.3
  */
-export enum AgentStepStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
+export const AgentStepStatus = {
+  PENDING: 'pending',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+export type AgentStepStatus = typeof AgentStepStatus[keyof typeof AgentStepStatus];
 
 /**
  * User roles in the system
  * Requirements: 1.3, 2.3
  */
-export enum UserRole {
-  PATIENT = 'patient',
-  DOCTOR = 'doctor',
-}
+export const UserRole = {
+  PATIENT: 'patient',
+  DOCTOR: 'doctor',
+} as const;
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 /**
  * Triage analysis results
  * Requirements: 6.2
  */
-export enum TriageAnalysis {
-  GREEN = 'green', // Healing well
-  RED = 'red',     // Risk detected
-}
+export const TriageAnalysis = {
+  GREEN: 'green', // Healing well
+  RED: 'red',     // Risk detected
+} as const;
+export type TriageAnalysis = typeof TriageAnalysis[keyof typeof TriageAnalysis];
 
 /**
  * Insurance verification status
  * Requirements: 7.2, 8.3
  */
-export enum InsuranceStatus {
-  APPROVED = 'approved',
-  PENDING = 'pending',
-  DENIED = 'denied',
-}
+export const InsuranceStatus = {
+  APPROVED: 'approved',
+  PENDING: 'pending',
+  DENIED: 'denied',
+} as const;
+export type InsuranceStatus = typeof InsuranceStatus[keyof typeof InsuranceStatus];
 
 /**
  * Pharmacy inventory status
  * Requirements: 7.2, 8.3
  */
-export enum InventoryStatus {
-  IN_STOCK = 'in_stock',
-  OUT_OF_STOCK = 'out_of_stock',
-}
+export const InventoryStatus = {
+  IN_STOCK: 'in_stock',
+  OUT_OF_STOCK: 'out_of_stock',
+} as const;
+export type InventoryStatus = typeof InventoryStatus[keyof typeof InventoryStatus];
 
 /**
  * Demo scenario configuration
  * Requirements: 15.1, 15.2
  */
-export enum DemoScenario {
-  SCENARIO_HAPPY_PATH = 'SCENARIO_HAPPY_PATH',
-  SCENARIO_RISK_DETECTED = 'SCENARIO_RISK_DETECTED',
-}
+export const DemoScenario = {
+  SCENARIO_HAPPY_PATH: 'SCENARIO_HAPPY_PATH',
+  SCENARIO_RISK_DETECTED: 'SCENARIO_RISK_DETECTED',
+} as const;
+export type DemoScenario = typeof DemoScenario[keyof typeof DemoScenario];
 
 // ============================================================================
 // Core Data Models
