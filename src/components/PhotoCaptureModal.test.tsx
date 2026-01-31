@@ -325,4 +325,19 @@ describe('PhotoCaptureModal', () => {
   });
 
   describe('Submit Behavior', () => {
-    it('should show error
+    it('should show error when submitting without selecting a file', async () => {
+      render(
+        <PhotoCaptureModal
+          isOpen={true}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const submitButton = screen.getByText('Submit Photo');
+      
+      // Button should be disabled when no file is selected
+      expect(submitButton).toBeDisabled();
+    });
+  });
+});
