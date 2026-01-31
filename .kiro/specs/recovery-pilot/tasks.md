@@ -342,7 +342,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle camera access denied
     - _Requirements: 5.4_
   
-  - [-] 21.4 Add error handling for agent workflows
+  - [x] 21.4 Add error handling for agent workflows
     - Handle workflow timeouts
     - Handle partial workflow completion
     - Display retry options
