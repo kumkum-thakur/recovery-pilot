@@ -17,6 +17,7 @@ import type {
   RefillResult,
   TriageAnalysis,
   InsuranceStatus,
+  InventoryStatus,
   ActionItemModel,
 } from '../types';
 
