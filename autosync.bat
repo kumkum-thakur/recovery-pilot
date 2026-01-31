@@ -6,7 +6,7 @@ setlocal EnableDelayedExpansion
 :: ==========================================
 set "REPO_URL=https://github.com/kumkum-thakur/recovery-pilot.git"
 set "BRANCH=main"
-set "SYNC_INTERVAL=15"
+set "SYNC_INTERVAL=20"
 set "AGENT_ID=Agent 1"
 
 :: Navigate to the directory where this script is located
