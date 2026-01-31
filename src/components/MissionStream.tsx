@@ -13,11 +13,13 @@ import { MissionCard } from './MissionCard';
 import { PhotoCaptureModal } from './PhotoCaptureModal';
 import { TriageResultCard } from './TriageResultCard';
 import { AgentStatusToast } from './AgentStatusToast';
+import { CelebrationOverlay } from './CelebrationOverlay';
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
 import { useAgentStore } from '../stores/agentStore';
 import { useConfigStore } from '../stores/configStore';
 import { agentService } from '../services/agentService';
+import { getEncouragingMessage, getAllMissionsCompleteMessage } from '../utils/encouragingMessages';
 import { Loader2, Sparkles, X } from 'lucide-react';
 import { MissionType } from '../types';
 import type { TriageResult } from '../types';
@@ -43,6 +45,10 @@ export function MissionStream() {
   // State for triage result display
   const [triageResult, setTriageResult] = useState<TriageResult | null>(null);
   const [showTriageResult, setShowTriageResult] = useState(false);
+  
+  // State for celebration overlay
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState<string>('');
   
   // State for workflow error handling
   const [workflowError, setWorkflowError] = useState<Error | null>(null);
