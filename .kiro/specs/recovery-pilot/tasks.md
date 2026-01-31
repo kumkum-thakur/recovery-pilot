@@ -158,7 +158,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### AGENT 2 TASKS - Frontend UI Components
 
 - [ ] 9. Build Login page
-  - [~] 9.1 Create LoginPage component
+  - [-] 9.1 Create LoginPage component
     - Build form with username and password fields
     - Add role selection (patient/doctor) or auto-detect from credentials
     - Implement form validation
@@ -367,29 +367,29 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Add hover effects on interactive elements
     - Add focus indicators for keyboard navigation
   
-  - [ ] 22.3 Improve accessibility
+  - [~] 22.3 Improve accessibility
     - Add ARIA labels to all interactive elements
     - Ensure keyboard navigation works throughout
     - Test with screen reader
     - Ensure color contrast meets WCAG AA standards
   
-  - [ ] 22.4 Add empty states
+  - [~] 22.4 Add empty states
     - Implement encouraging empty state for missions
     - Implement positive empty state for action items
     - _Requirements: 3.1, 8.1_
 
 - [ ] 23. Manual end-to-end testing
-  - [ ] 23.1 End-to-end testing of patient flow
+  - [~] 23.1 End-to-end testing of patient flow
     - Test login → view missions → upload photo → see triage result → streak update
     - Test both Green and Red triage scenarios
     - Test refill request workflow
   
-  - [ ] 23.2 End-to-end testing of doctor flow
+  - [~] 23.2 End-to-end testing of doctor flow
     - Test login → view action items → approve item → verify patient notification
     - Test reject with reason
     - Test empty inbox state
   
-  - [ ] 23.3 Test demo scenario switching
+  - [~] 23.3 Test demo scenario switching
     - Verify SCENARIO_HAPPY_PATH produces Green results
     - Verify SCENARIO_RISK_DETECTED produces Red results
     - Test deterministic behavior across multiple runs
