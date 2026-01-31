@@ -100,15 +100,24 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
     try {
       // Execute workflow steps sequentially
       for (let i = 0; i < steps.length; i++) {
+        // Get current workflow state
+        let { currentWorkflow } = get();
+        if (!currentWorkflow) break;
+        
         // Update step to in_progress
-        const updatedSteps = [...steps];
+        let updatedSteps = [...currentWorkflow];
         updatedSteps[i] = { ...updatedSteps[i], status: 'in_progress' };
         set({ currentWorkflow: updatedSteps });
         
         // Simulate processing delay
         await new Promise(resolve => setTimeout(resolve, steps[i].duration || 1000));
         
+        // Get current workflow state again
+        ({ currentWorkflow } = get());
+        if (!currentWorkflow) break;
+        
         // Update step to completed
+        updatedSteps = [...currentWorkflow];
         updatedSteps[i] = { ...updatedSteps[i], status: 'completed' };
         set({ currentWorkflow: updatedSteps });
       }
@@ -190,15 +199,24 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
     try {
       // Execute workflow steps sequentially
       for (let i = 0; i < steps.length; i++) {
+        // Get current workflow state
+        let { currentWorkflow } = get();
+        if (!currentWorkflow) break;
+        
         // Update step to in_progress
-        const updatedSteps = [...steps];
+        let updatedSteps = [...currentWorkflow];
         updatedSteps[i] = { ...updatedSteps[i], status: 'in_progress' };
         set({ currentWorkflow: updatedSteps });
         
         // Simulate processing delay
         await new Promise(resolve => setTimeout(resolve, steps[i].duration || 1000));
         
+        // Get current workflow state again
+        ({ currentWorkflow } = get());
+        if (!currentWorkflow) break;
+        
         // Update step to completed
+        updatedSteps = [...currentWorkflow];
         updatedSteps[i] = { ...updatedSteps[i], status: 'completed' };
         set({ currentWorkflow: updatedSteps });
       }
