@@ -260,7 +260,8 @@ describe('UserStore - Streak Tracking', () => {
       yesterday.setDate(yesterday.getDate() - 1);
       store.updateLastMissionCheckDate(yesterday.toISOString());
       
-      const initialStreak = store.currentUser?.streakCount;
+      const beforeCheck = useUserStore.getState();
+      const initialStreak = beforeCheck.currentUser?.streakCount;
       
       // Check for missed day
       store.checkAndUpdateStreakForMissedDay();
@@ -283,7 +284,8 @@ describe('UserStore - Streak Tracking', () => {
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       store.updateLastMissionCheckDate(threeDaysAgo.toISOString());
       
-      expect(store.currentUser?.streakCount).toBe(5);
+      const beforeCheck = useUserStore.getState();
+      expect(beforeCheck.currentUser?.streakCount).toBe(5);
       
       // Check for missed day
       store.checkAndUpdateStreakForMissedDay();
