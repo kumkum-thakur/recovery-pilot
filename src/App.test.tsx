@@ -114,4 +114,200 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Doctor Dash
+      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Patient Route (/patient)', () => {
+    it('should show patient dashboard for authenticated patient', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Divya Patel',
+          role: UserRole.PATIENT,
+          streakCount: 7,
+        },
+      });
+
+      window.history.pushState({}, '', '/patient');
+      render(<App />);
+      
+      expect(screen.getByText(/Welcome back, Divya Patel/i)).toBeInTheDocument();
+    });
+
+    it('should redirect unauthenticated user to /login', () => {
+      window.history.pushState({}, '', '/patient');
+      render(<App />);
+      
+      // Should redirect to login
+      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
+    });
+
+    it('should redirect doctor to /doctor when accessing /patient', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Dr. Smith',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      window.history.pushState({}, '', '/patient');
+      render(<App />);
+      
+      // Should redirect to doctor dashboard
+      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Doctor Route (/doctor)', () => {
+    it('should show doctor dashboard for authenticated doctor', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Dr. Sarah Smith',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      window.history.pushState({}, '', '/doctor');
+      render(<App />);
+      
+      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.getByText(/Welcome, Dr. Sarah Smith/i)).toBeInTheDocument();
+    });
+
+    it('should redirect unauthenticated user to /login', () => {
+      window.history.pushState({}, '', '/doctor');
+      render(<App />);
+      
+      // Should redirect to login
+      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.queryByText('Doctor Dashboard')).not.toBeInTheDocument();
+    });
+
+    it('should redirect patient to /patient when accessing /doctor', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Divya Patel',
+          role: UserRole.PATIENT,
+          streakCount: 5,
+        },
+      });
+
+      window.history.pushState({}, '', '/doctor');
+      render(<App />);
+      
+      // Should redirect to patient dashboard
+      expect(screen.getByText(/Welcome back, Divya Patel/i)).toBeInTheDocument();
+      expect(screen.queryByText('Doctor Dashboard')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Invalid Routes', () => {
+    it('should redirect to root for unknown routes', () => {
+      window.history.pushState({}, '', '/unknown-route');
+      render(<App />);
+      
+      // Should redirect to login (via root redirect)
+      expect(screen.getByText('Sign In')).toBeInTheDocument();
+    });
+
+    it('should redirect authenticated patient to /patient for unknown routes', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 0,
+        },
+      });
+
+      window.history.pushState({}, '', '/some-invalid-path');
+      render(<App />);
+      
+      // Should redirect to patient dashboard
+      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+    });
+
+    it('should redirect authenticated doctor to /doctor for unknown routes', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'doctor-1',
+          name: 'Test Doctor',
+          role: UserRole.DOCTOR,
+        },
+      });
+
+      window.history.pushState({}, '', '/another-invalid-path');
+      render(<App />);
+      
+      // Should redirect to doctor dashboard
+      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+    });
+  });
+
+  describe('Navigation Guards', () => {
+    it('should maintain authentication state across route changes', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 5,
+        },
+      });
+
+      const { rerender } = render(<App />);
+      
+      // Should show patient dashboard
+      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+      
+      // Simulate navigation by changing URL
+      window.history.pushState({}, '', '/patient');
+      rerender(<App />);
+      
+      // Should still show patient dashboard
+      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+    });
+
+    it('should redirect to login after logout', () => {
+      useUserStore.setState({
+        isAuthenticated: true,
+        currentUser: {
+          id: 'patient-1',
+          name: 'Test Patient',
+          role: UserRole.PATIENT,
+          streakCount: 5,
+        },
+      });
+
+      const { rerender } = render(<App />);
+      
+      // Should show patient dashboard
+      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+      
+      // Simulate logout
+      useUserStore.setState({
+        isAuthenticated: false,
+        currentUser: null,
+      });
+      
+      rerender(<App />);
+      
+      // Should redirect to login
+      expect(screen.getByText('Sign In')).toBeInTheDocument();
+    });
+  });
+});
