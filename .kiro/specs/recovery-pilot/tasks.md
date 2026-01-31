@@ -213,7 +213,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Auto-dismiss on workflow completion
     - _Requirements: 7.3_
   
-  - [-] 13.2 Integrate with AgentStore
+  - [x] 13.2 Integrate with AgentStore
     - Subscribe to currentWorkflow state
     - Display toast when workflow starts
     - Update steps as workflow progresses
