@@ -6,14 +6,15 @@
  * - Form validation
  * - Role auto-detection from credentials
  * - Error message display
+ * - Session expiration notification
  * - Connection to UserStore
  * 
  * Requirements: 1.1, 1.2, 2.1, 2.2
  */
 
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LogIn, AlertCircle } from 'lucide-react';
+import { useState, useEffect, type FormEvent } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LogIn, AlertCircle, Clock } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import { UserRole } from '../types';
 
@@ -22,11 +23,13 @@ import { UserRole } from '../types';
  * 
  * Renders a login form with username and password fields.
  * On successful login, redirects to the appropriate dashboard based on user role.
+ * Shows session expiration message if redirected due to expired session.
  * 
  * Requirements: 1.1, 1.2, 2.1, 2.2
  */
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const login = useUserStore((state) => state.login);
   
   // Form state
@@ -34,6 +37,23 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState<string | null>(null);
+
+  // Check if redirected due to session expiration
+  useEffect(() => {
+    const state = location.state as { sessionExpired?: boolean } | null;
+    
+    if (state?.sessionExpired) {
+      setSessionExpiredMessage('Your session has expired. Please log in again.');
+      
+      // Clear the message after 10 seconds
+      const timer = setTimeout(() => {
+        setSessionExpiredMessage(null);
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   /**
    * Validates form inputs
@@ -65,8 +85,9 @@ export function LoginPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Clear previous errors
+    // Clear previous errors and session messages
     setError(null);
+    setSessionExpiredMessage(null);
     
     // Validate form
     if (!validateForm()) {
@@ -128,6 +149,14 @@ export function LoginPage() {
           <h2 className="text-2xl font-semibold text-medical-text text-center mb-6">
             Sign In
           </h2>
+
+          {/* Session Expiration Message */}
+          {sessionExpiredMessage && (
+            <div className="mb-4 flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <Clock className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800">{sessionExpiredMessage}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Username Field */}
