@@ -241,7 +241,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Style with gamification colors (orange/purple)
     - _Requirements: 10.3_
   
-  - [~] 16.2 Implement streak tracking logic
+  - [-] 16.2 Implement streak tracking logic
     - Increment streak on all missions completed
     - Reset streak on missed day
     - Persist streak across sessions
