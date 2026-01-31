@@ -118,4 +118,62 @@ The `PhotoCaptureModal` is integrated into the `MissionStream` component:
 - **File Too Large**: "Image must be under 10MB"
 - **Camera Access Denied**: "Camera access is required. Please enable it in your browser settings."
 
-## State Manageme
+## State Management
+
+The component manages internal state for:
+- `previewUrl`: Data URL for image preview
+- `selectedFile`: Currently selected File object
+- `error`: Error message to display
+- `isSubmitting`: Loading state during submission
+
+## Cleanup
+
+The component properly cleans up resources:
+- Revokes object URLs when modal closes
+- Resets all state when modal closes
+- Prevents memory leaks from preview URLs
+
+## Testing
+
+Comprehensive unit tests cover:
+- Modal visibility and rendering
+- User interactions (close, cancel, backdrop click)
+- File validation (format, size)
+- Error handling and display
+- Accessibility features
+- Button states and behavior
+
+Run tests with:
+```bash
+npm test -- PhotoCaptureModal.test.tsx
+```
+
+## Browser Compatibility
+
+The component uses standard browser APIs:
+- **File API**: Supported in all modern browsers
+- **FileReader**: For creating preview URLs
+- **Input capture attribute**: Mobile camera access (iOS Safari 11+, Chrome Android)
+
+### Fallback Behavior
+
+If camera access is not available:
+- The "Take Photo" button will open the file picker
+- Users can still upload photos from their device
+- No functionality is lost
+
+## Future Enhancements
+
+Potential improvements for production:
+1. **Image Compression**: Reduce file size before upload
+2. **EXIF Data Handling**: Strip or preserve metadata
+3. **Multiple Photos**: Support uploading multiple images
+4. **Crop/Rotate**: Basic image editing before submission
+5. **Real-time Validation**: Check image quality (blur, lighting)
+
+## Related Components
+
+- **MissionStream**: Parent component that manages mission actions
+- **MissionCard**: Displays mission details and action button
+- **AgentStore**: Handles AI triage workflow after photo upload
+- **MissionStore**: Manages photo upload and mission completion
