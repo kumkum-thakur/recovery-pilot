@@ -215,6 +215,122 @@ describe('PhotoCaptureModal', () => {
     });
   });
 
+  describe('Camera Access Errors', () => {
+    it('should show error when camera access is denied', async () => {
+      // Mock getUserMedia to simulate permission denied
+      const mockGetUserMedia = vi.fn().mockRejectedValue(
+        Object.assign(new Error('Permission denied'), { name: 'NotAllowedError' })
+      );
+      
+      Object.defineProperty(navigator, 'mediaDevices', {
+        value: {
+          getUserMedia: mockGetUserMedia,
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      render(
+        <PhotoCaptureModal
+          isOpen={true}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const takePhotoButton = screen.getByLabelText('Open camera to take photo');
+      fireEvent.click(takePhotoButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Camera access denied/)).toBeInTheDocument();
+      });
+    });
+
+    it('should show error when no camera is found', async () => {
+      // Mock getUserMedia to simulate no camera found
+      const mockGetUserMedia = vi.fn().mockRejectedValue(
+        Object.assign(new Error('No camera found'), { name: 'NotFoundError' })
+      );
+      
+      Object.defineProperty(navigator, 'mediaDevices', {
+        value: {
+          getUserMedia: mockGetUserMedia,
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      render(
+        <PhotoCaptureModal
+          isOpen={true}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const takePhotoButton = screen.getByLabelText('Open camera to take photo');
+      fireEvent.click(takePhotoButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/No camera found/)).toBeInTheDocument();
+      });
+    });
+
+    it('should show error when camera is already in use', async () => {
+      // Mock getUserMedia to simulate camera in use
+      const mockGetUserMedia = vi.fn().mockRejectedValue(
+        Object.assign(new Error('Camera in use'), { name: 'NotReadableError' })
+      );
+      
+      Object.defineProperty(navigator, 'mediaDevices', {
+        value: {
+          getUserMedia: mockGetUserMedia,
+        },
+        writable: true,
+        configurable: true,
+      });
+
+      render(
+        <PhotoCaptureModal
+          isOpen={true}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const takePhotoButton = screen.getByLabelText('Open camera to take photo');
+      fireEvent.click(takePhotoButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Camera is already in use/)).toBeInTheDocument();
+      });
+    });
+
+    it('should show error when MediaDevices API is not available', async () => {
+      // Mock navigator.mediaDevices as undefined
+      Object.defineProperty(navigator, 'mediaDevices', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      render(
+        <PhotoCaptureModal
+          isOpen={true}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />
+      );
+
+      const takePhotoButton = screen.getByLabelText('Open camera to take photo');
+      fireEvent.click(takePhotoButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Camera is not available on this device/)).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Accessibility', () => {
     it('should have proper ARIA attributes', () => {
       render(
