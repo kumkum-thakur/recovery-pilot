@@ -220,7 +220,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 7.1, 7.2, 7.3_
 
 - [~] 14. Build Triage Result Display
-  - [-] 14.1 Create TriageResultCard component
+  - [x] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
     - Show confidence score
