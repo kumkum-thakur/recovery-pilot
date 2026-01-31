@@ -235,7 +235,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Ask user if questions arise
 
 - [~] 16. Build Gamification features
-  - [~] 16.1 Create StreakDisplay component
+  - [-] 16.1 Create StreakDisplay component
     - Display current streak count prominently
     - Add fire emoji or icon for visual appeal
     - Style with gamification colors (orange/purple)
