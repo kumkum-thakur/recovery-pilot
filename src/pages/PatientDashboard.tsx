@@ -3,14 +3,17 @@
  * 
  * Mobile-first responsive layout with header and mission stream.
  * Implements accessibility requirements with minimum tap targets and text sizes.
+ * Integrates AgentStatusToast to display AI workflow progress.
  * 
- * Requirements: 3.4, 10.3, 13.1, 13.2, 13.3, 13.4
+ * Requirements: 3.4, 7.1, 7.2, 7.3, 10.3, 13.1, 13.2, 13.3, 13.4
  */
 
 import { useUserStore } from '../stores/userStore';
+import { useAgentStore } from '../stores/agentStore';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { MissionStream } from '../components/MissionStream';
+import { AgentStatusToast } from '../components/AgentStatusToast';
 
 export function PatientDashboard() {
   const { currentUser, logout } = useUserStore();
