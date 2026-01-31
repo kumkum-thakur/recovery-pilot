@@ -1,63 +1,86 @@
 /**
  * MissionStream - Displays the list of patient missions
  * 
- * Placeholder component - will be fully implemented in task 11.2
+ * Fetches missions from MissionStore on mount and displays them as cards.
+ * Handles loading states and empty states with encouraging messages.
  * 
  * Requirements: 3.1, 3.2, 3.3
  */
 
+import { useEffect } from 'react';
 import { MissionCard } from './MissionCard';
-import { Mission, MissionType, MissionStatus } from '../types';
+import { useMissionStore } from '../stores/missionStore';
+import { useUserStore } from '../stores/userStore';
+import { Loader2, Sparkles } from 'lucide-react';
 
 export function MissionStream() {
-  // Example missions to preview the MissionCard component
-  // This will be replaced with real data from MissionStore in task 11.2
-  const exampleMissions: Mission[] = [
-    {
-      id: 'mission-1',
-      type: MissionType.PHOTO_UPLOAD,
-      title: 'Mission 1: Scan Incision',
-      description: 'Take a photo of your surgical incision for healing assessment',
-      status: MissionStatus.PENDING,
-      dueDate: new Date(),
-      actionButtonText: 'Scan Incision',
-    },
-    {
-      id: 'mission-2',
-      type: MissionType.MEDICATION_CHECK,
-      title: 'Mission 2: Medication Check',
-      description: 'Confirm you took your morning antibiotics',
-      status: MissionStatus.PENDING,
-      dueDate: new Date(),
-      actionButtonText: 'Mark Complete',
-    },
-  ];
+  // Get missions and loading state from MissionStore
+  const { missions, isLoading, fetchMissions } = useMissionStore();
+  
+  // Get current user from UserStore
+  const { currentUser } = useUserStore();
+
+  // Fetch missions on mount
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchMissions(currentUser.id).catch((error) => {
+        console.error('Failed to fetch missions:', error);
+      });
+    }
+  }, [currentUser?.id, fetchMissions]);
 
   const handleAction = (missionId: string) => {
     console.log('Mission action triggered:', missionId);
-    // This will be connected to MissionStore in task 11.2
+    // Action handling will be implemented in task 12 (Photo Capture)
+    // For now, just log the action
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-medical-text">Your Missions</h2>
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <Loader2 className="w-8 h-8 text-medical-primary animate-spin" />
+          <p className="text-medical-text-secondary">Loading your missions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state - no missions available
+  if (missions.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-medical-text">Your Missions</h2>
+        <div className="flex flex-col items-center justify-center py-12 space-y-4 bg-gradient-to-br from-gamification-success/10 to-gamification-accent/10 rounded-lg border border-gamification-success/20">
+          <Sparkles className="w-12 h-12 text-gamification-success" />
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-semibold text-medical-text">
+              Great job! 🎉
+            </h3>
+            <p className="text-medical-text-secondary max-w-md">
+              No missions right now. You're all caught up! Check back tomorrow for new recovery tasks.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Display missions
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold text-medical-text">Your Missions</h2>
       
-      {/* Preview of MissionCard component (Task 11.1 complete) */}
       <div className="space-y-4">
-        {exampleMissions.map((mission) => (
+        {missions.map((mission) => (
           <MissionCard
             key={mission.id}
             mission={mission}
             onAction={handleAction}
           />
         ))}
-      </div>
-      
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-        <p className="text-sm text-medical-text">
-          ℹ️ <strong>Preview Mode:</strong> MissionCard component (Task 11.1) is complete! 
-          Full integration with MissionStore will be implemented in task 11.2.
-        </p>
       </div>
     </div>
   );
