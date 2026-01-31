@@ -301,11 +301,16 @@ export interface AgentStatusToastProps {
 export interface UserStore {
   currentUser: User | null;
   isAuthenticated: boolean;
+  lastMissionCheckDate: string | null; // ISO date string for tracking daily mission completion
   
   // Actions
   login: (credentials: { username: string; password: string }) => Promise<void>;
   logout: () => void;
   updateStreak: (newCount: number) => void;
+  incrementStreak: () => void;
+  resetStreak: () => void;
+  checkAndUpdateStreakForMissedDay: () => void;
+  updateLastMissionCheckDate: (date: string) => void;
 }
 
 /**

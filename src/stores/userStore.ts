@@ -41,6 +41,14 @@ export const useUserStore = create<IUserStore>((set, get) => ({
    */
   isAuthenticated: authService.isAuthenticated(),
 
+  /**
+   * Last date when missions were checked/completed
+   * Used to detect missed days for streak reset
+   * 
+   * Requirements: 10.2
+   */
+  lastMissionCheckDate: null,
+
   // ============================================================================
   // Actions
   // ============================================================================
