@@ -10,22 +10,25 @@
  * Requirements: 12.1, 12.2, 12.3, 12.4
  */
 
-import {
+import type {
   UserModel,
   MissionModel,
   ActionItemModel,
   ConfigModel,
-  STORAGE_KEYS,
   PersistenceService as IPersistenceService,
 } from '../types';
+import { STORAGE_KEYS } from '../types';
 
 /**
  * Error class for persistence-related errors
  */
 export class PersistenceError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
+  cause?: unknown;
+  
+  constructor(message: string, cause?: unknown) {
     super(message);
     this.name = 'PersistenceError';
+    this.cause = cause;
   }
 }
 
