@@ -59,6 +59,9 @@ export function TriageResultCard({
 
   // Format confidence score as percentage
   const confidencePercentage = Math.round(confidenceScore * 100);
+  
+  // Get encouraging message based on analysis
+  const encouragingMessage = getTriageEncouragingMessage(analysis);
 
   return (
     <div
@@ -99,7 +102,8 @@ export function TriageResultCard({
 
       {/* Analysis text */}
       <div className={`${textColor} mb-4`}>
-        <p className="text-base leading-relaxed">{analysisText}</p>
+        <p className="text-base leading-relaxed font-medium">{encouragingMessage}</p>
+        <p className="text-sm leading-relaxed mt-2 opacity-90">{analysisText}</p>
       </div>
 
       {/* Green result: Care instructions */}
