@@ -5,15 +5,19 @@
  * Enhanced animations are triggered for streak milestones (7, 30, 100 days).
  * Auto-dismisses after 2 seconds.
  * 
- * Requirements: 11.3 - Streak Celebration with full-screen confetti effect
+ * Requirements: 
+ * - 11.2 - Tone of Voice: encouraging, slightly humorous text
+ * - 11.3 - Streak Celebration with full-screen confetti effect
  * 
  * @param isVisible - Whether the overlay is visible
  * @param streakCount - Current streak count (used to determine milestone animations)
+ * @param message - Optional custom encouraging message to display
  * @param onComplete - Callback when animation completes and overlay dismisses
  */
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getStreakMilestoneMessage } from '../utils/encouragingMessages';
 
 interface CelebrationOverlayProps {
   isVisible: boolean;
