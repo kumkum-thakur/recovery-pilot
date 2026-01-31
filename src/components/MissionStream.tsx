@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { MissionCard } from './MissionCard';
 import { PhotoCaptureModal } from './PhotoCaptureModal';
 import { TriageResultCard } from './TriageResultCard';
+import { AgentStatusToast } from './AgentStatusToast';
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
 import { useAgentStore } from '../stores/agentStore';
@@ -88,12 +89,16 @@ export function MissionStream() {
    * Handles photo submission from PhotoCaptureModal
    * Uploads photo, triggers AI triage workflow, and performs AI analysis
    * 
-   * Requirements: 5.3, 6.1
+   * Requirements: 5.3, 6.1, 7.1
    */
   const handlePhotoSubmit = async (imageFile: File) => {
     if (!selectedMissionId) {
       throw new Error('No mission selected');
     }
+
+    // Store the file for potential retry
+    setLastPhotoFile(imageFile);
+    setWorkflowError(null);
 
     try {
       // Step 1: Upload photo to mission store
@@ -125,7 +130,42 @@ export function MissionStream() {
       setSelectedMissionTitle('');
     } catch (error) {
       console.error('Failed to submit photo:', error);
-      throw error; // Re-throw to let modal handle the error
+      
+      // Store error for display
+      setWorkflowError(error instanceof Error ? error : new Error('Unknown error occurred'));
+      
+      // Don't close modal on error - let user see the error and retry
+      // The workflow will show failed steps in the toast
+    }
+  };
+
+  /**
+   * Handles retry of failed workflow
+   * Re-attempts the photo submission with the last uploaded file
+   * 
+   * Requirements: 7.1
+   */
+  const handleRetryWorkflow = async () => {
+    if (!lastPhotoFile || !selectedMissionId) {
+      console.error('Cannot retry: no photo file or mission selected');
+      return;
+    }
+
+    // Clear previous error
+    setWorkflowError(null);
+    
+    // Clear the failed workflow before retrying
+    clearWorkflow();
+    
+    // Wait a brief moment for UI to update
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Retry the photo submission
+    try {
+      await handlePhotoSubmit(lastPhotoFile);
+    } catch (error) {
+      console.error('Retry failed:', error);
+      // Error is already handled in handlePhotoSubmit
     }
   };
 
