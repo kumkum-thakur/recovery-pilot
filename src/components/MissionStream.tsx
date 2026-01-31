@@ -133,6 +133,14 @@ export function MissionStream() {
     setSelectedMissionTitle('');
   };
 
+  /**
+   * Handles triage result close
+   */
+  const handleTriageResultClose = () => {
+    setShowTriageResult(false);
+    setTriageResult(null);
+  };
+
   // Loading state
   if (isLoading) {
     return (
