@@ -30,7 +30,7 @@ describe('App Routing', () => {
       
       // Should show login page content
       expect(screen.getByText('RecoveryPilot')).toBeInTheDocument();
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
 
     it('should redirect authenticated patient to /patient', () => {
