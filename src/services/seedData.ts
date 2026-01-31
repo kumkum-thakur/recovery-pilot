@@ -106,3 +106,35 @@ export function initializeSeedData(persistenceService: {
     console.log('✅ Initialized seed missions:', SEED_MISSIONS.map(m => m.title).join(', '));
   }
 }
+
+/**
+ * Reinitializes the database with fresh seed data
+ * 
+ * This function clears all existing data and reinitializes with seed data.
+ * Used for recovery from data corruption.
+ * 
+ * @param persistenceService - The persistence service instance
+ * 
+ * Requirements: 12.4 - Reinitialize with seed data on corruption
+ */
+export function reinitializeWithSeedData(persistenceService: {
+  clearAll: () => void;
+  saveUser: (user: UserModel) => void;
+  saveMission: (mission: MissionModel) => void;
+}): void {
+  console.warn('⚠️ Reinitializing database with seed data...');
+  
+  // Clear all existing data
+  persistenceService.clearAll();
+  
+  // Reinitialize with seed data
+  SEED_USERS.forEach(user => {
+    persistenceService.saveUser(user);
+  });
+  
+  SEED_MISSIONS.forEach(mission => {
+    persistenceService.saveMission(mission);
+  });
+  
+  console.log('✅ Database reinitialized with seed data');
+}
