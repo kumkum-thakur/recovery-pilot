@@ -11,7 +11,7 @@
  * Requirements: 1.1, 1.2, 2.1, 2.2
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, AlertCircle } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
