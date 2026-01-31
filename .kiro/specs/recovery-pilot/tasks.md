@@ -205,7 +205,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Update mission status to completed
     - _Requirements: 5.3, 6.1_
 
-- [ ] 13. Build Agent Status Toast
+- [~] 13. Build Agent Status Toast
   - [~] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
@@ -219,7 +219,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Update steps as workflow progresses
     - _Requirements: 7.1, 7.2, 7.3_
 
-- [ ] 14. Build Triage Result Display
+- [~] 14. Build Triage Result Display
   - [~] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
@@ -227,14 +227,14 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Style with appropriate colors (green for good, red for risk)
     - _Requirements: 6.3, 6.4, 6.5_
 
-- [ ] 15. Checkpoint - Patient dashboard core features complete
+- [~] 15. Checkpoint - Patient dashboard core features complete
   - Test mission stream displays correctly
   - Test photo upload and triage workflow end-to-end
   - Test agent status toast shows workflow steps
   - Verify mobile responsiveness
   - Ask user if questions arise
 
-- [ ] 16. Build Gamification features
+- [~] 16. Build Gamification features
   - [~] 16.1 Create StreakDisplay component
     - Display current streak count prominently
     - Add fire emoji or icon for visual appeal
@@ -259,7 +259,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Examples: "You crushed that pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
     - _Requirements: 11.2_
 
-- [ ] 17. Build Doctor Dashboard core layout
+- [~] 17. Build Doctor Dashboard core layout
   - [~] 17.1 Create DoctorDashboard page component
     - Implement desktop-optimized layout (1024px+)
     - Add Header with NotificationBadge and ProfileButton
@@ -268,7 +268,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Add keyboard navigation shortcuts
     - _Requirements: 14.1, 14.2, 14.3_
 
-- [ ] 18. Build Triage Inbox components
+- [~] 18. Build Triage Inbox components
   - [~] 18.1 Create ActionItemCard component
     - Display patient name, request type, created date
     - Conditionally render TriageDetails or RefillDetails based on type
@@ -295,7 +295,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle loading states
     - _Requirements: 8.1_
 
-- [ ] 19. Build Action Item Review functionality
+- [~] 19. Build Action Item Review functionality
   - [~] 19.1 Implement approve action
     - Connect Approve button to ActionItemStore.approveItem
     - Update action item status to "approved"
@@ -317,7 +317,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Show success toast notification
     - _Requirements: 9.3, 9.4_
 
-- [ ] 20. Checkpoint - Doctor dashboard complete
+- [~] 20. Checkpoint - Doctor dashboard complete
   - Test action item inbox displays correctly
   - Test approve and reject workflows end-to-end
   - Test multi-column layout on wide screens
@@ -356,7 +356,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 2 TASKS - Polish & Accessibility
 
-- [ ] 22. Polish and accessibility
+- [~] 22. Polish and accessibility
   - [~] 22.1 Add loading states and skeletons
     - Add skeleton loaders for mission stream
     - Add skeleton loaders for action item inbox
@@ -378,7 +378,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Implement positive empty state for action items
     - _Requirements: 3.1, 8.1_
 
-- [ ] 23. Manual end-to-end testing
+- [~] 23. Manual end-to-end testing
   - [~] 23.1 End-to-end testing of patient flow
     - Test login → view missions → upload photo → see triage result → streak update
     - Test both Green and Red triage scenarios
