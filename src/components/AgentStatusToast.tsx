@@ -9,16 +9,18 @@
  * - Shows step status: pending, in_progress, completed, failed
  * - Animates step transitions
  * - Auto-dismisses on workflow completion
+ * - Displays retry options on workflow failure
  */
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Loader2, Circle, XCircle } from 'lucide-react';
+import { CheckCircle2, Loader2, Circle, XCircle, RefreshCw } from 'lucide-react';
 import type { AgentStep, AgentStepStatus } from '../types';
 
 export interface AgentStatusToastProps {
   steps: AgentStep[];
   isVisible: boolean;
   onComplete: () => void;
+  onRetry?: () => void; // Optional retry callback
 }
 
 /**
@@ -58,7 +60,7 @@ function getStepIcon(status: AgentStepStatus) {
  * AgentStatusToast component displays the agent's workflow progress
  * in a toast notification that appears at the bottom of the screen
  */
-export function AgentStatusToast({ steps, isVisible, onComplete }: AgentStatusToastProps) {
+export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: AgentStatusToastProps) {
   const [shouldRender, setShouldRender] = useState(isVisible);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
@@ -67,6 +69,9 @@ export function AgentStatusToast({ steps, isVisible, onComplete }: AgentStatusTo
   
   // Check if any step failed
   const hasFailedStep = steps.some(step => step.status === 'failed');
+  
+  // Check if workflow is partially completed (some steps completed, some failed)
+  const isPartiallyCompleted = steps.some(step => step.status === 'completed') && hasFailedStep;
 
   // Handle visibility changes
   useEffect(() => {
@@ -86,13 +91,13 @@ export function AgentStatusToast({ steps, isVisible, onComplete }: AgentStatusTo
 
   // Auto-dismiss after all steps complete (with a delay to show final state)
   useEffect(() => {
-    if (allStepsCompleted && isVisible) {
+    if (allStepsCompleted && isVisible && !hasFailedStep) {
       const timer = setTimeout(() => {
         onComplete();
       }, 1500); // Show completed state for 1.5 seconds
       return () => clearTimeout(timer);
     }
-  }, [allStepsCompleted, isVisible, onComplete]);
+  }, [allStepsCompleted, isVisible, hasFailedStep, onComplete]);
 
   // Don't render if not visible and animation is complete
   if (!shouldRender) {
