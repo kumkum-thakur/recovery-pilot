@@ -24,9 +24,16 @@ export class AuthenticationError extends Error {
 }
 
 /**
- * Session storage key for current user
+ * Session storage keys
  */
 const SESSION_STORAGE_KEY = 'recovery_pilot_current_user';
+const SESSION_EXPIRY_KEY = 'recovery_pilot_session_expiry';
+
+/**
+ * Session timeout duration in milliseconds (30 minutes)
+ * Requirements: 1.2, 2.2
+ */
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 /**
  * Simple password hashing for MVP
@@ -145,6 +152,7 @@ class AuthServiceImpl implements IAuthService {
   logout(): void {
     try {
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_EXPIRY_KEY);
     } catch (error) {
       console.error('Error during logout:', error);
       // Don't throw - logout should always succeed
@@ -154,9 +162,11 @@ class AuthServiceImpl implements IAuthService {
   /**
    * Gets the currently authenticated user from session
    * 
-   * @returns Current user or null if not authenticated
+   * Checks session expiration and returns null if session has expired.
    * 
-   * Requirements: 1.1, 2.1
+   * @returns Current user or null if not authenticated or session expired
+   * 
+   * Requirements: 1.1, 2.1, 1.2, 2.2
    */
   getCurrentUser(): User | null {
     try {
@@ -166,12 +176,19 @@ class AuthServiceImpl implements IAuthService {
         return null;
       }
 
+      // Check if session has expired
+      if (this.isSessionExpired()) {
+        // Clear expired session
+        this.logout();
+        return null;
+      }
+
       const user = JSON.parse(userJson) as User;
       return user;
     } catch (error) {
       console.error('Error retrieving current user:', error);
       // Clear corrupted session data
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      this.logout();
       return null;
     }
   }
@@ -179,13 +196,21 @@ class AuthServiceImpl implements IAuthService {
   /**
    * Sets the current user in session storage
    * 
+   * Also sets the session expiry time.
+   * 
    * @param user - User to store in session
    * @private
+   * 
+   * Requirements: 1.2, 2.2
    */
   private setCurrentUser(user: User): void {
     try {
       const userJson = JSON.stringify(user);
       sessionStorage.setItem(SESSION_STORAGE_KEY, userJson);
+      
+      // Set session expiry time
+      const expiryTime = Date.now() + SESSION_TIMEOUT_MS;
+      sessionStorage.setItem(SESSION_EXPIRY_KEY, expiryTime.toString());
     } catch (error) {
       console.error('Error storing current user:', error);
       throw new AuthenticationError('Failed to create session');
