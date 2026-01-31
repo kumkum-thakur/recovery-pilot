@@ -5,12 +5,16 @@
  * - Current agent workflow state and steps
  * - Processing status
  * - Triage and refill workflow execution
+ * - Error handling and retry capabilities
  * 
  * Requirements: 7.1, 7.2, 7.3
  */
 
 import { create } from 'zustand';
 import type { AgentStore as IAgentStore, AgentStep } from '../types';
+
+// Workflow timeout in milliseconds (5 seconds per step max)
+const WORKFLOW_STEP_TIMEOUT = 5000;
 
 /**
  * AgentStore implementation using Zustand
@@ -44,6 +48,60 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
   // ============================================================================
   // Actions
   // ============================================================================
+
+  /**
+   * Helper function to execute a single workflow step with timeout
+   * 
+   * @param step - The workflow step to execute
+   * @param stepIndex - Index of the step in the workflow
+   * @returns Promise that resolves when step completes or rejects on timeout
+   * 
+   * Requirements: 7.1, 7.2
+   */
+  executeStepWithTimeout: async (step: AgentStep, stepIndex: number): Promise<void> => {
+    const { currentWorkflow } = get();
+    if (!currentWorkflow) return;
+
+    // Update step to in_progress
+    let updatedSteps = [...currentWorkflow];
+    updatedSteps[stepIndex] = { ...updatedSteps[stepIndex], status: 'in_progress' };
+    set({ currentWorkflow: updatedSteps });
+
+    // Create timeout promise
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Step "${step.label}" timed out after ${WORKFLOW_STEP_TIMEOUT}ms`));
+      }, WORKFLOW_STEP_TIMEOUT);
+    });
+
+    // Create step execution promise
+    const stepPromise = new Promise<void>(resolve => {
+      setTimeout(resolve, step.duration || 1000);
+    });
+
+    try {
+      // Race between step completion and timeout
+      await Promise.race([stepPromise, timeoutPromise]);
+
+      // Get current workflow state again (might have been cleared)
+      const { currentWorkflow: updatedWorkflow } = get();
+      if (!updatedWorkflow) return;
+
+      // Update step to completed
+      updatedSteps = [...updatedWorkflow];
+      updatedSteps[stepIndex] = { ...updatedSteps[stepIndex], status: 'completed' };
+      set({ currentWorkflow: updatedSteps });
+    } catch (error) {
+      // Mark step as failed on timeout
+      const { currentWorkflow: failedWorkflow } = get();
+      if (failedWorkflow) {
+        const failedSteps = [...failedWorkflow];
+        failedSteps[stepIndex] = { ...failedSteps[stepIndex], status: 'failed' };
+        set({ currentWorkflow: failedSteps });
+      }
+      throw error;
+    }
+  },
 
   /**
    * Starts the triage workflow for wound image analysis
