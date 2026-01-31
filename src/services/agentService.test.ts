@@ -19,4 +19,263 @@ describe('Agent Service - Workflow Step Simulator', () => {
 
   describe('simulateWorkflowSteps', () => {
     it('should yield steps in correct order: in_progress then completed', async () => {
-      const steps: Agent
+      const steps: AgentStep[] = [
+        { id: '1', label: 'Step 1', status: 'pending', duration: 100 },
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      // Start the generator
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      // Fast-forward through the delays
+      await vi.runAllTimersAsync();
+      await promise;
+
+      expect(results).toHaveLength(2);
+      expect(results[0]).toMatchObject({
+        id: '1',
+        label: 'Step 1',
+        status: 'in_progress',
+      });
+      expect(results[1]).toMatchObject({
+        id: '1',
+        label: 'Step 1',
+        status: 'completed',
+      });
+    });
+
+    it('should process multiple steps sequentially', async () => {
+      const steps: AgentStep[] = [
+        { id: '1', label: 'Step 1', status: 'pending', duration: 100 },
+        { id: '2', label: 'Step 2', status: 'pending', duration: 100 },
+        { id: '3', label: 'Step 3', status: 'pending', duration: 100 },
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      // Should have 2 yields per step (in_progress + completed)
+      expect(results).toHaveLength(6);
+      
+      // Verify order: step1 in_progress, step1 completed, step2 in_progress, etc.
+      expect(results[0].id).toBe('1');
+      expect(results[0].status).toBe('in_progress');
+      expect(results[1].id).toBe('1');
+      expect(results[1].status).toBe('completed');
+      expect(results[2].id).toBe('2');
+      expect(results[2].status).toBe('in_progress');
+      expect(results[3].id).toBe('2');
+      expect(results[3].status).toBe('completed');
+      expect(results[4].id).toBe('3');
+      expect(results[4].status).toBe('in_progress');
+      expect(results[5].id).toBe('3');
+      expect(results[5].status).toBe('completed');
+    });
+
+    it('should use default duration of 1000ms when not specified', async () => {
+      const steps: AgentStep[] = [
+        { id: '1', label: 'Step 1', status: 'pending' }, // No duration specified
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      // Advance by less than 1000ms - should not complete yet
+      await vi.advanceTimersByTimeAsync(500);
+      expect(results).toHaveLength(1); // Only in_progress
+
+      // Advance the rest of the way
+      await vi.advanceTimersByTimeAsync(500);
+      await promise;
+      
+      expect(results).toHaveLength(2); // in_progress + completed
+    });
+
+    it('should respect custom durations for each step', async () => {
+      const steps: AgentStep[] = [
+        { id: '1', label: 'Fast step', status: 'pending', duration: 100 },
+        { id: '2', label: 'Slow step', status: 'pending', duration: 500 },
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      // After 100ms, first step should be complete
+      await vi.advanceTimersByTimeAsync(100);
+      expect(results).toHaveLength(2); // step1: in_progress, completed
+
+      // After another 500ms, second step should be complete
+      await vi.advanceTimersByTimeAsync(500);
+      await promise;
+      
+      expect(results).toHaveLength(4); // step1: 2, step2: 2
+      expect(results[2].id).toBe('2');
+      expect(results[2].status).toBe('in_progress');
+      expect(results[3].id).toBe('2');
+      expect(results[3].status).toBe('completed');
+    });
+
+    it('should handle empty step array', async () => {
+      const steps: AgentStep[] = [];
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      for await (const step of generator) {
+        results.push(step);
+      }
+
+      expect(results).toHaveLength(0);
+    });
+
+    it('should preserve step labels and IDs', async () => {
+      const steps: AgentStep[] = [
+        { id: 'custom-id', label: 'Custom Label', status: 'pending', duration: 100 },
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      expect(results[0].id).toBe('custom-id');
+      expect(results[0].label).toBe('Custom Label');
+      expect(results[1].id).toBe('custom-id');
+      expect(results[1].label).toBe('Custom Label');
+    });
+
+    it('should handle steps with zero duration', async () => {
+      const steps: AgentStep[] = [
+        { id: '1', label: 'Instant step', status: 'pending', duration: 0 },
+      ];
+
+      const generator = simulateWorkflowSteps(steps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      expect(results).toHaveLength(2);
+      expect(results[0].status).toBe('in_progress');
+      expect(results[1].status).toBe('completed');
+    });
+
+    it('should not mutate original step objects', async () => {
+      const originalStep: AgentStep = {
+        id: '1',
+        label: 'Original',
+        status: 'pending',
+        duration: 100,
+      };
+      const steps: AgentStep[] = [originalStep];
+
+      const generator = simulateWorkflowSteps(steps);
+      
+      const promise = (async () => {
+        for await (const step of generator) {
+          // Just consume the generator
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      // Original should be unchanged
+      expect(originalStep.status).toBe('pending');
+    });
+  });
+
+  describe('Real-world workflow scenarios', () => {
+    it('should simulate triage workflow steps', async () => {
+      const triageSteps: AgentStep[] = [
+        { id: '1', label: 'Analyzing Image...', status: 'pending', duration: 1000 },
+        { id: '2', label: 'Drafting Clinical Note...', status: 'pending', duration: 1000 },
+        { id: '3', label: 'Creating Appointment Slot...', status: 'pending', duration: 1000 },
+      ];
+
+      const generator = simulateWorkflowSteps(triageSteps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      // Should have 6 results (3 steps × 2 states each)
+      expect(results).toHaveLength(6);
+      
+      // Verify the workflow labels are preserved
+      expect(results[0].label).toBe('Analyzing Image...');
+      expect(results[2].label).toBe('Drafting Clinical Note...');
+      expect(results[4].label).toBe('Creating Appointment Slot...');
+    });
+
+    it('should simulate refill workflow steps', async () => {
+      const refillSteps: AgentStep[] = [
+        { id: '1', label: 'Checking Pharmacy Inventory (Mock API)...', status: 'pending', duration: 1000 },
+        { id: '2', label: 'Verifying Insurance Coverage...', status: 'pending', duration: 1000 },
+        { id: '3', label: 'Order Placed.', status: 'pending', duration: 500 },
+      ];
+
+      const generator = simulateWorkflowSteps(refillSteps);
+      const results: AgentStep[] = [];
+
+      const promise = (async () => {
+        for await (const step of generator) {
+          results.push(step);
+        }
+      })();
+
+      await vi.runAllTimersAsync();
+      await promise;
+
+      expect(results).toHaveLength(6);
+      expect(results[0].label).toBe('Checking Pharmacy Inventory (Mock API)...');
+      expect(results[2].label).toBe('Verifying Insurance Coverage...');
+      expect(results[4].label).toBe('Order Placed.');
+    });
+  });
+});
