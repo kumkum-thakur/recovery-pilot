@@ -24,10 +24,10 @@ import type { TriageResult } from '../types';
 
 export function MissionStream() {
   // Get missions and loading state from MissionStore
-  const { missions, isLoading, fetchMissions, uploadPhoto, completeMission } = useMissionStore();
+  const { missions, isLoading, fetchMissions, uploadPhoto, completeMission, areAllDailyMissionsCompleted } = useMissionStore();
   
-  // Get current user from UserStore
-  const { currentUser } = useUserStore();
+  // Get current user and streak functions from UserStore
+  const { currentUser, incrementStreak, updateLastMissionCheckDate, checkAndUpdateStreakForMissedDay } = useUserStore();
 
   // Get agent store for triggering AI analysis
   const { currentWorkflow, startTriageWorkflow, clearWorkflow } = useAgentStore();
