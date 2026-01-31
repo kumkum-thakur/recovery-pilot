@@ -121,8 +121,11 @@ describe('ConfigStore', () => {
       // Set zero delay
       store.setMockDelay(0);
       
+      // Get fresh state after update
+      const updatedStore = useConfigStore.getState();
+      
       // Verify state updated
-      expect(store.config.mockDelayMs).toBe(0);
+      expect(updatedStore.config.mockDelayMs).toBe(0);
     });
   });
 
