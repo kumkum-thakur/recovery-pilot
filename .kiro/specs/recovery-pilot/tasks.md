@@ -191,7 +191,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 3.1_
 
 - [ ] 12. Build Photo Capture functionality
-  - [~] 12.1 Create PhotoCaptureModal component
+  - [-] 12.1 Create PhotoCaptureModal component
     - Implement camera access using browser File API
     - Add file upload fallback
     - Display image preview before submission
