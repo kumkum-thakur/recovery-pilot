@@ -207,4 +207,109 @@ export function PhotoCaptureModal({
               >
                 {error}
               </div>
-            
+            )}
+
+            {/* Image preview or capture options */}
+            {previewUrl ? (
+              <div className="space-y-4">
+                <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                  <img
+                    src={previewUrl}
+                    alt="Preview of captured image"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-sm text-gray-600 text-center">
+                  Preview your image before submitting
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-base text-gray-700">
+                  Take a clear photo of your incision or upload an existing image.
+                </p>
+
+                {/* Camera capture button */}
+                <button
+                  onClick={handleCameraClick}
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-medical-primary text-white rounded-lg hover:bg-medical-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                  aria-label="Open camera to take photo"
+                >
+                  <Camera className="w-5 h-5" />
+                  <span className="text-base font-medium">Take Photo</span>
+                </button>
+
+                {/* File upload button */}
+                <button
+                  onClick={handleFileUploadClick}
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-medical-primary border-2 border-medical-primary rounded-lg hover:bg-medical-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+                  aria-label="Upload image from device"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="text-base font-medium">Upload Image</span>
+                </button>
+
+                <p className="text-sm text-gray-500 text-center">
+                  Supported formats: JPEG, PNG, HEIC (max 10MB)
+                </p>
+              </div>
+            )}
+
+            {/* Hidden file inputs */}
+            {/* Camera input with capture attribute for mobile */}
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/heic,image/heif"
+              capture="environment"
+              onChange={handleFileSelect}
+              onError={handleCameraError}
+              className="hidden"
+              aria-hidden="true"
+            />
+
+            {/* File upload input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/heic,image/heif"
+              onChange={handleFileSelect}
+              className="hidden"
+              aria-hidden="true"
+            />
+          </div>
+
+          {/* Footer with action buttons */}
+          <div className="flex gap-3 p-4 border-t border-gray-200">
+            <button
+              onClick={handleClose}
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-base font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!selectedFile || isSubmitting}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gamification-success text-white rounded-lg hover:bg-gamification-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-base font-medium"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5" />
+                  <span>Submit Photo</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

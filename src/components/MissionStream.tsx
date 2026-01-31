@@ -3,15 +3,19 @@
  * 
  * Fetches missions from MissionStore on mount and displays them as cards.
  * Handles loading states and empty states with encouraging messages.
+ * Integrates PhotoCaptureModal for photo upload missions.
  * 
- * Requirements: 3.1, 3.2, 3.3
+ * Requirements: 3.1, 3.2, 3.3, 5.1, 5.2, 5.3
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MissionCard } from './MissionCard';
+import { PhotoCaptureModal } from './PhotoCaptureModal';
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
+import { useAgentStore } from '../stores/agentStore';
 import { Loader2, Sparkles } from 'lucide-react';
+import { MissionType } from '../types';
 
 export function MissionStream() {
   // Get missions and loading state from MissionStore
