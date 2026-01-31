@@ -22,6 +22,7 @@ import { getStreakMilestoneMessage } from '../utils/encouragingMessages';
 interface CelebrationOverlayProps {
   isVisible: boolean;
   streakCount?: number;
+  message?: string; // Optional custom encouraging message
   onComplete: () => void;
 }
 
@@ -63,6 +64,7 @@ function getRandomColor(): string {
 export function CelebrationOverlay({
   isVisible,
   streakCount = 0,
+  message,
   onComplete,
 }: CelebrationOverlayProps) {
   const [confetti, setConfetti] = useState<ReturnType<typeof generateConfetti>>([]);
