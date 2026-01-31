@@ -192,6 +192,40 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
   },
 
   /**
+   * Checks if all missions for the current day are completed
+   * 
+   * This method:
+   * 1. Filters missions to only include today's missions
+   * 2. Checks if all of them are completed
+   * 
+   * @returns true if all daily missions are completed, false otherwise
+   * 
+   * Requirements: 10.1
+   */
+  areAllDailyMissionsCompleted: (): boolean => {
+    const { missions } = get();
+    
+    // Get today's date (start of day)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Filter missions due today
+    const todaysMissions = missions.filter(mission => {
+      const dueDate = new Date(mission.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      return dueDate.getTime() === today.getTime();
+    });
+    
+    // If no missions for today, return false (can't complete what doesn't exist)
+    if (todaysMissions.length === 0) {
+      return false;
+    }
+    
+    // Check if all today's missions are completed
+    return todaysMissions.every(mission => mission.status === MissionStatus.COMPLETED);
+  },
+
+  /**
    * Uploads a photo for a mission and triggers AI analysis
    * 
    * This method:

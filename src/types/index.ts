@@ -320,6 +320,7 @@ export interface MissionStore {
   fetchMissions: (userId: string) => Promise<void>;
   completeMission: (missionId: string) => Promise<void>;
   uploadPhoto: (missionId: string, imageFile: File) => Promise<void>;
+  areAllDailyMissionsCompleted: () => boolean;
 }
 
 /**
