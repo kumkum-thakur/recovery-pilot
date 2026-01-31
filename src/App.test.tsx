@@ -188,7 +188,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to login
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.queryByText('Doctor Dashboard')).not.toBeInTheDocument();
     });
 
@@ -218,7 +218,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to login (via root redirect)
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
 
     it('should redirect authenticated patient to /patient for unknown routes', () => {
@@ -307,7 +307,7 @@ describe('App Routing', () => {
       rerender(<App />);
       
       // Should redirect to login
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
   });
 });
