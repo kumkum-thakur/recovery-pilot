@@ -6,7 +6,7 @@
 
 This implementation plan breaks down the RecoveryPilot autonomous care orchestrator into discrete, incremental coding tasks. The approach follows a bottom-up strategy: establishing core infrastructure (routing, state management, services) first, then building patient features, followed by doctor features, and finally integrating gamification and polish.
 
-Each task builds on previous work, with checkpoints to validate functionality. Testing tasks are marked as optional (*) to enable faster MVP delivery while maintaining the option for comprehensive test coverage.
+**FOCUS: BUILD FIRST, TEST LATER** - All testing tasks have been moved to the end. The priority is to build a working application first, then add comprehensive tests afterward.
 
 ## Tasks
 
@@ -18,14 +18,14 @@ Each task builds on previous work, with checkpoints to validate functionality. T
   - Configure Vitest for testing
   - _Requirements: Technical Constraints 1, 2_
 
-- [ ]* 1.1 Write unit tests for project configuration
-  - Test that Tailwind theme colors are correctly configured
-  - Test that all required dependencies are installed
-  - _Requirements: Technical Constraints 1_
-
 - [x] 2. Define core TypeScript interfaces and types
   - Create types for User, Mission, ActionItem, AgentStep models
   - Create types for store interfaces (UserStore, MissionStore, AgentStore, ActionItemStore)
+  - Create types for service interfaces (AuthService, AgentService, PersistenceService)
+  - Create enums for mission types, action item types, statuses
+  - _Requirements: 1.3, 2.3, 3.1, 7.1, 8.1_
+
+- [ ] 3. Implems for store interfaces (UserStore, MissionStore, AgentStore, ActionItemStore)
   - Create types for service interfaces (AuthService, AgentService, PersistenceService)
   - Create enums for mission types, action item types, statuses
   - _Requirements: 1.3, 2.3, 3.1, 7.1, 8.1_
