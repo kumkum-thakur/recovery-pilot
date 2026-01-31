@@ -113,13 +113,11 @@ describe('AgentStatusToast', () => {
     // Should not call immediately
     expect(onComplete).not.toHaveBeenCalled();
     
-    // Fast-forward time by 1.5 seconds
-    vi.advanceTimersByTime(1500);
+    // Fast-forward time by 1.5 seconds and run all timers
+    await vi.advanceTimersByTimeAsync(1500);
     
     // Should call onComplete after delay
-    await waitFor(() => {
-      expect(onComplete).toHaveBeenCalledTimes(1);
-    });
+    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
   it('should not auto-dismiss if steps are not all completed', () => {
@@ -208,12 +206,10 @@ describe('AgentStatusToast', () => {
     // Should still be in DOM but animating out
     expect(container.firstChild).not.toBeNull();
     
-    // Fast-forward animation
-    vi.advanceTimersByTime(300);
+    // Fast-forward animation and run all timers
+    await vi.advanceTimersByTimeAsync(300);
     
     // Should be removed from DOM after animation
-    await waitFor(() => {
-      expect(container.firstChild).toBeNull();
-    });
+    expect(container.firstChild).toBeNull();
   });
 });
