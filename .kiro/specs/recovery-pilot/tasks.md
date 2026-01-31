@@ -82,7 +82,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 3: Streak Persistence Round-Trip**
     - **Validates: Requirements 1.4, 10.4**
   
-  - [-] 5.4 Create MissionStore
+  - [x] 5.4 Create MissionStore
     - Implement state: missions, isLoading
     - Implement actions: fetchMissions, completeMission, uploadPhoto
     - Integrate with PersistenceService
