@@ -167,7 +167,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
 - [ ] 10. Build Patient Dashboard core layout
-  - [~] 10.1 Create PatientDashboard page component
+  - [-] 10.1 Create PatientDashboard page component
     - Implement mobile-first responsive layout
     - Add Header with StreakDisplay and ProfileButton
     - Add main content area for MissionStream
