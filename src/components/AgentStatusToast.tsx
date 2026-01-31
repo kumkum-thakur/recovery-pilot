@@ -60,4 +60,122 @@ function getStepIcon(status: AgentStepStatus) {
  */
 export function AgentStatusToast({ steps, isVisible, onComplete }: AgentStatusToastProps) {
   const [shouldRender, setShouldRender] = useState(isVisible);
-  const [isAnimatingOut, set
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+
+  // Check if all steps are completed
+  const allStepsCompleted = steps.length > 0 && steps.every(step => step.status === 'completed');
+  
+  // Check if any step failed
+  const hasFailedStep = steps.some(step => step.status === 'failed');
+
+  // Handle visibility changes
+  useEffect(() => {
+    if (isVisible) {
+      setShouldRender(true);
+      setIsAnimatingOut(false);
+    } else if (shouldRender) {
+      // Start exit animation
+      setIsAnimatingOut(true);
+      // Remove from DOM after animation completes
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300); // Match animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, shouldRender]);
+
+  // Auto-dismiss after all steps complete (with a delay to show final state)
+  useEffect(() => {
+    if (allStepsCompleted && isVisible) {
+      const timer = setTimeout(() => {
+        onComplete();
+      }, 1500); // Show completed state for 1.5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [allStepsCompleted, isVisible, onComplete]);
+
+  // Don't render if not visible and animation is complete
+  if (!shouldRender) {
+    return null;
+  }
+
+  return (
+    <div
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 transition-all duration-300 ${
+        isAnimatingOut ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
+      }`}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-2 h-2 rounded-full bg-gamification-agent animate-pulse" />
+          <h3 className="text-sm font-semibold text-medical-text">
+            {hasFailedStep ? 'Workflow Failed' : allStepsCompleted ? 'Workflow Complete' : 'Agent Working...'}
+          </h3>
+        </div>
+
+        {/* Steps list */}
+        <div className="space-y-2">
+          {steps.map((step, index) => {
+            const { Icon, className, animate } = getStepIcon(step.status);
+            
+            return (
+              <div
+                key={step.id}
+                className={`flex items-center gap-3 transition-all duration-300 ${
+                  step.status === 'in_progress' ? 'scale-105' : 'scale-100'
+                }`}
+              >
+                {/* Step icon */}
+                <div className="flex-shrink-0">
+                  <Icon
+                    className={`w-5 h-5 ${className} ${animate ? 'animate-spin' : ''}`}
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* Step label */}
+                <p
+                  className={`text-sm transition-colors duration-200 ${
+                    step.status === 'completed'
+                      ? 'text-medical-text font-medium'
+                      : step.status === 'in_progress'
+                      ? 'text-medical-text font-semibold'
+                      : step.status === 'failed'
+                      ? 'text-red-600 font-medium'
+                      : 'text-gray-500'
+                  }`}
+                >
+                  {step.label}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Success message when all complete */}
+        {allStepsCompleted && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-sm text-gamification-success font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              All done! ✨
+            </p>
+          </div>
+        )}
+
+        {/* Error message if any step failed */}
+        {hasFailedStep && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-sm text-red-600 font-medium flex items-center gap-2">
+              <XCircle className="w-4 h-4" />
+              Something went wrong. Please try again.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
