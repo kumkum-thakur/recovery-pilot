@@ -352,14 +352,17 @@ describe('UserStore - Streak Tracking', () => {
       // Day 1: Complete missions, increment streak
       store.incrementStreak();
       store.updateLastMissionCheckDate(new Date().toISOString());
-      expect(store.currentUser?.streakCount).toBe(6);
+      const afterDay1 = useUserStore.getState();
+      expect(afterDay1.currentUser?.streakCount).toBe(6);
       
       // Day 2: Check for missed day (none), increment again
       store.checkAndUpdateStreakForMissedDay();
-      expect(store.currentUser?.streakCount).toBe(6); // Not reset
+      const afterCheck = useUserStore.getState();
+      expect(afterCheck.currentUser?.streakCount).toBe(6); // Not reset
       
       store.incrementStreak();
-      expect(store.currentUser?.streakCount).toBe(7);
+      const afterDay2 = useUserStore.getState();
+      expect(afterDay2.currentUser?.streakCount).toBe(7);
       
       // Simulate missing 3 days
       const threeDaysAgo = new Date();
@@ -368,11 +371,13 @@ describe('UserStore - Streak Tracking', () => {
       
       // Check for missed day - should reset
       store.checkAndUpdateStreakForMissedDay();
-      expect(store.currentUser?.streakCount).toBe(0);
+      const afterMissedDays = useUserStore.getState();
+      expect(afterMissedDays.currentUser?.streakCount).toBe(0);
       
       // Start new streak
       store.incrementStreak();
-      expect(store.currentUser?.streakCount).toBe(1);
+      const afterNewStreak = useUserStore.getState();
+      expect(afterNewStreak.currentUser?.streakCount).toBe(1);
     });
   });
 });
