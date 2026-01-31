@@ -13,7 +13,7 @@
  * Requirements: Task 21.1
  */
 
-import { ErrorInfo } from 'react';
+import { type ErrorInfo } from 'react';
 
 export interface ErrorLogContext {
   componentStack?: string;
@@ -62,7 +62,7 @@ class ErrorLoggerService {
       error,
       {
         ...context,
-        componentStack: errorInfo.componentStack,
+        componentStack: errorInfo.componentStack ?? undefined,
       },
       'high'
     );
