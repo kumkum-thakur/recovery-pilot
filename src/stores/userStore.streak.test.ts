@@ -83,7 +83,8 @@ describe('UserStore - Streak Tracking', () => {
       
       // Reset to 0 first
       store.updateStreak(0);
-      expect(store.currentUser?.streakCount).toBe(0);
+      const afterReset = useUserStore.getState();
+      expect(afterReset.currentUser?.streakCount).toBe(0);
       
       // Increment
       store.incrementStreak();
@@ -132,7 +133,8 @@ describe('UserStore - Streak Tracking', () => {
         password: 'password123',
       });
       
-      expect(store.currentUser?.streakCount).toBe(5);
+      const initialState = useUserStore.getState();
+      expect(initialState.currentUser?.streakCount).toBe(5);
       
       // Reset streak
       store.resetStreak();
@@ -165,11 +167,13 @@ describe('UserStore - Streak Tracking', () => {
       });
       
       store.resetStreak();
-      expect(store.currentUser?.streakCount).toBe(0);
+      const afterFirstReset = useUserStore.getState();
+      expect(afterFirstReset.currentUser?.streakCount).toBe(0);
       
       // Reset again
       store.resetStreak();
-      expect(store.currentUser?.streakCount).toBe(0);
+      const afterSecondReset = useUserStore.getState();
+      expect(afterSecondReset.currentUser?.streakCount).toBe(0);
     });
 
     it('should throw error when no user is logged in', () => {
