@@ -7,11 +7,13 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PersistenceServiceImpl, PersistenceError } from './persistenceService';
-import {
+import type {
   UserModel,
   MissionModel,
   ActionItemModel,
   ConfigModel,
+} from '../types';
+import {
   UserRole,
   MissionType,
   MissionStatus,
