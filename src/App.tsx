@@ -1,5 +1,3 @@
-import React from 'react';
-
 function App() {
   return (
     <div className="min-h-screen bg-medical-bg text-medical-text">
