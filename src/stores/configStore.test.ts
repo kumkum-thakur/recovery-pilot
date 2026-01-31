@@ -69,8 +69,11 @@ describe('ConfigStore', () => {
       // Then set back to happy path
       store.setDemoScenario(DemoScenario.SCENARIO_HAPPY_PATH);
       
+      // Get fresh state after update
+      const updatedStore = useConfigStore.getState();
+      
       // Verify state updated
-      expect(store.config.demoScenario).toBe(DemoScenario.SCENARIO_HAPPY_PATH);
+      expect(updatedStore.config.demoScenario).toBe(DemoScenario.SCENARIO_HAPPY_PATH);
     });
   });
 
@@ -81,8 +84,11 @@ describe('ConfigStore', () => {
       // Set delay
       store.setMockDelay(500);
       
+      // Get fresh state after update
+      const updatedStore = useConfigStore.getState();
+      
       // Verify state updated
-      expect(store.config.mockDelayMs).toBe(500);
+      expect(updatedStore.config.mockDelayMs).toBe(500);
     });
 
     it('should persist mock delay to storage', () => {
@@ -102,8 +108,11 @@ describe('ConfigStore', () => {
       // Set negative delay
       store.setMockDelay(-100);
       
+      // Get fresh state after update
+      const updatedStore = useConfigStore.getState();
+      
       // Verify clamped to 0
-      expect(store.config.mockDelayMs).toBe(0);
+      expect(updatedStore.config.mockDelayMs).toBe(0);
     });
 
     it('should handle zero delay', () => {
@@ -129,9 +138,12 @@ describe('ConfigStore', () => {
       const store = useConfigStore.getState();
       store.loadConfig();
       
+      // Get fresh state after load
+      const updatedStore = useConfigStore.getState();
+      
       // Verify loaded
-      expect(store.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
-      expect(store.config.mockDelayMs).toBe(500);
+      expect(updatedStore.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
+      expect(updatedStore.config.mockDelayMs).toBe(500);
     });
 
     it('should use default config if storage is empty', () => {
@@ -142,9 +154,12 @@ describe('ConfigStore', () => {
       const store = useConfigStore.getState();
       store.loadConfig();
       
+      // Get fresh state after load
+      const updatedStore = useConfigStore.getState();
+      
       // Verify defaults
-      expect(store.config.demoScenario).toBe(DemoScenario.SCENARIO_HAPPY_PATH);
-      expect(store.config.mockDelayMs).toBe(1000);
+      expect(updatedStore.config.demoScenario).toBe(DemoScenario.SCENARIO_HAPPY_PATH);
+      expect(updatedStore.config.mockDelayMs).toBe(1000);
     });
 
     it('should save default config to storage if none exists', () => {
