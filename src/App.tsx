@@ -6,19 +6,31 @@
  * - Patient dashboard (/patient)
  * - Doctor dashboard (/doctor)
  * 
- * Requirements: 1.1, 2.1
+ * Also includes:
+ * - DebugMenu for demo scenario configuration (Ctrl+Shift+D to toggle)
+ * 
+ * Requirements: 1.1, 2.1, 15.1, 15.2
  */
 
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { DebugMenu } from './components/DebugMenu';
 import { useUserStore } from './stores/userStore';
+import { useConfigStore } from './stores/configStore';
 import { UserRole } from './types';
 
 function App() {
   const { isAuthenticated, currentUser } = useUserStore();
+  const { loadConfig } = useConfigStore();
+
+  // Initialize config store on app mount
+  useEffect(() => {
+    loadConfig();
+  }, [loadConfig]);
 
   return (
     <BrowserRouter>
