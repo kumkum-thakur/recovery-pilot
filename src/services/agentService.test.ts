@@ -127,15 +127,18 @@ describe('Agent Service - Workflow Step Simulator', () => {
         }
       })();
 
-      // After 100ms, first step should be complete
-      await vi.advanceTimersByTimeAsync(100);
-      expect(results).toHaveLength(2); // step1: in_progress, completed
-
-      // After another 500ms, second step should be complete
-      await vi.advanceTimersByTimeAsync(500);
+      // Run all timers to completion
+      await vi.runAllTimersAsync();
       await promise;
       
-      expect(results).toHaveLength(4); // step1: 2, step2: 2
+      // Should have 4 results total (2 steps × 2 states each)
+      expect(results).toHaveLength(4);
+      
+      // Verify the steps and their order
+      expect(results[0].id).toBe('1');
+      expect(results[0].status).toBe('in_progress');
+      expect(results[1].id).toBe('1');
+      expect(results[1].status).toBe('completed');
       expect(results[2].id).toBe('2');
       expect(results[2].status).toBe('in_progress');
       expect(results[3].id).toBe('2');

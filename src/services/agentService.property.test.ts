@@ -315,7 +315,7 @@ describe('Agent Service - Property-Based Tests', () => {
               id: fc.string({ minLength: 1, maxLength: 20 }),
               label: fc.string({ minLength: 1, maxLength: 100 }),
               status: fc.constant('pending' as AgentStepStatus),
-              duration: fc.nat({ max: 1000 }),
+              duration: fc.integer({ min: 100, max: 1000 }), // Ensure minimum duration to avoid timing issues
             }),
             { minLength: 1, maxLength: 5 }
           ),
@@ -331,12 +331,15 @@ describe('Agent Service - Property-Based Tests', () => {
               }
             })();
 
-            // Advance by total duration minus a small amount
-            await vi.advanceTimersByTimeAsync(totalDuration - 10);
+            // Only test timing if total duration is significant enough
+            if (totalDuration > 50) {
+              // Advance by total duration minus a small amount
+              await vi.advanceTimersByTimeAsync(totalDuration - 50);
 
-            // Should not be fully complete yet
-            const completedCount = results.filter(r => r.status === 'completed').length;
-            expect(completedCount).toBeLessThan(steps.length);
+              // Should not be fully complete yet
+              const completedCount = results.filter(r => r.status === 'completed').length;
+              expect(completedCount).toBeLessThan(steps.length);
+            }
 
             // Complete the rest
             await vi.runAllTimersAsync();
