@@ -15,6 +15,9 @@ import type {
   DemoScenario,
   TriageResult,
   RefillResult,
+  TriageAnalysis,
+  InsuranceStatus,
+  ActionItemModel,
 } from '../types';
 
 // ============================================================================
