@@ -8,7 +8,56 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 **FOCUS: BUILD FIRST, TEST LATER** - All testing tasks have been moved to the end. The priority is to build a working application first, then add comprehensive tests afterward.
 
+## Agent Task Assignments
+
+**AGENT 1 - Backend & Infrastructure Focus:**
+- Tasks 1-8: Core infrastructure, services, stores, routing
+- Tasks 21: Error handling
+- Tasks 25-29: Backend/service testing
+
+**AGENT 2 - Frontend & UI Focus:**
+- Tasks 9-20: All UI components (Login, Patient Dashboard, Doctor Dashboard)
+- Tasks 22-24: Polish, accessibility, and manual testing
+- Tasks 30-43: Frontend component testing
+
+### Detailed Task Breakdown
+
+**AGENT 1 Responsibilities:**
+1. ✓ Task 1: Project setup and core infrastructure
+2. ✓ Task 2: Define core TypeScript interfaces and types
+3. ✓ Task 3: Implement Persistence Service with LocalStorage
+4. ✓ Task 4: Implement Authentication Service
+5. ✓ Task 5: Implement Zustand stores (UserStore, MissionStore, AgentStore, ActionItemStore)
+6. ✓ Task 6: Checkpoint - Core infrastructure complete
+7. Task 7: Implement Mock Agent Service (triage workflow, refill workflow, scenario config)
+8. Task 8: Implement routing and navigation
+9. Task 21: Implement error handling and edge cases
+10. Task 25-29: Write backend/service tests (persistence, auth, stores, agent service)
+
+**AGENT 2 Responsibilities:**
+1. Task 9: Build Login page
+2. Task 10: Build Patient Dashboard core layout
+3. Task 11: Build Mission Stream components
+4. Task 12: Build Photo Capture functionality
+5. Task 13: Build Agent Status Toast
+6. Task 14: Build Triage Result Display
+7. Task 15: Checkpoint - Patient dashboard core features complete
+8. Task 16: Build Gamification features (streak, celebration, notifications)
+9. Task 17: Build Doctor Dashboard core layout
+10. Task 18: Build Triage Inbox components
+11. Task 19: Build Action Item Review functionality
+12. Task 20: Checkpoint - Doctor dashboard complete
+13. Task 22: Polish and accessibility
+14. Task 23: Manual end-to-end testing
+15. Task 24: Checkpoint - Application complete and ready for testing
+16. Task 30-41: Write frontend component tests (routing, login, dashboards, components)
+
+**BOTH AGENTS:**
+- Task 42-43: Run full test suite and final checkpoint
+
 ## Tasks
+
+### AGENT 1 TASKS - Core Infrastructure & Backend
 
 - [-] 1. Project setup and core infrastructure
   - Initialize Vite + React project with TypeScript
@@ -105,6 +154,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Implement role-based routing (patients → /patient, doctors → /doctor)
   - Add navigation guards and redirects
   - _Requirements: 1.1, 2.1_
+
+### AGENT 2 TASKS - Frontend UI Components
 
 - [ ] 9. Build Login page
   - [ ] 9.1 Create LoginPage component
@@ -273,6 +324,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Test keyboard shortcuts work
   - Ask user if questions arise
 
+### AGENT 1 TASKS - Error Handling
+
 - [ ] 21. Implement error handling and edge cases
   - [ ] 21.1 Add error boundaries for React components
     - Catch and display component errors gracefully
@@ -300,6 +353,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle data corruption
     - Reinitialize with seed data on corruption
     - _Requirements: 12.4_
+
+### AGENT 2 TASKS - Polish & Accessibility
 
 - [ ] 22. Polish and accessibility
   - [ ] 22.1 Add loading states and skeletons
@@ -350,6 +405,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ---
 
 ## TESTING PHASE - Add tests after app is working
+
+### AGENT 1 TASKS - Backend & Service Testing
 
 - [ ] 25. Unit tests for project configuration
   - [ ] 25.1 Write unit tests for project configuration
@@ -402,6 +459,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - [ ] 29.4 Write property test for scenario determinism
     - **Property 34: Scenario Determinism**
     - **Validates: Requirements 15.2**
+
+### AGENT 2 TASKS - Frontend Component Testing
 
 - [ ] 30. Tests for routing and navigation
   - [ ] 30.1 Write unit tests for routing logic
@@ -537,6 +596,8 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - [ ] 41.1 Write unit tests for all error scenarios
     - Test each error handler displays correct message
     - Test error recovery flows
+
+### BOTH AGENTS - Final Testing & Deployment
 
 - [ ] 42. Run full test suite
   - [ ] 42.1 Run full property test suite
