@@ -158,7 +158,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### AGENT 2 TASKS - Frontend UI Components
 
 - [ ] 9. Build Login page
-  - [ ] 9.1 Create LoginPage component
+  - [~] 9.1 Create LoginPage component
     - Build form with username and password fields
     - Add role selection (patient/doctor) or auto-detect from credentials
     - Implement form validation
@@ -167,7 +167,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
 - [ ] 10. Build Patient Dashboard core layout
-  - [ ] 10.1 Create PatientDashboard page component
+  - [~] 10.1 Create PatientDashboard page component
     - Implement mobile-first responsive layout
     - Add Header with StreakDisplay and ProfileButton
     - Add main content area for MissionStream
@@ -176,14 +176,14 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 3.4, 10.3, 13.1, 13.2, 13.3, 13.4_
 
 - [ ] 11. Build Mission Stream components
-  - [ ] 11.1 Create MissionCard component
+  - [~] 11.1 Create MissionCard component
     - Display mission title, description, status
     - Implement SmartActionButton with context-aware text
     - Add mission icons from lucide-react
     - Style with Tailwind (medical whites/blues)
     - _Requirements: 3.2, 3.3, 4.1, 4.2, 4.3_
   
-  - [ ] 11.2 Create MissionStream component
+  - [~] 11.2 Create MissionStream component
     - Fetch missions from MissionStore on mount
     - Render list of MissionCard components
     - Implement empty state with encouraging message
@@ -191,7 +191,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 3.1_
 
 - [ ] 12. Build Photo Capture functionality
-  - [ ] 12.1 Create PhotoCaptureModal component
+  - [~] 12.1 Create PhotoCaptureModal component
     - Implement camera access using browser File API
     - Add file upload fallback
     - Display image preview before submission
@@ -199,28 +199,28 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle camera permission errors
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
   
-  - [ ] 12.2 Integrate photo upload with MissionStore
+  - [~] 12.2 Integrate photo upload with MissionStore
     - Connect PhotoCaptureModal to uploadPhoto action
     - Trigger AI analysis on submission
     - Update mission status to completed
     - _Requirements: 5.3, 6.1_
 
 - [ ] 13. Build Agent Status Toast
-  - [ ] 13.1 Create AgentStatusToast component
+  - [~] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
     - Animate step transitions
     - Auto-dismiss on workflow completion
     - _Requirements: 7.3_
   
-  - [ ] 13.2 Integrate with AgentStore
+  - [~] 13.2 Integrate with AgentStore
     - Subscribe to currentWorkflow state
     - Display toast when workflow starts
     - Update steps as workflow progresses
     - _Requirements: 7.1, 7.2, 7.3_
 
 - [ ] 14. Build Triage Result Display
-  - [ ] 14.1 Create TriageResultCard component
+  - [~] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
     - Show confidence score
@@ -235,32 +235,32 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Ask user if questions arise
 
 - [ ] 16. Build Gamification features
-  - [ ] 16.1 Create StreakDisplay component
+  - [~] 16.1 Create StreakDisplay component
     - Display current streak count prominently
     - Add fire emoji or icon for visual appeal
     - Style with gamification colors (orange/purple)
     - _Requirements: 10.3_
   
-  - [ ] 16.2 Implement streak tracking logic
+  - [~] 16.2 Implement streak tracking logic
     - Increment streak on all missions completed
     - Reset streak on missed day
     - Persist streak across sessions
     - _Requirements: 10.1, 10.2, 10.4_
   
-  - [ ] 16.3 Create CelebrationOverlay component
+  - [~] 16.3 Create CelebrationOverlay component
     - Implement confetti animation using framer-motion
     - Trigger on mission completion
     - Trigger enhanced animation on streak milestones
     - Auto-dismiss after 2 seconds
     - _Requirements: 11.3_
   
-  - [ ] 16.4 Add encouraging notification text
+  - [~] 16.4 Add encouraging notification text
     - Implement friendly, humorous messages for mission completion
     - Examples: "You crushed that pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
     - _Requirements: 11.2_
 
 - [ ] 17. Build Doctor Dashboard core layout
-  - [ ] 17.1 Create DoctorDashboard page component
+  - [~] 17.1 Create DoctorDashboard page component
     - Implement desktop-optimized layout (1024px+)
     - Add Header with NotificationBadge and ProfileButton
     - Add main content area for TriageInbox
@@ -269,26 +269,26 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 14.1, 14.2, 14.3_
 
 - [ ] 18. Build Triage Inbox components
-  - [ ] 18.1 Create ActionItemCard component
+  - [~] 18.1 Create ActionItemCard component
     - Display patient name, request type, created date
     - Conditionally render TriageDetails or RefillDetails based on type
     - Show Approve and Reject buttons
     - Style with clean medical aesthetic
     - _Requirements: 8.2, 8.3, 8.4, 9.1_
   
-  - [ ] 18.2 Create TriageDetails sub-component
+  - [~] 18.2 Create TriageDetails sub-component
     - Display wound image
     - Display AI analysis text and category (Green/Red)
     - Display confidence score
     - _Requirements: 8.4_
   
-  - [ ] 18.3 Create RefillDetails sub-component
+  - [~] 18.3 Create RefillDetails sub-component
     - Display medication name
     - Display insurance verification status
     - Display inventory availability
     - _Requirements: 8.3_
   
-  - [ ] 18.4 Create TriageInbox component
+  - [~] 18.4 Create TriageInbox component
     - Fetch action items from ActionItemStore on mount
     - Render list of ActionItemCard components in priority order
     - Implement empty state: "All caught up! No pending items to review. ✨"
@@ -296,20 +296,20 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 8.1_
 
 - [ ] 19. Build Action Item Review functionality
-  - [ ] 19.1 Implement approve action
+  - [~] 19.1 Implement approve action
     - Connect Approve button to ActionItemStore.approveItem
     - Update action item status to "approved"
     - Record timestamp
     - Show success toast notification
     - _Requirements: 9.2, 9.4_
   
-  - [ ] 19.2 Create RejectionModal component
+  - [~] 19.2 Create RejectionModal component
     - Display textarea for rejection reason
     - Add submit and cancel buttons
     - Validate that reason is not empty
     - _Requirements: 9.3_
   
-  - [ ] 19.3 Implement reject action
+  - [~] 19.3 Implement reject action
     - Connect Reject button to open RejectionModal
     - Connect modal submit to ActionItemStore.rejectItem
     - Update action item status to "rejected"
@@ -357,12 +357,12 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### AGENT 2 TASKS - Polish & Accessibility
 
 - [ ] 22. Polish and accessibility
-  - [ ] 22.1 Add loading states and skeletons
+  - [~] 22.1 Add loading states and skeletons
     - Add skeleton loaders for mission stream
     - Add skeleton loaders for action item inbox
     - Add loading spinners for async actions
   
-  - [ ] 22.2 Add animations and transitions
+  - [~] 22.2 Add animations and transitions
     - Add smooth transitions for mission completion
     - Add hover effects on interactive elements
     - Add focus indicators for keyboard navigation
