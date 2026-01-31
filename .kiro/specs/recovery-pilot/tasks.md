@@ -10,7 +10,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
 
 ## Tasks
 
-- [~] 1. Project setup and core infrastructure
+- [-] 1. Project setup and core infrastructure
   - Initialize Vite + React project with TypeScript
   - Configure Tailwind CSS with custom theme (medical whites/blues, gamification orange/purple)
   - Install dependencies: zustand, react-router-dom, lucide-react, framer-motion, fast-check, vitest
@@ -455,13 +455,13 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Handle camera access denied
     - _Requirements: 5.4_
   
-  - [ ] 21.4 Add error handling for agent workflows
+  - [~] 21.4 Add error handling for agent workflows
     - Handle workflow timeouts
     - Handle partial workflow completion
     - Display retry options
     - _Requirements: 7.1, 7.2_
   
-  - [ ] 21.5 Add error handling for data persistence
+  - [~] 21.5 Add error handling for data persistence
     - Handle LocalStorage full
     - Handle data corruption
     - Reinitialize with seed data on corruption
@@ -472,39 +472,39 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Test error recovery flows
 
 - [ ] 22. Polish and accessibility
-  - [ ] 22.1 Add loading states and skeletons
+  - [~] 22.1 Add loading states and skeletons
     - Add skeleton loaders for mission stream
     - Add skeleton loaders for action item inbox
     - Add loading spinners for async actions
   
-  - [ ] 22.2 Add animations and transitions
+  - [~] 22.2 Add animations and transitions
     - Add smooth transitions for mission completion
     - Add hover effects on interactive elements
     - Add focus indicators for keyboard navigation
   
-  - [ ] 22.3 Improve accessibility
+  - [~] 22.3 Improve accessibility
     - Add ARIA labels to all interactive elements
     - Ensure keyboard navigation works throughout
     - Test with screen reader
     - Ensure color contrast meets WCAG AA standards
   
-  - [ ] 22.4 Add empty states
+  - [~] 22.4 Add empty states
     - Implement encouraging empty state for missions
     - Implement positive empty state for action items
     - _Requirements: 3.1, 8.1_
 
 - [ ] 23. Final integration and testing
-  - [ ] 23.1 End-to-end testing of patient flow
+  - [~] 23.1 End-to-end testing of patient flow
     - Test login → view missions → upload photo → see triage result → streak update
     - Test both Green and Red triage scenarios
     - Test refill request workflow
   
-  - [ ] 23.2 End-to-end testing of doctor flow
+  - [~] 23.2 End-to-end testing of doctor flow
     - Test login → view action items → approve item → verify patient notification
     - Test reject with reason
     - Test empty inbox state
   
-  - [ ] 23.3 Test demo scenario switching
+  - [~] 23.3 Test demo scenario switching
     - Verify SCENARIO_HAPPY_PATH produces Green results
     - Verify SCENARIO_RISK_DETECTED produces Red results
     - Test deterministic behavior across multiple runs
@@ -520,7 +520,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Verify coverage meets goals (80% line, 75% branch)
     - Fix any failures
 
-- [ ] 24. Final checkpoint - Complete application
+- [~] 24. Final checkpoint - Complete application
   - Verify all features work end-to-end
   - Test on multiple devices and browsers
   - Verify responsive design on mobile and desktop
