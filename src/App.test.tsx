@@ -76,7 +76,7 @@ describe('App Routing', () => {
       render(<App />);
       
       expect(screen.getByText('RecoveryPilot')).toBeInTheDocument();
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.getByLabelText('Username')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
     });
@@ -142,7 +142,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to login
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
     });
 
