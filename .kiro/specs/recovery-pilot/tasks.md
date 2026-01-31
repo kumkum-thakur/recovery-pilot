@@ -205,7 +205,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Update mission status to completed
     - _Requirements: 5.3, 6.1_
 
-- [~] 13. Build Agent Status Toast
+- [x] 13. Build Agent Status Toast
   - [x] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
@@ -220,7 +220,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 7.1, 7.2, 7.3_
 
 - [~] 14. Build Triage Result Display
-  - [~] 14.1 Create TriageResultCard component
+  - [-] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
     - Show confidence score
