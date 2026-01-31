@@ -50,11 +50,9 @@ describe('ActionItemStore', () => {
       isLoading: false,
     });
     
-    // Initialize with test action items
-    persistenceService.set('recovery_pilot_action_items', [
-      mockTriageActionItem,
-      mockRefillActionItem,
-    ]);
+    // Initialize with test action items using proper persistence methods
+    persistenceService.saveActionItem(mockTriageActionItem);
+    persistenceService.saveActionItem(mockRefillActionItem);
   });
 
   describe('fetchActionItems', () => {
