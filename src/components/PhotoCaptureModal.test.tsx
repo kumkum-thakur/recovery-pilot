@@ -240,14 +240,14 @@ describe('PhotoCaptureModal', () => {
 
       const takePhotoButton = screen.getByLabelText('Open camera to take photo');
       const uploadButton = screen.getByLabelText('Upload image from device');
-      const cancelButton = screen.getByText('Cancel');
-      const submitButton = screen.getByText('Submit Photo');
+      const cancelButton = screen.getByText('Cancel').closest('button');
+      const submitButton = screen.getByText('Submit Photo').closest('button');
 
       // Check that buttons have min-h-[44px] class
       expect(takePhotoButton.className).toContain('min-h-[44px]');
       expect(uploadButton.className).toContain('min-h-[44px]');
-      expect(cancelButton.className).toContain('min-h-[44px]');
-      expect(submitButton.className).toContain('min-h-[44px]');
+      expect(cancelButton?.className).toContain('min-h-[44px]');
+      expect(submitButton?.className).toContain('min-h-[44px]');
     });
 
     it('should have minimum 16px text size', () => {
@@ -334,7 +334,7 @@ describe('PhotoCaptureModal', () => {
         />
       );
 
-      const submitButton = screen.getByText('Submit Photo');
+      const submitButton = screen.getByText('Submit Photo').closest('button');
       
       // Button should be disabled when no file is selected
       expect(submitButton).toBeDisabled();
