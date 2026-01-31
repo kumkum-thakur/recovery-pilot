@@ -333,6 +333,7 @@ export interface AgentStore {
   // Actions
   startTriageWorkflow: (imageFile: File) => Promise<void>;
   startRefillWorkflow: (medicationName: string) => Promise<void>;
+  executeStepWithTimeout: (step: AgentStep, stepIndex: number) => Promise<void>;
   clearWorkflow: () => void;
 }
 
