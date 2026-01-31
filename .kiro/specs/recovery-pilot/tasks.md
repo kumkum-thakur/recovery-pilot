@@ -336,7 +336,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle session expiration
     - _Requirements: 1.2, 2.2_
   
-  - [~] 21.3 Add error handling for photo upload
+  - [-] 21.3 Add error handling for photo upload
     - Handle unsupported formats
     - Handle file size limits
     - Handle camera access denied
