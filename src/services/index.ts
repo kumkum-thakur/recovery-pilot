@@ -5,3 +5,4 @@
  */
 
 export { persistenceService, PersistenceServiceImpl, PersistenceError } from './persistenceService';
+export { SEED_USERS, SEED_MISSIONS, initializeSeedData } from './seedData';
