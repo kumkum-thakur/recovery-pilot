@@ -173,4 +173,120 @@ export const useUserStore = create<IUserStore>((set, get) => ({
       throw error;
     }
   },
+
+  /**
+   * Increments the streak count by 1 for the current patient
+   * 
+   * This method should be called when all daily missions are completed.
+   * It automatically increments the current streak count by 1.
+   * 
+   * @throws Error if no user is logged in or user is not a patient
+   * 
+   * Requirements: 10.1, 10.4
+   */
+  incrementStreak: () => {
+    const { currentUser, updateStreak } = get();
+    
+    // Validate user is logged in
+    if (!currentUser) {
+      throw new Error('No user is currently logged in');
+    }
+    
+    // Validate user is a patient
+    if (currentUser.role !== 'patient') {
+      throw new Error('Only patients can have streak counts');
+    }
+    
+    // Get current streak count (default to 0 if undefined)
+    const currentStreak = currentUser.streakCount ?? 0;
+    
+    // Increment by 1
+    updateStreak(currentStreak + 1);
+    
+    console.log(`✅ Streak incremented to ${currentStreak + 1}`);
+  },
+
+  /**
+   * Resets the streak count to 0 for the current patient
+   * 
+   * This method should be called when a patient misses a day of missions.
+   * 
+   * @throws Error if no user is logged in or user is not a patient
+   * 
+   * Requirements: 10.2, 10.4
+   */
+  resetStreak: () => {
+    const { currentUser, updateStreak } = get();
+    
+    // Validate user is logged in
+    if (!currentUser) {
+      throw new Error('No user is currently logged in');
+    }
+    
+    // Validate user is a patient
+    if (currentUser.role !== 'patient') {
+      throw new Error('Only patients can have streak counts');
+    }
+    
+    // Reset to 0
+    updateStreak(0);
+    
+    console.log('⚠️ Streak reset to 0 due to missed day');
+  },
+
+  /**
+   * Checks if a day was missed and resets streak if necessary
+   * 
+   * This method:
+   * 1. Compares the last mission check date with today
+   * 2. If more than 1 day has passed, resets the streak
+   * 3. Should be called when the patient logs in or when missions are loaded
+   * 
+   * Requirements: 10.2
+   */
+  checkAndUpdateStreakForMissedDay: () => {
+    const { currentUser, lastMissionCheckDate, resetStreak } = get();
+    
+    // Only check for patients
+    if (!currentUser || currentUser.role !== 'patient') {
+      return;
+    }
+    
+    // If no last check date, this is the first time - don't reset
+    if (!lastMissionCheckDate) {
+      return;
+    }
+    
+    // Get today's date (start of day)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Get last check date (start of day)
+    const lastCheck = new Date(lastMissionCheckDate);
+    lastCheck.setHours(0, 0, 0, 0);
+    
+    // Calculate days difference
+    const daysDifference = Math.floor((today.getTime() - lastCheck.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // If more than 1 day has passed, reset streak
+    if (daysDifference > 1) {
+      resetStreak();
+      console.log(`⚠️ Missed ${daysDifference - 1} day(s). Streak reset.`);
+    }
+  },
+
+  /**
+   * Updates the last mission check date
+   * 
+   * This should be called when:
+   * - All daily missions are completed
+   * - Patient logs in (to track activity)
+   * 
+   * @param date - ISO date string
+   * 
+   * Requirements: 10.2
+   */
+  updateLastMissionCheckDate: (date: string) => {
+    set({ lastMissionCheckDate: date });
+  },
 }));
