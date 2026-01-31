@@ -60,4 +60,253 @@ function getActionButtonText(type: string): string {
 export const useMissionStore = create<IMissionStore>((set, get) => ({
   // ============================================================================
   // State
-  // ==
+  // ============================================================================
+  
+  /**
+   * List of missions for the current patient
+   * Empty array if no missions loaded
+   * 
+   * Requirements: 3.1, 3.2
+   */
+  missions: [],
+  
+  /**
+   * Loading state for async operations
+   * true when fetching missions or processing actions
+   * 
+   * Requirements: 3.1
+   */
+  isLoading: false,
+
+  // ============================================================================
+  // Actions
+  // ============================================================================
+
+  /**
+   * Fetches all missions for a specific patient
+   * 
+   * This method:
+   * 1. Sets loading state to true
+   * 2. Retrieves missions from persistence
+   * 3. Converts mission models to mission objects
+   * 4. Updates missions state
+   * 5. Sets loading state to false
+   * 
+   * @param userId - Patient user ID
+   * @throws Error if fetch fails
+   * 
+   * Requirements: 3.1, 3.2, 3.3
+   */
+  fetchMissions: async (userId: string) => {
+    // Set loading state
+    set({ isLoading: true });
+    
+    try {
+      // Simulate async operation (for consistency with future API integration)
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Get missions from persistence
+      const missionModels = persistenceService.getMissions(userId);
+      
+      // Convert to Mission objects
+      const missions = missionModels.map(missionModelToMission);
+      
+      // Sort by due date (earliest first)
+      missions.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+      
+      // Update state
+      set({
+        missions,
+        isLoading: false,
+      });
+    } catch (error) {
+      // Log error and reset loading state
+      console.error('Failed to fetch missions:', error);
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  /**
+   * Marks a mission as completed
+   * 
+   * This method:
+   * 1. Finds the mission in the current state
+   * 2. Updates the mission status to 'completed' in persistence
+   * 3. Updates the mission in the local state
+   * 4. Records completion timestamp
+   * 
+   * Note: Streak count updates are handled by the caller (typically the UI component)
+   * after checking if all daily missions are complete.
+   * 
+   * @param missionId - Mission ID to complete
+   * @throws Error if mission not found or update fails
+   * 
+   * Requirements: 3.3, 10.1
+   */
+  completeMission: async (missionId: string) => {
+    const { missions } = get();
+    
+    // Find the mission
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) {
+      throw new Error(`Mission with ID "${missionId}" not found`);
+    }
+    
+    // Check if already completed
+    if (mission.status === MissionStatus.COMPLETED) {
+      console.warn(`Mission "${missionId}" is already completed`);
+      return;
+    }
+    
+    try {
+      // Simulate async operation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Get mission model from persistence
+      const missionModel = persistenceService.getMission(missionId);
+      if (!missionModel) {
+        throw new Error(`Mission model with ID "${missionId}" not found in persistence`);
+      }
+      
+      // Update mission status in persistence
+      const updatedModel: MissionModel = {
+        ...missionModel,
+        status: MissionStatus.COMPLETED,
+        completedAt: new Date().toISOString(),
+      };
+      persistenceService.saveMission(updatedModel);
+      
+      // Update mission in local state
+      const updatedMissions = missions.map(m =>
+        m.id === missionId
+          ? { ...m, status: MissionStatus.COMPLETED }
+          : m
+      );
+      
+      set({ missions: updatedMissions });
+    } catch (error) {
+      console.error('Failed to complete mission:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Uploads a photo for a mission and triggers AI analysis
+   * 
+   * This method:
+   * 1. Validates the mission exists and is a photo upload mission
+   * 2. Validates the image file
+   * 3. Creates a local URL for the image (for MVP, stores as data URL)
+   * 4. Stores the image reference in mission metadata
+   * 5. Marks the mission as completed
+   * 
+   * Note: AI analysis is triggered by the caller (AgentStore) after this method completes.
+   * This separation allows for better control flow and error handling.
+   * 
+   * @param missionId - Mission ID for photo upload
+   * @param imageFile - Image file to upload
+   * @throws Error if mission not found, wrong type, or upload fails
+   * 
+   * Requirements: 5.3, 6.1
+   */
+  uploadPhoto: async (missionId: string, imageFile: File) => {
+    const { missions } = get();
+    
+    // Find the mission
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) {
+      throw new Error(`Mission with ID "${missionId}" not found`);
+    }
+    
+    // Validate mission type
+    if (mission.type !== 'photo_upload') {
+      throw new Error(`Mission "${missionId}" is not a photo upload mission`);
+    }
+    
+    // Validate file is an image
+    if (!imageFile.type.startsWith('image/')) {
+      throw new Error('File must be an image (JPEG, PNG, or HEIC)');
+    }
+    
+    // Validate file size (10MB limit)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+    if (imageFile.size > MAX_FILE_SIZE) {
+      throw new Error('Image must be under 10MB');
+    }
+    
+    try {
+      // Set loading state
+      set({ isLoading: true });
+      
+      // Simulate async upload
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Convert image to data URL for MVP storage
+      const imageUrl = await fileToDataUrl(imageFile);
+      
+      // Get mission model from persistence
+      const missionModel = persistenceService.getMission(missionId);
+      if (!missionModel) {
+        throw new Error(`Mission model with ID "${missionId}" not found in persistence`);
+      }
+      
+      // Update mission with image URL in metadata
+      const updatedModel: MissionModel = {
+        ...missionModel,
+        status: MissionStatus.COMPLETED,
+        completedAt: new Date().toISOString(),
+        metadata: {
+          ...missionModel.metadata,
+          imageUrl,
+          imageFileName: imageFile.name,
+          imageSize: imageFile.size,
+          imageType: imageFile.type,
+        },
+      };
+      persistenceService.saveMission(updatedModel);
+      
+      // Update mission in local state
+      const updatedMissions = missions.map(m =>
+        m.id === missionId
+          ? { ...m, status: MissionStatus.COMPLETED }
+          : m
+      );
+      
+      set({
+        missions: updatedMissions,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error('Failed to upload photo:', error);
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+}));
+
+/**
+ * Converts a File to a data URL
+ * 
+ * @param file - File to convert
+ * @returns Promise resolving to data URL string
+ */
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new Error('Failed to convert file to data URL'));
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsDataURL(file);
+  });
+}
