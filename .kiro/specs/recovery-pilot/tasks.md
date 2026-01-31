@@ -199,7 +199,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle camera permission errors
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
   
-  - [~] 12.2 Integrate photo upload with MissionStore
+  - [-] 12.2 Integrate photo upload with MissionStore
     - Connect PhotoCaptureModal to uploadPhoto action
     - Trigger AI analysis on submission
     - Update mission status to completed
