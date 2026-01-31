@@ -31,7 +31,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
   - _Requirements: 1.3, 2.3, 3.1, 7.1, 8.1_
 
 - [ ] 3. Implement Persistence Service with LocalStorage
-  - [-] 3.1 Create PersistenceService with generic CRUD operations
+  - [x] 3.1 Create PersistenceService with generic CRUD operations
     - Implement get, set, update, delete methods
     - Implement domain-specific methods: getUser, saveUser, getMissions, etc.
     - Add JSON serialization/deserialization with error handling
