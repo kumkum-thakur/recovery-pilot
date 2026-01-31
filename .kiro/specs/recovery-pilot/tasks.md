@@ -336,13 +336,13 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle session expiration
     - _Requirements: 1.2, 2.2_
   
-  - [-] 21.3 Add error handling for photo upload
+  - [x] 21.3 Add error handling for photo upload
     - Handle unsupported formats
     - Handle file size limits
     - Handle camera access denied
     - _Requirements: 5.4_
   
-  - [~] 21.4 Add error handling for agent workflows
+  - [-] 21.4 Add error handling for agent workflows
     - Handle workflow timeouts
     - Handle partial workflow completion
     - Display retry options
