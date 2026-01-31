@@ -16,6 +16,10 @@ describe('ConfigStore', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    
+    // Reset the store to default state
+    const store = useConfigStore.getState();
+    store.resetConfig();
   });
 
   afterEach(() => {
@@ -38,8 +42,11 @@ describe('ConfigStore', () => {
       // Set scenario
       store.setDemoScenario(DemoScenario.SCENARIO_RISK_DETECTED);
       
+      // Get fresh state after update
+      const updatedStore = useConfigStore.getState();
+      
       // Verify state updated
-      expect(store.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
+      expect(updatedStore.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
     });
 
     it('should persist scenario to storage', () => {
