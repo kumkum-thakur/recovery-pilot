@@ -30,7 +30,7 @@ export function MissionStream() {
   const { currentUser } = useUserStore();
 
   // Get agent store for triggering AI analysis
-  const { startTriageWorkflow, clearWorkflow } = useAgentStore();
+  const { currentWorkflow, startTriageWorkflow, clearWorkflow } = useAgentStore();
 
   // Get config store for demo scenario
   const { getCurrentScenario } = useConfigStore();
@@ -240,6 +240,14 @@ export function MissionStream() {
         onClose={handleModalClose}
         onSubmit={handlePhotoSubmit}
         missionTitle={selectedMissionTitle}
+      />
+
+      {/* Agent Status Toast - displays workflow progress with retry option */}
+      <AgentStatusToast
+        steps={currentWorkflow || []}
+        isVisible={currentWorkflow !== null && currentWorkflow.length > 0}
+        onComplete={clearWorkflow}
+        onRetry={workflowError ? handleRetryWorkflow : undefined}
       />
 
       {/* Triage Result Display */}
