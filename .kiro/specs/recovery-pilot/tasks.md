@@ -148,7 +148,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Add debug menu toggle (hidden UI or code flag)
     - _Requirements: 15.1, 15.2_
 
-- [-] 8. Implement routing and navigation
+- [x] 8. Implement routing and navigation
   - Set up React Router with routes: /, /login, /patient, /doctor
   - Create ProtectedRoute component for authenticated routes
   - Implement role-based routing (patients → /patient, doctors → /doctor)
