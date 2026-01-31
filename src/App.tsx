@@ -113,6 +113,9 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         
+        {/* Session Monitor - Active when authenticated */}
+        {isAuthenticated && <SessionMonitor />}
+        
         {/* Debug Menu - Toggle with Ctrl+Shift+D */}
         <DebugMenu />
       </BrowserRouter>
