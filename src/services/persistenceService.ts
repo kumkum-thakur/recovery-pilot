@@ -582,7 +582,7 @@ class PersistenceServiceImpl implements IPersistenceService {
     
     try {
       for (const key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
           const value = localStorage.getItem(key);
           if (value) {
             // Approximate size: key length + value length in bytes
