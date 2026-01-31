@@ -142,7 +142,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Create action items for doctor review
     - _Requirements: 7.2_
   
-  - [-] 7.4 Implement demo scenario configuration
+  - [x] 7.4 Implement demo scenario configuration
     - Create ConfigModel for scenario switching
     - Implement SCENARIO_HAPPY_PATH and SCENARIO_RISK_DETECTED
     - Add debug menu toggle (hidden UI or code flag)
