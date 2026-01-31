@@ -85,3 +85,92 @@ export function CelebrationOverlay({
       {isVisible && (
         <motion.div
           className="fixed inset-0 z-50 pointer-events-none overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          role="presentation"
+          aria-live="polite"
+          aria-label="Celebration animation"
+        >
+          {/* Confetti pieces */}
+          {confetti.map((piece) => (
+            <motion.div
+              key={piece.id}
+              className="absolute"
+              style={{
+                left: `${piece.x}%`,
+                width: `${piece.size}px`,
+                height: `${piece.size}px`,
+                backgroundColor: piece.color,
+                borderRadius: isMilestone ? '50%' : '2px', // Circles for milestones, squares for regular
+              }}
+              initial={{
+                y: piece.y,
+                rotate: piece.rotation,
+                opacity: 1,
+              }}
+              animate={{
+                y: window.innerHeight + 50, // Fall below viewport
+                rotate: piece.rotation + 360 * 2, // Spin while falling
+                opacity: [1, 1, 0.8, 0], // Fade out near the end
+              }}
+              transition={{
+                duration: piece.duration,
+                delay: piece.delay,
+                ease: 'easeIn',
+              }}
+            />
+          ))}
+          
+          {/* Milestone message */}
+          {isMilestone && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 200,
+                damping: 15,
+              }}
+            >
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl px-8 py-6 text-center border-4 border-gamification-accent">
+                <div className="text-6xl mb-2">🎉</div>
+                <h2 className="text-3xl font-bold text-gamification-accent mb-2">
+                  {streakCount} Day Milestone!
+                </h2>
+                <p className="text-lg text-slate-600">
+                  You're crushing it! Keep going! 💪
+                </p>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Regular completion message */}
+          {!isMilestone && (
+            <motion.div
+              className="absolute top-1/3 left-1/2 -translate-x-1/2"
+              initial={{ scale: 0, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0, opacity: 0, y: -20 }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 20,
+              }}
+            >
+              <div className="bg-gamification-success/95 backdrop-blur-sm rounded-xl shadow-xl px-6 py-4 text-center">
+                <div className="text-4xl mb-1">✨</div>
+                <p className="text-xl font-bold text-white">
+                  Mission Complete!
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
