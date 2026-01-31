@@ -88,12 +88,12 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Integrate with PersistenceService
     - _Requirements: 3.1, 3.2, 3.3, 5.3, 10.1_
   
-  - [x] 5.5 Create AgentStore
+  - [-] 5.5 Create AgentStore
     - Implement state: currentWorkflow, isProcessing
     - Implement actions: startTriageWorkflow, startRefillWorkflow, clearWorkflow
     - _Requirements: 7.1, 7.2, 7.3_
   
-  - [-] 5.6 Create ActionItemStore
+  - [ ] 5.6 Create ActionItemStore
     - Implement state: actionItems, isLoading
     - Implement actions: fetchActionItems, approveItem, rejectItem
     - Integrate with PersistenceService
