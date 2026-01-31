@@ -42,6 +42,10 @@ export function MissionStream() {
   // State for triage result display
   const [triageResult, setTriageResult] = useState<TriageResult | null>(null);
   const [showTriageResult, setShowTriageResult] = useState(false);
+  
+  // State for workflow error handling
+  const [workflowError, setWorkflowError] = useState<Error | null>(null);
+  const [lastPhotoFile, setLastPhotoFile] = useState<File | null>(null);
 
   // Fetch missions on mount
   useEffect(() => {

@@ -173,11 +173,25 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
 
         {/* Error message if any step failed */}
         {hasFailedStep && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-gray-100 space-y-3">
             <p className="text-sm text-red-600 font-medium flex items-center gap-2">
               <XCircle className="w-4 h-4" />
-              Something went wrong. Please try again.
+              {isPartiallyCompleted 
+                ? 'Workflow partially completed. Some steps failed.'
+                : 'Something went wrong. Please try again.'}
             </p>
+            
+            {/* Retry button */}
+            {onRetry && (
+              <button
+                onClick={onRetry}
+                className="w-full px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm flex items-center justify-center gap-2 min-h-[44px]"
+                aria-label="Retry workflow"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Retry Workflow
+              </button>
+            )}
           </div>
         )}
       </div>
