@@ -45,7 +45,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 27: Data Persistence Round-Trip**
     - **Validates: Requirements 12.2, 12.3**
   
-  - [~] 3.4 Create seed data (SEED_USERS, SEED_MISSIONS)
+  - [-] 3.4 Create seed data (SEED_USERS, SEED_MISSIONS)
     - Define default patient (Divya) and doctor (Dr. Smith)
     - Define initial missions for testing
     - _Requirements: 1.1, 2.1, 3.1_
