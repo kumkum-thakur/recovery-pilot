@@ -2,10 +2,9 @@
  * AgentStore - Zustand store for AI workflow management
  * 
  * Manages:
- * - Current workflow state and processing status
- * - Triage workflow execution
- * - Refill workflow execution
- * - Workflow step tracking and updates
+ * - Current agent workflow state and steps
+ * - Processing status
+ * - Triage and refill workflow execution
  * 
  * Requirements: 7.1, 7.2, 7.3
  */
@@ -16,7 +15,9 @@ import type { AgentStore as IAgentStore, AgentStep } from '../types';
 /**
  * AgentStore implementation using Zustand
  * 
- * Provides state management for AI-driven workflows
+ * Provides state management for AI-driven workflows including
+ * triage analysis and medication refill requests
+ * 
  * Requirements: 7.1, 7.2, 7.3
  */
 export const useAgentStore = create<IAgentStore>((set, get) => ({
@@ -26,15 +27,15 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
   
   /**
    * Current workflow steps being executed
-   * null when no workflow is active
+   * null if no workflow is active
    * 
-   * Requirements: 7.3
+   * Requirements: 7.1, 7.2, 7.3
    */
   currentWorkflow: null,
   
   /**
-   * Processing state for async workflow operations
-   * true when a workflow is actively executing
+   * Processing status
+   * true if a workflow is currently executing
    * 
    * Requirements: 7.1, 7.2
    */
@@ -47,43 +48,89 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
   /**
    * Starts the triage workflow for wound image analysis
    * 
-   * This method:
-   * 1. Sets processing state to true
-   * 2. Initializes workflow steps
-   * 3. Delegates to agent service for actual analysis
-   * 4. Updates workflow steps as they progress
-   * 5. Clears workflow on completion
+   * This workflow executes the following steps:
+   * 1. Analyzing Image... (1s delay)
+   * 2. Drafting Clinical Note... (1s delay)
+   * 3. Creating Appointment Slot... (1s delay)
    * 
-   * Note: The actual AI analysis is handled by the AgentService.
-   * This store only manages the workflow state and UI updates.
+   * The workflow steps are displayed to the user via the AgentStatusToast
+   * component, showing the AI "working" on their behalf.
    * 
-   * @param imageFile - Wound image to analyze
-   * @throws Error if workflow fails
+   * @param imageFile - The wound photo to analyze
+   * @throws Error if a workflow is already in progress
    * 
-   * Requirements: 7.1, 7.3
+   * Requirements: 7.1
    */
   startTriageWorkflow: async (imageFile: File) => {
-    // Set processing state
-    set({ isProcessing: true });
+    const { isProcessing } = get();
+    
+    // Prevent concurrent workflows
+    if (isProcessing) {
+      throw new Error('A workflow is already in progress');
+    }
+    
+    // Define triage workflow steps
+    const steps: AgentStep[] = [
+      {
+        id: 'triage-1',
+        label: 'Analyzing Image...',
+        status: 'pending',
+        duration: 1000,
+      },
+      {
+        id: 'triage-2',
+        label: 'Drafting Clinical Note...',
+        status: 'pending',
+        duration: 1000,
+      },
+      {
+        id: 'triage-3',
+        label: 'Creating Appointment Slot...',
+        status: 'pending',
+        duration: 1000,
+      },
+    ];
+    
+    // Initialize workflow
+    set({
+      currentWorkflow: steps,
+      isProcessing: true,
+    });
     
     try {
-      // Initialize workflow steps (will be updated by agent service)
-      const steps: AgentStep[] = [
-        { id: '1', label: 'Analyzing Image...', status: 'pending', duration: 1000 },
-        { id: '2', label: 'Drafting Clinical Note...', status: 'pending', duration: 1000 },
-        { id: '3', label: 'Creating Appointment Slot...', status: 'pending', duration: 1000 },
-      ];
+      // Execute workflow steps sequentially
+      for (let i = 0; i < steps.length; i++) {
+        // Update step to in_progress
+        const updatedSteps = [...steps];
+        updatedSteps[i] = { ...updatedSteps[i], status: 'in_progress' };
+        set({ currentWorkflow: updatedSteps });
+        
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, steps[i].duration || 1000));
+        
+        // Update step to completed
+        updatedSteps[i] = { ...updatedSteps[i], status: 'completed' };
+        set({ currentWorkflow: updatedSteps });
+      }
       
-      set({ currentWorkflow: steps });
+      // Workflow complete - keep steps visible for UI to handle cleanup
+      set({ isProcessing: false });
       
-      // Note: Actual workflow execution will be handled by AgentService
-      // This is a placeholder that will be integrated in task 7.2
-      console.log('Triage workflow started for image:', imageFile.name);
-      
-      // Workflow will be cleared by the caller after completion
     } catch (error) {
-      console.error('Failed to start triage workflow:', error);
-      set({ isProcessing: false, currentWorkflow: null });
+      // Mark current step as failed
+      const { currentWorkflow } = get();
+      if (currentWorkflow) {
+        const failedSteps = currentWorkflow.map(step => 
+          step.status === 'in_progress' 
+            ? { ...step, status: 'failed' as const }
+            : step
+        );
+        set({
+          currentWorkflow: failedSteps,
+          isProcessing: false,
+        });
+      }
+      
       throw error;
     }
   },
@@ -91,54 +138,98 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
   /**
    * Starts the refill workflow for medication ordering
    * 
-   * This method:
-   * 1. Sets processing state to true
-   * 2. Initializes workflow steps
-   * 3. Delegates to agent service for processing
-   * 4. Updates workflow steps as they progress
-   * 5. Clears workflow on completion
+   * This workflow executes the following steps:
+   * 1. Checking Pharmacy Inventory (Mock API)... (1s delay)
+   * 2. Verifying Insurance Coverage... (1s delay)
+   * 3. Order Placed. (0.5s delay)
    * 
-   * Note: The actual processing is handled by the AgentService.
-   * This store only manages the workflow state and UI updates.
+   * The workflow steps are displayed to the user via the AgentStatusToast
+   * component, showing the AI "working" on their behalf.
    * 
-   * @param medicationName - Medication to refill
-   * @throws Error if workflow fails
+   * @param medicationName - The medication to refill
+   * @throws Error if a workflow is already in progress
    * 
-   * Requirements: 7.2, 7.3
+   * Requirements: 7.2
    */
   startRefillWorkflow: async (medicationName: string) => {
-    // Set processing state
-    set({ isProcessing: true });
+    const { isProcessing } = get();
+    
+    // Prevent concurrent workflows
+    if (isProcessing) {
+      throw new Error('A workflow is already in progress');
+    }
+    
+    // Define refill workflow steps
+    const steps: AgentStep[] = [
+      {
+        id: 'refill-1',
+        label: 'Checking Pharmacy Inventory (Mock API)...',
+        status: 'pending',
+        duration: 1000,
+      },
+      {
+        id: 'refill-2',
+        label: 'Verifying Insurance Coverage...',
+        status: 'pending',
+        duration: 1000,
+      },
+      {
+        id: 'refill-3',
+        label: 'Order Placed.',
+        status: 'pending',
+        duration: 500,
+      },
+    ];
+    
+    // Initialize workflow
+    set({
+      currentWorkflow: steps,
+      isProcessing: true,
+    });
     
     try {
-      // Initialize workflow steps (will be updated by agent service)
-      const steps: AgentStep[] = [
-        { id: '1', label: 'Checking Pharmacy Inventory (Mock API)...', status: 'pending', duration: 1000 },
-        { id: '2', label: 'Verifying Insurance Coverage...', status: 'pending', duration: 1000 },
-        { id: '3', label: 'Order Placed.', status: 'pending', duration: 500 },
-      ];
+      // Execute workflow steps sequentially
+      for (let i = 0; i < steps.length; i++) {
+        // Update step to in_progress
+        const updatedSteps = [...steps];
+        updatedSteps[i] = { ...updatedSteps[i], status: 'in_progress' };
+        set({ currentWorkflow: updatedSteps });
+        
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, steps[i].duration || 1000));
+        
+        // Update step to completed
+        updatedSteps[i] = { ...updatedSteps[i], status: 'completed' };
+        set({ currentWorkflow: updatedSteps });
+      }
       
-      set({ currentWorkflow: steps });
+      // Workflow complete - keep steps visible for UI to handle cleanup
+      set({ isProcessing: false });
       
-      // Note: Actual workflow execution will be handled by AgentService
-      // This is a placeholder that will be integrated in task 7.5
-      console.log('Refill workflow started for medication:', medicationName);
-      
-      // Workflow will be cleared by the caller after completion
     } catch (error) {
-      console.error('Failed to start refill workflow:', error);
-      set({ isProcessing: false, currentWorkflow: null });
+      // Mark current step as failed
+      const { currentWorkflow } = get();
+      if (currentWorkflow) {
+        const failedSteps = currentWorkflow.map(step => 
+          step.status === 'in_progress' 
+            ? { ...step, status: 'failed' as const }
+            : step
+        );
+        set({
+          currentWorkflow: failedSteps,
+          isProcessing: false,
+        });
+      }
+      
       throw error;
     }
   },
 
   /**
-   * Clears the current workflow and resets processing state
+   * Clears the current workflow
    * 
-   * This method should be called:
-   * - After a workflow completes successfully
-   * - When a workflow is cancelled
-   * - When an error occurs and the workflow needs to be reset
+   * This should be called after the UI has finished displaying
+   * the workflow results (e.g., after the AgentStatusToast is dismissed)
    * 
    * Requirements: 7.3
    */
