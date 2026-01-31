@@ -14,8 +14,11 @@ import { PhotoCaptureModal } from './PhotoCaptureModal';
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
 import { useAgentStore } from '../stores/agentStore';
+import { useConfigStore } from '../stores/configStore';
+import { agentService } from '../services/agentService';
 import { Loader2, Sparkles } from 'lucide-react';
 import { MissionType } from '../types';
+import type { TriageResult } from '../types';
 
 export function MissionStream() {
   // Get missions and loading state from MissionStore
@@ -25,12 +28,19 @@ export function MissionStream() {
   const { currentUser } = useUserStore();
 
   // Get agent store for triggering AI analysis
-  const { startTriageWorkflow } = useAgentStore();
+  const { startTriageWorkflow, clearWorkflow } = useAgentStore();
+
+  // Get config store for demo scenario
+  const { getCurrentScenario } = useConfigStore();
 
   // State for PhotoCaptureModal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
   const [selectedMissionTitle, setSelectedMissionTitle] = useState<string>('');
+
+  // State for triage result display
+  const [triageResult, setTriageResult] = useState<TriageResult | null>(null);
+  const [showTriageResult, setShowTriageResult] = useState(false);
 
   // Fetch missions on mount
   useEffect(() => {
