@@ -57,6 +57,38 @@ export function MissionStream() {
     }
   }, [currentUser?.id, fetchMissions]);
 
+  // Check for missed days when missions are loaded
+  useEffect(() => {
+    if (currentUser?.role === 'patient' && missions.length > 0) {
+      checkAndUpdateStreakForMissedDay();
+    }
+  }, [currentUser?.role, missions.length, checkAndUpdateStreakForMissedDay]);
+
+  /**
+   * Checks if all daily missions are completed and updates streak accordingly
+   * 
+   * This should be called after any mission is completed.
+   * 
+   * Requirements: 10.1, 10.4
+   */
+  const checkAndUpdateStreak = () => {
+    // Only check for patients
+    if (currentUser?.role !== 'patient') {
+      return;
+    }
+
+    // Check if all daily missions are completed
+    if (areAllDailyMissionsCompleted()) {
+      // Increment streak
+      incrementStreak();
+      
+      // Update last mission check date to today
+      updateLastMissionCheckDate(new Date().toISOString());
+      
+      console.log('🎉 All daily missions completed! Streak incremented.');
+    }
+  };
+
   /**
    * Handles mission action button click
    * Opens PhotoCaptureModal for photo upload missions
