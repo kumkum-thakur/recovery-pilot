@@ -176,7 +176,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 3.4, 10.3, 13.1, 13.2, 13.3, 13.4_
 
 - [ ] 11. Build Mission Stream components
-  - [-] 11.1 Create MissionCard component
+  - [x] 11.1 Create MissionCard component
     - Display mission title, description, status
     - Implement SmartActionButton with context-aware text
     - Add mission icons from lucide-react
