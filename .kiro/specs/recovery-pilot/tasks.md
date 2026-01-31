@@ -206,7 +206,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 5.3, 6.1_
 
 - [~] 13. Build Agent Status Toast
-  - [-] 13.1 Create AgentStatusToast component
+  - [x] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
     - Animate step transitions
