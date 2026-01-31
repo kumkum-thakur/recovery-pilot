@@ -93,7 +93,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Implement actions: startTriageWorkflow, startRefillWorkflow, clearWorkflow
     - _Requirements: 7.1, 7.2, 7.3_
   
-  - [ ] 5.6 Create ActionItemStore
+  - [-] 5.6 Create ActionItemStore
     - Implement state: actionItems, isLoading
     - Implement actions: fetchActionItems, approveItem, rejectItem
     - Integrate with PersistenceService
