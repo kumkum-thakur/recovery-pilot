@@ -17,11 +17,22 @@ import { AgentStatusToast } from '../components/AgentStatusToast';
 
 export function PatientDashboard() {
   const { currentUser, logout } = useUserStore();
+  const { currentWorkflow, clearWorkflow } = useAgentStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  /**
+   * Handle workflow completion
+   * Called when the AgentStatusToast auto-dismisses after all steps complete
+   * 
+   * Requirements: 7.3
+   */
+  const handleWorkflowComplete = () => {
+    clearWorkflow();
   };
 
   // Safety check - should not happen due to ProtectedRoute
@@ -53,6 +64,14 @@ export function PatientDashboard() {
         {/* Mission Stream - will be populated in task 11 */}
         <MissionStream />
       </main>
+
+      {/* Agent Status Toast - displays workflow progress */}
+      {/* Requirements: 7.1, 7.2, 7.3 */}
+      <AgentStatusToast
+        steps={currentWorkflow || []}
+        isVisible={currentWorkflow !== null && currentWorkflow.length > 0}
+        onComplete={handleWorkflowComplete}
+      />
     </div>
   );
 }
