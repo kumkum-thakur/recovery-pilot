@@ -81,7 +81,7 @@ export function MissionStream() {
 
   /**
    * Handles photo submission from PhotoCaptureModal
-   * Uploads photo and triggers AI triage analysis
+   * Uploads photo, triggers AI triage workflow, and performs AI analysis
    * 
    * Requirements: 5.3, 6.1
    */
@@ -91,11 +91,28 @@ export function MissionStream() {
     }
 
     try {
-      // Upload photo to mission store
+      // Step 1: Upload photo to mission store
+      // This marks the mission as completed and stores the image
       await uploadPhoto(selectedMissionId, imageFile);
 
-      // Trigger AI triage workflow
+      // Step 2: Trigger AI triage workflow (visual steps for user)
+      // This shows the "Analyzing Image...", "Drafting Note...", etc. steps
       await startTriageWorkflow(imageFile);
+
+      // Step 3: Perform actual AI analysis
+      // Get current demo scenario to determine result
+      const scenario = getCurrentScenario();
+      const result = await agentService.analyzeWoundImage(imageFile, scenario);
+
+      // Step 4: Display triage result to user
+      setTriageResult(result);
+      setShowTriageResult(true);
+
+      // Step 5: Clear the agent workflow after a short delay
+      // This allows the UI to show the completed workflow before clearing
+      setTimeout(() => {
+        clearWorkflow();
+      }, 1000);
 
       // Close modal
       setIsModalOpen(false);
