@@ -1,13 +1,26 @@
 # Task Assignments: RecoveryPilot
 
+## Agent Identity
+
+**If you're reading this file, you are Agent 1.** The other developer/agent working on this project is Agent 2.
+
+When Agent 2 reads this file on their system, they will see themselves as Agent 1 and you as Agent 2. This is intentional - each agent sees themselves as "Agent 1" in their local context.
+
+**For coordination purposes:**
+- Use "Agent 1" when claiming tasks on this system
+- The other system will use "Agent 1" when they claim tasks
+- Git commits will show who did what based on timestamps and commit messages
+
 ## Purpose
 This file coordinates work between multiple agents/developers working on RecoveryPilot. Before starting a task, claim it here to avoid conflicts.
 
 ## How to Use
-1. **Before starting work**: Find an available task and move it to "In Progress" with your agent/developer name
+1. **Before starting work**: Find an available task and move it to "In Progress" with "Agent 1" (that's you!)
 2. **While working**: Keep the task in "In Progress" 
 3. **After completing**: Move the task to "Completed" with completion timestamp
 4. **If blocked**: Move to "Blocked" with reason and ask for help
+
+**Remember:** You are Agent 1 on this system. When you commit and push, the other agent will see your work and coordinate accordingly.
 
 ## Task Status
 
@@ -23,19 +36,28 @@ These tasks are ready to be claimed by any agent:
   - [ ] 4.1 Create AuthService with login/logout functionality
 
 ### In Progress
-Format: `- [Agent Name] Task X.Y - Started: YYYY-MM-DD HH:MM`
+Format: `- [Agent 1] Task X.Y - Started: YYYY-MM-DD HH:MM`
 
 *No tasks currently in progress*
 
+Example:
+- [Agent 1] Task 1 - Started: 2026-01-31 14:30
+
 ### Completed
-Format: `- [x] Task X.Y - Completed by: [Agent Name] on YYYY-MM-DD HH:MM`
+Format: `- [x] Task X.Y - Completed by: Agent 1 on YYYY-MM-DD HH:MM`
 
 *No tasks completed yet*
 
+Example:
+- [x] Task 1 - Completed by: Agent 1 on 2026-01-31 15:45
+
 ### Blocked
-Format: `- [!] Task X.Y - Blocked by: [Agent Name] - Reason: [description]`
+Format: `- [!] Task X.Y - Blocked by: Agent 1 - Reason: [description]`
 
 *No tasks currently blocked*
+
+Example:
+- [!] Task 5.4 - Blocked by: Agent 1 - Reason: Waiting for Task 3.1 to complete
 
 ---
 
@@ -113,7 +135,7 @@ Some tasks must be completed before others can start. Check these dependencies:
 ### When claiming a task:
 ```
 Claiming Task X.Y: [Task Name]
-Agent: [Your Name]
+Agent: Agent 1 (that's you!)
 Started: [Timestamp]
 Expected completion: [Estimate]
 ```
@@ -121,31 +143,35 @@ Expected completion: [Estimate]
 ### When completing a task:
 ```
 Completed Task X.Y: [Task Name]
-Agent: [Your Name]
+Agent: Agent 1
 Completed: [Timestamp]
-Notes: [Any important notes for other agents]
+Notes: [Any important notes for Agent 2]
 ```
 
 ### When blocked:
 ```
 Blocked on Task X.Y: [Task Name]
-Agent: [Your Name]
+Agent: Agent 1
 Reason: [What's blocking you]
-Need: [What you need to unblock]
+Need: [What you need to unblock - maybe Agent 2 can help!]
 ```
 
 ---
 
 ## Current Recommendations
 
-**Start Here (Agent 1):**
-- Claim Task 1 (Project setup) - This unblocks everything else
+**You are Agent 1** - Here's what you should start with:
 
-**Start Here (Agent 2):**
-- Wait for Task 1, then claim Task 2 (TypeScript interfaces) or help with Task 1
+**Start Here (You - Agent 1):**
+- Claim Task 1 (Project setup) - This unblocks everything else
+- After Task 1, claim Task 2 (TypeScript interfaces)
+
+**Agent 2 will:**
+- Wait for Task 1 to complete
+- Then help with Task 2 or claim Task 4 (Authentication)
 
 **After Foundation:**
-- Agent 1 → Task 3 (Persistence)
+- You (Agent 1) → Task 3 (Persistence)
 - Agent 2 → Task 4 (Authentication)
 
 This approach maximizes parallel work while respecting dependencies!

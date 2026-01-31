@@ -4,23 +4,27 @@ An agentic healthcare application that automates post-op recovery logistics thro
 
 ## 🚀 Quick Start for Multi-Agent Development
 
-### For Agent 1 (This System)
-You're already set up! The spec is ready in `.kiro/specs/recovery-pilot/`
-
-### For Agent 2 (Other System)
+### Setup Instructions
 ```bash
+# Clone the repository
 git clone https://github.com/kumkum-thakur/recovery-pilot.git
 cd recovery-pilot
 ```
 
+**You are Agent 1** - The other developer/agent working on this project is Agent 2.
+
+The spec is ready in `.kiro/specs/recovery-pilot/` - start by reviewing the coordination file!
+
 ## 📋 Coordination System
+
+**You are Agent 1** - Coordinate with Agent 2 using the task assignment file.
 
 **Before starting any task:**
 1. Open `.kiro/specs/recovery-pilot/task-assignments.md`
 2. Find an available task
-3. Claim it by moving to "In Progress" with your name
-4. Commit and push your claim: `git add . && git commit -m "Claiming Task X.Y" && git push`
-5. Pull frequently to see what the other agent is working on: `git pull`
+3. Claim it by moving to "In Progress" with "Agent 1" as your name
+4. Commit and push your claim: `git add . && git commit -m "Agent 1: Claiming Task X.Y" && git push`
+5. Pull frequently to see what Agent 2 is working on: `git pull`
 
 ## 📁 Spec Files
 
@@ -50,20 +54,22 @@ This keeps both agents in sync without manual git commands.
 
 ## 👥 Recommended Work Split
 
+**You are Agent 1** - Here's the recommended task distribution:
+
 ### Phase 1: Foundation (Sequential)
-- **Agent 1:** Task 1 (Project setup) → Task 2 (TypeScript interfaces)
-- **Agent 2:** Wait for Task 1, then help with Task 2
+- **You (Agent 1):** Task 1 (Project setup) → Task 2 (TypeScript interfaces)
+- **Agent 2:** Waits for Task 1, then helps with Task 2
 
 ### Phase 2-4: Core Services (Parallel)
-- **Agent 1:** Persistence Service, UserStore, MissionStore
+- **You (Agent 1):** Persistence Service, UserStore, MissionStore
 - **Agent 2:** Authentication Service, AgentStore, ActionItemStore
 
 ### Phase 5: Dashboards (Parallel - BEST SPLIT!)
-- **Agent 1:** Patient Dashboard (Tasks 10-14, 16)
+- **You (Agent 1):** Patient Dashboard (Tasks 10-14, 16)
 - **Agent 2:** Doctor Dashboard (Tasks 17-19)
 
 ### Phase 6-7: Polish & Testing
-- **Agent 1:** Error handling
+- **You (Agent 1):** Error handling
 - **Agent 2:** Accessibility & polish
 - **Both:** Final integration testing
 
@@ -87,11 +93,12 @@ This keeps both agents in sync without manual git commands.
 
 ## 📝 Development Guidelines
 
-1. **Check task-assignments.md before starting work**
-2. **Commit frequently** - Other agent needs to see your progress
-3. **Pull before pushing** - Avoid conflicts
-4. **Optional tests marked with `*`** - Skip for faster MVP, add later for quality
-5. **Follow checkpoints** - Validate incrementally
+1. **You are Agent 1** - Always identify yourself in commits and task claims
+2. **Check task-assignments.md before starting work**
+3. **Commit frequently** - Agent 2 needs to see your progress
+4. **Pull before pushing** - Avoid conflicts with Agent 2's work
+5. **Optional tests marked with `*`** - Skip for faster MVP, add later for quality
+6. **Follow checkpoints** - Validate incrementally
 
 ## 🧪 Testing Strategy
 
@@ -109,18 +116,21 @@ This keeps both agents in sync without manual git commands.
 
 ## 📞 Communication
 
-Use git commit messages to communicate:
+**You are Agent 1** - Use git commit messages to communicate with Agent 2:
 ```bash
-git commit -m "Claiming Task 3.1: Persistence Service"
-git commit -m "Completed Task 3.1: All CRUD operations working"
-git commit -m "Blocked on Task 5.4: Need Task 3.1 to complete first"
+git commit -m "Agent 1: Claiming Task 3.1 - Persistence Service"
+git commit -m "Agent 1: Completed Task 3.1 - All CRUD operations working"
+git commit -m "Agent 1: Blocked on Task 5.4 - Need Task 3.1 to complete first"
 ```
 
 ## 🚦 Getting Started
 
-1. **Clone the repo** (Agent 2 only)
-2. **Open `task-assignments.md`**
-3. **Claim your first task**
-4. **Start coding!**
+**You are Agent 1** - Here's your workflow:
 
-Let's build something amazing! 🚀
+1. **Review the spec files** in `.kiro/specs/recovery-pilot/`
+2. **Open `task-assignments.md`** to see available tasks
+3. **Claim Task 1** (Project setup) - This unblocks everything else
+4. **Commit your claim** so Agent 2 knows you're working on it
+5. **Start coding!**
+
+Agent 2 will see this same README and know they are Agent 2. Let's build something amazing! 🚀
