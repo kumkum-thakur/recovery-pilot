@@ -264,8 +264,11 @@ describe('ConfigStore', () => {
       // Simulate app restart by loading config
       store.loadConfig();
       
+      // Get fresh state after load
+      const updatedStore = useConfigStore.getState();
+      
       // Verify scenario persisted
-      expect(store.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
+      expect(updatedStore.config.demoScenario).toBe(DemoScenario.SCENARIO_RISK_DETECTED);
     });
 
     it('should maintain mock delay across store resets', () => {
@@ -276,8 +279,11 @@ describe('ConfigStore', () => {
       // Simulate app restart by loading config
       store.loadConfig();
       
+      // Get fresh state after load
+      const updatedStore = useConfigStore.getState();
+      
       // Verify delay persisted
-      expect(store.config.mockDelayMs).toBe(2500);
+      expect(updatedStore.config.mockDelayMs).toBe(2500);
     });
   });
 
