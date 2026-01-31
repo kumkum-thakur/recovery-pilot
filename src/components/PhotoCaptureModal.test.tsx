@@ -180,7 +180,7 @@ describe('PhotoCaptureModal', () => {
         fireEvent.change(fileInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Please upload a JPEG, PNG, or HEIC image')).toBeInTheDocument();
+          expect(screen.getByText('Unsupported file format. Please upload a JPEG, PNG, or HEIC image.')).toBeInTheDocument();
         });
       }
     });
@@ -208,7 +208,8 @@ describe('PhotoCaptureModal', () => {
         fireEvent.change(fileInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Image must be under 10MB')).toBeInTheDocument();
+          // The error message now includes the actual file size
+          expect(screen.getByText(/Image is too large.*Please upload an image under 10MB/)).toBeInTheDocument();
         });
       }
     });
