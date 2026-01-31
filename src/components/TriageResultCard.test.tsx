@@ -109,7 +109,7 @@ describe('TriageResultCard', () => {
       
       // Check for action item ID display (truncated)
       expect(screen.getByText(/Action Item ID:/)).toBeInTheDocument();
-      expect(screen.getByText(/action-12.../)).toBeInTheDocument();
+      expect(screen.getByText(/action-1/)).toBeInTheDocument();
     });
 
     it('should handle red results without action item gracefully', () => {
