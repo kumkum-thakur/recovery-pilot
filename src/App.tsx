@@ -19,6 +19,7 @@ import { LoginPage } from './pages/LoginPage';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { SessionMonitor } from './components/SessionMonitor';
 import { DebugMenu } from './components/DebugMenu';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { RouteErrorBoundary } from './components/RouteErrorBoundary';
