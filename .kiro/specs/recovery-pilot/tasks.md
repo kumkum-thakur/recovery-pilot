@@ -124,31 +124,31 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Ask user if questions arise
 
 - [ ] 7. Implement Mock Agent Service
-  - [ ] 7.1 Create workflow step simulator
+  - [~] 7.1 Create workflow step simulator
     - Implement simulateWorkflowSteps generator function
     - Add configurable delays for each step
     - _Requirements: 7.1, 7.2_
   
-  - [ ] 7.2 Implement triage workflow (analyzeWoundImage)
+  - [~] 7.2 Implement triage workflow (analyzeWoundImage)
     - Create multi-step workflow: Analyzing, Drafting Note, Creating Appointment
     - Implement scenario-based results (Green vs Red)
     - Create action items for Red results
     - Store confidence scores
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.1_
   
-  - [ ] 7.3 Implement refill workflow (processRefillRequest)
+  - [~] 7.3 Implement refill workflow (processRefillRequest)
     - Create multi-step workflow: Checking Inventory, Verifying Insurance, Order Placed
     - Implement mock insurance/inventory checks
     - Create action items for doctor review
     - _Requirements: 7.2_
   
-  - [ ] 7.4 Implement demo scenario configuration
+  - [~] 7.4 Implement demo scenario configuration
     - Create ConfigModel for scenario switching
     - Implement SCENARIO_HAPPY_PATH and SCENARIO_RISK_DETECTED
     - Add debug menu toggle (hidden UI or code flag)
     - _Requirements: 15.1, 15.2_
 
-- [ ] 8. Implement routing and navigation
+- [~] 8. Implement routing and navigation
   - Set up React Router with routes: /, /login, /patient, /doctor
   - Create ProtectedRoute component for authenticated routes
   - Implement role-based routing (patients → /patient, doctors → /doctor)
@@ -327,28 +327,28 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### AGENT 1 TASKS - Error Handling
 
 - [ ] 21. Implement error handling and edge cases
-  - [ ] 21.1 Add error boundaries for React components
+  - [~] 21.1 Add error boundaries for React components
     - Catch and display component errors gracefully
     - Log errors for debugging
   
-  - [ ] 21.2 Add error handling for authentication
+  - [~] 21.2 Add error handling for authentication
     - Display user-friendly error messages
     - Handle session expiration
     - _Requirements: 1.2, 2.2_
   
-  - [ ] 21.3 Add error handling for photo upload
+  - [~] 21.3 Add error handling for photo upload
     - Handle unsupported formats
     - Handle file size limits
     - Handle camera access denied
     - _Requirements: 5.4_
   
-  - [ ] 21.4 Add error handling for agent workflows
+  - [~] 21.4 Add error handling for agent workflows
     - Handle workflow timeouts
     - Handle partial workflow completion
     - Display retry options
     - _Requirements: 7.1, 7.2_
   
-  - [ ] 21.5 Add error handling for data persistence
+  - [~] 21.5 Add error handling for data persistence
     - Handle LocalStorage full
     - Handle data corruption
     - Reinitialize with seed data on corruption
