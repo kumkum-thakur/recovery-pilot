@@ -282,3 +282,147 @@ describe('Agent Service - Workflow Step Simulator', () => {
     });
   });
 });
+
+describe('Agent Service - Triage Workflow', () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  describe('analyzeWoundImage', () => {
+    it('should return green result for SCENARIO_HAPPY_PATH', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      // Create a mock image file
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Analyze with happy path scenario
+      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Verify green result
+      expect(result.analysis).toBe('green');
+      expect(result.analysisText).toBe('Healing well. Keep it dry.');
+      expect(result.confidenceScore).toBe(0.92);
+      expect(result.actionItemId).toBeUndefined();
+    });
+
+    it('should return red result for SCENARIO_RISK_DETECTED', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      // Create a mock image file
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Analyze with risk detected scenario
+      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Verify red result
+      expect(result.analysis).toBe('red');
+      expect(result.analysisText).toBe('Redness detected. I have auto-drafted a message to Dr. Smith.');
+      expect(result.confidenceScore).toBe(0.87);
+      expect(result.actionItemId).toBeDefined();
+    });
+
+    it('should create action item for red result', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      // Create a mock image file
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Analyze with risk detected scenario
+      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Verify action item was created
+      expect(result.actionItemId).toBeDefined();
+      
+      // Retrieve the action item from persistence
+      const actionItem = persistenceService.getActionItem(result.actionItemId!);
+      
+      expect(actionItem).toBeDefined();
+      expect(actionItem?.type).toBe('triage');
+      expect(actionItem?.status).toBe('pending_doctor');
+      expect(actionItem?.triageAnalysis).toBe('red');
+      expect(actionItem?.triageText).toBe('Redness detected around incision site. Possible infection.');
+      expect(actionItem?.aiConfidenceScore).toBe(0.87);
+      expect(actionItem?.imageUrl).toBeDefined();
+      expect(actionItem?.patientId).toBe('patient-1');
+      expect(actionItem?.patientName).toBe('Divya Patel');
+    });
+
+    it('should store confidence score for both green and red results', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Test green result
+      const greenResult = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      expect(greenResult.confidenceScore).toBe(0.92);
+      
+      // Test red result
+      const redResult = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      expect(redResult.confidenceScore).toBe(0.87);
+    });
+
+    it('should convert image file to data URL for storage', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      // Create a mock image file
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Analyze with risk detected scenario (which stores the image)
+      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Retrieve the action item
+      const actionItem = persistenceService.getActionItem(result.actionItemId!);
+      
+      // Verify image URL is a data URL
+      expect(actionItem?.imageUrl).toBeDefined();
+      expect(actionItem?.imageUrl).toMatch(/^data:image\/jpeg;base64,/);
+    });
+
+    it('should execute workflow steps before returning result', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      vi.useFakeTimers();
+      
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Start the analysis
+      const promise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers (3 steps × 1000ms each)
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      expect(result.analysis).toBe('green');
+      
+      vi.restoreAllMocks();
+    });
+
+    it('should be deterministic for same scenario', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
+      
+      // Run multiple times with same scenario
+      const result1 = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      const result2 = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Results should be identical (except for action item IDs which are time-based)
+      expect(result1.analysis).toBe(result2.analysis);
+      expect(result1.analysisText).toBe(result2.analysisText);
+      expect(result1.confidenceScore).toBe(result2.confidenceScore);
+    });
+  });
+});
