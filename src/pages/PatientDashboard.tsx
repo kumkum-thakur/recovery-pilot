@@ -1,14 +1,16 @@
 /**
  * PatientDashboard - Main dashboard for patient users
  * 
- * Placeholder component for patient dashboard.
- * Will be implemented in task 10.1
+ * Mobile-first responsive layout with header and mission stream.
+ * Implements accessibility requirements with minimum tap targets and text sizes.
  * 
  * Requirements: 3.4, 10.3, 13.1, 13.2, 13.3, 13.4
  */
 
 import { useUserStore } from '../stores/userStore';
 import { useNavigate } from 'react-router-dom';
+import { Header } from '../components/Header';
+import { MissionStream } from '../components/MissionStream';
 
 export function PatientDashboard() {
   const { currentUser, logout } = useUserStore();
@@ -19,37 +21,35 @@ export function PatientDashboard() {
     navigate('/login');
   };
 
+  // Safety check - should not happen due to ProtectedRoute
+  if (!currentUser) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-medical-bg">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-medical-primary">
-              Patient Dashboard
-            </h1>
-            <p className="text-medical-text mt-2">
-              Welcome back, {currentUser?.name}!
-            </p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-medical-bg flex flex-col">
+      {/* Header with StreakDisplay and ProfileButton */}
+      <Header
+        userName={currentUser.name}
+        streakCount={currentUser.streakCount}
+        onLogout={handleLogout}
+      />
+
+      {/* Main content area - mobile-first responsive */}
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
+        {/* Welcome message */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-medical-text">
+            Welcome back, {currentUser.name}! 👋
+          </h2>
+          <p className="text-base text-gray-600 mt-1">
+            Let's keep up with your recovery journey
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-medical-text">
-            Patient dashboard content will be implemented in task 10.1
-          </p>
-          {currentUser?.streakCount !== undefined && (
-            <p className="mt-4 text-gamification-accent font-bold">
-              Current Streak: {currentUser.streakCount} days 🔥
-            </p>
-          )}
-        </div>
-      </div>
+        {/* Mission Stream - will be populated in task 11 */}
+        <MissionStream />
+      </main>
     </div>
   );
 }
