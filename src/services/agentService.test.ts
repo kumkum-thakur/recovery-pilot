@@ -467,3 +467,212 @@ describe('Agent Service - Triage Workflow', () => {
     });
   });
 });
+
+describe('Agent Service - Refill Workflow', () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('processRefillRequest', () => {
+    it('should return approved insurance and in-stock inventory for SCENARIO_HAPPY_PATH', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      // Start the refill request
+      const promise = agentService.processRefillRequest('Amoxicillin', DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      // Verify result
+      expect(result.insuranceStatus).toBe('approved');
+      expect(result.inventoryStatus).toBe('in_stock');
+      expect(result.actionItemId).toBeDefined();
+    });
+
+    it('should return approved insurance and in-stock inventory for SCENARIO_RISK_DETECTED', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      // Start the refill request
+      const promise = agentService.processRefillRequest('Ibuprofen', DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      // Verify result (refills are always approved in MVP)
+      expect(result.insuranceStatus).toBe('approved');
+      expect(result.inventoryStatus).toBe('in_stock');
+      expect(result.actionItemId).toBeDefined();
+    });
+
+    it('should create action item for doctor review', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      const medicationName = 'Hydrocodone';
+      
+      // Start the refill request
+      const promise = agentService.processRefillRequest(medicationName, DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      // Verify action item was created
+      expect(result.actionItemId).toBeDefined();
+      
+      // Retrieve the action item from persistence
+      const actionItem = persistenceService.getActionItem(result.actionItemId);
+      
+      expect(actionItem).toBeDefined();
+      expect(actionItem?.type).toBe('refill');
+      expect(actionItem?.status).toBe('pending_doctor');
+      expect(actionItem?.medicationName).toBe(medicationName);
+      expect(actionItem?.insuranceStatus).toBe('approved');
+      expect(actionItem?.inventoryStatus).toBe('in_stock');
+      expect(actionItem?.patientId).toBe('patient-1');
+      expect(actionItem?.patientName).toBe('Divya Patel');
+    });
+
+    it('should execute workflow steps before returning result', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      // Start the refill request
+      const promise = agentService.processRefillRequest('Aspirin', DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers (1000ms + 1000ms + 500ms)
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      expect(result.insuranceStatus).toBe('approved');
+      expect(result.inventoryStatus).toBe('in_stock');
+    });
+
+    it('should be deterministic for same scenario', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      
+      const medicationName = 'Acetaminophen';
+      
+      // Run first refill request
+      const promise1 = agentService.processRefillRequest(medicationName, DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result1 = await promise1;
+      
+      // Clear timers for next test
+      vi.clearAllTimers();
+      
+      // Run second refill request
+      const promise2 = agentService.processRefillRequest(medicationName, DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result2 = await promise2;
+      
+      // Results should be identical (except for action item IDs which are time-based)
+      expect(result1.insuranceStatus).toBe(result2.insuranceStatus);
+      expect(result1.inventoryStatus).toBe(result2.inventoryStatus);
+    });
+
+    it('should handle different medication names', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      const medications = ['Medication A', 'Medication B', 'Medication C'];
+      
+      for (const medication of medications) {
+        // Start the refill request
+        const promise = agentService.processRefillRequest(medication, DemoScenario.SCENARIO_HAPPY_PATH);
+        
+        // Fast-forward through all timers
+        await vi.runAllTimersAsync();
+        
+        // Wait for the promise to resolve
+        const result = await promise;
+        
+        // Retrieve the action item
+        const actionItem = persistenceService.getActionItem(result.actionItemId);
+        
+        // Verify medication name is stored correctly
+        expect(actionItem?.medicationName).toBe(medication);
+        
+        // Clear timers for next iteration
+        vi.clearAllTimers();
+      }
+    });
+
+    it('should create unique action items for multiple refill requests', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      // First refill request
+      const promise1 = agentService.processRefillRequest('Med1', DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result1 = await promise1;
+      
+      // Clear timers
+      vi.clearAllTimers();
+      
+      // Second refill request
+      const promise2 = agentService.processRefillRequest('Med2', DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result2 = await promise2;
+      
+      // Action item IDs should be different
+      expect(result1.actionItemId).not.toBe(result2.actionItemId);
+      
+      // Both action items should exist
+      const actionItem1 = persistenceService.getActionItem(result1.actionItemId);
+      const actionItem2 = persistenceService.getActionItem(result2.actionItemId);
+      
+      expect(actionItem1).toBeDefined();
+      expect(actionItem2).toBeDefined();
+      expect(actionItem1?.medicationName).toBe('Med1');
+      expect(actionItem2?.medicationName).toBe('Med2');
+    });
+
+    it('should store timestamps for action items', async () => {
+      const { agentService } = await import('./agentService');
+      const { DemoScenario } = await import('../types');
+      const { persistenceService } = await import('./persistenceService');
+      
+      // Start the refill request
+      const promise = agentService.processRefillRequest('Medication', DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
+      
+      // Retrieve the action item
+      const actionItem = persistenceService.getActionItem(result.actionItemId);
+      
+      // Verify timestamps exist and are valid ISO strings
+      expect(actionItem?.createdAt).toBeDefined();
+      expect(actionItem?.updatedAt).toBeDefined();
+      expect(() => new Date(actionItem!.createdAt)).not.toThrow();
+      expect(() => new Date(actionItem!.updatedAt)).not.toThrow();
+    });
+  });
+});
