@@ -206,7 +206,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 5.3, 6.1_
 
 - [~] 13. Build Agent Status Toast
-  - [~] 13.1 Create AgentStatusToast component
+  - [-] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
     - Animate step transitions
@@ -395,7 +395,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Test deterministic behavior across multiple runs
     - _Requirements: 15.1, 15.2_
 
-- [ ] 24. Checkpoint - Application complete and ready for testing
+- [~] 24. Checkpoint - Application complete and ready for testing
   - Verify all features work end-to-end
   - Test on multiple devices and browsers
   - Verify responsive design on mobile and desktop
