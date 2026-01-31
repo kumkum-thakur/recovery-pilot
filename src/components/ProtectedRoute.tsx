@@ -10,7 +10,7 @@
  * Requirements: 1.1, 2.1
  */
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserStore } from '../stores/userStore';
 import { UserRole } from '../types';
