@@ -216,4 +216,64 @@ export const useActionItemStore = create<IActionItemStore>((set, get) => ({
    * 1. Validates that a rejection reason is provided
    * 2. Finds the action item in the current state
    * 3. Updates the action item status to 'rejected' in persistence
-   * 4. Records th
+   * 4. Records the rejection timestamp and reason
+   * 5. Removes the item from the local state (no longer pending)
+   * 
+   * @param itemId - Action item ID to reject
+   * @param reason - Rejection reason (required, must not be empty)
+   * @throws Error if item not found, reason is empty, or update fails
+   * 
+   * Requirements: 9.3, 9.4
+   */
+  rejectItem: async (itemId: string, reason: string) => {
+    // Validate rejection reason
+    if (!reason || reason.trim().length === 0) {
+      throw new Error('Rejection reason is required');
+    }
+    
+    const { actionItems } = get();
+    
+    // Find the action item
+    const actionItem = actionItems.find(item => item.id === itemId);
+    if (!actionItem) {
+      throw new Error(`Action item with ID "${itemId}" not found`);
+    }
+    
+    // Check if already rejected
+    if (actionItem.status === ActionItemStatus.REJECTED) {
+      console.warn(`Action item "${itemId}" is already rejected`);
+      return;
+    }
+    
+    try {
+      // Simulate async operation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Get action item model from persistence
+      const actionItemModel = persistenceService.getActionItem(itemId);
+      if (!actionItemModel) {
+        throw new Error(`Action item model with ID "${itemId}" not found in persistence`);
+      }
+      
+      // Update action item status in persistence
+      const updatedModel: ActionItemModel = {
+        ...actionItemModel,
+        status: ActionItemStatus.REJECTED,
+        updatedAt: new Date().toISOString(),
+        rejectionReason: reason.trim(),
+      };
+      persistenceService.saveActionItem(updatedModel);
+      
+      // Remove from local state (no longer pending)
+      const updatedActionItems = actionItems.filter(item => item.id !== itemId);
+      
+      set({ actionItems: updatedActionItems });
+      
+      // TODO: Trigger patient notification (future enhancement)
+      console.log(`Action item "${itemId}" rejected with reason: "${reason}"`);
+    } catch (error) {
+      console.error('Failed to reject action item:', error);
+      throw error;
+    }
+  },
+}));
