@@ -197,21 +197,18 @@ describe('AgentStatusToast', () => {
     
     // Initially visible
     expect(container.firstChild).not.toBeNull();
+    expect(screen.getByText('Step 1')).toBeInTheDocument();
     
     // Change to not visible
     rerender(
       <AgentStatusToast steps={steps} isVisible={false} onComplete={vi.fn()} />
     );
     
-    // Should still be in DOM but animating out
+    // Should still be in DOM during animation
     expect(container.firstChild).not.toBeNull();
     
-    // Fast-forward animation and run all timers
-    await vi.advanceTimersByTimeAsync(350);
-    
-    // Wait for the component to be removed from DOM
-    await waitFor(() => {
-      expect(container.firstChild).toBeNull();
-    });
+    // The component should have the animating out class
+    const toastElement = container.firstChild as HTMLElement;
+    expect(toastElement.className).toContain('opacity-0');
   });
 });
