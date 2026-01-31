@@ -219,7 +219,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Update steps as workflow progresses
     - _Requirements: 7.1, 7.2, 7.3_
 
-- [~] 14. Build Triage Result Display
+- [x] 14. Build Triage Result Display
   - [x] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
@@ -227,7 +227,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Style with appropriate colors (green for good, red for risk)
     - _Requirements: 6.3, 6.4, 6.5_
 
-- [~] 15. Checkpoint - Patient dashboard core features complete
+- [-] 15. Checkpoint - Patient dashboard core features complete
   - Test mission stream displays correctly
   - Test photo upload and triage workflow end-to-end
   - Test agent status toast shows workflow steps
