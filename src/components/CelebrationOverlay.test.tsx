@@ -58,7 +58,7 @@ describe('CelebrationOverlay', () => {
   });
 
   describe('Auto-dismiss', () => {
-    it('should call onComplete after 2 seconds', async () => {
+    it('should call onComplete after 2 seconds', () => {
       const onComplete = vi.fn();
       
       render(
@@ -76,9 +76,7 @@ describe('CelebrationOverlay', () => {
       vi.advanceTimersByTime(2000);
       
       // Should be called after 2 seconds
-      await waitFor(() => {
-        expect(onComplete).toHaveBeenCalledTimes(1);
-      });
+      expect(onComplete).toHaveBeenCalledTimes(1);
     });
 
     it('should not call onComplete before 2 seconds', () => {
