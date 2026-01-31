@@ -7,10 +7,11 @@
  * - Doctor dashboard (/doctor)
  * 
  * Also includes:
+ * - SessionMonitor for tracking and warning about session expiration
  * - DebugMenu for demo scenario configuration (Ctrl+Shift+D to toggle)
  * - ErrorBoundary for catching and handling React errors gracefully
  * 
- * Requirements: 1.1, 2.1, 15.1, 15.2, Task 21.1
+ * Requirements: 1.1, 2.1, 1.2, 2.2, 15.1, 15.2, Task 21.1, Task 21.2
  */
 
 import { useEffect } from 'react';
