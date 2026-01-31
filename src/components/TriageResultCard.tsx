@@ -6,15 +6,18 @@
  * - Red results: Action item notification for doctor review
  * - Confidence score display
  * - Appropriate color styling (green for good, red for risk)
+ * - Encouraging, friendly tone of voice
  * 
  * Requirements:
  * - 6.3: Display Green results with positive feedback
  * - 6.4: Display Red results with action item notification
  * - 6.5: Show confidence score
+ * - 11.2: Tone of Voice: encouraging, slightly humorous text
  */
 
 import { CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import type { TriageAnalysis } from '../types';
+import { getTriageEncouragingMessage } from '../utils/encouragingMessages';
 
 export interface TriageResultCardProps {
   analysis: TriageAnalysis;

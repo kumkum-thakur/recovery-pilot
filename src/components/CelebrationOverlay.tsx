@@ -148,7 +148,7 @@ export function CelebrationOverlay({
                   {streakCount} Day Milestone!
                 </h2>
                 <p className="text-lg text-slate-600">
-                  You're crushing it! Keep going! 💪
+                  {getStreakMilestoneMessage(streakCount)}
                 </p>
               </div>
             </motion.div>
@@ -167,11 +167,16 @@ export function CelebrationOverlay({
                 damping: 20,
               }}
             >
-              <div className="bg-gamification-success/95 backdrop-blur-sm rounded-xl shadow-xl px-6 py-4 text-center">
-                <div className="text-4xl mb-1">✨</div>
-                <p className="text-xl font-bold text-white">
+              <div className="bg-gamification-success/95 backdrop-blur-sm rounded-xl shadow-xl px-6 py-4 text-center max-w-md">
+                <div className="text-4xl mb-2">✨</div>
+                <p className="text-xl font-bold text-white mb-1">
                   Mission Complete!
                 </p>
+                {message && (
+                  <p className="text-base text-white/90">
+                    {message}
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
