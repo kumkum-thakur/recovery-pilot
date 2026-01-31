@@ -215,7 +215,8 @@ describe('UserStore - Streak Tracking', () => {
         password: 'password123',
       });
       
-      const initialStreak = store.currentUser?.streakCount;
+      const beforeCheck = useUserStore.getState();
+      const initialStreak = beforeCheck.currentUser?.streakCount;
       
       // Check for missed day (no last check date set)
       store.checkAndUpdateStreakForMissedDay();
@@ -236,7 +237,8 @@ describe('UserStore - Streak Tracking', () => {
       const today = new Date().toISOString();
       store.updateLastMissionCheckDate(today);
       
-      const initialStreak = store.currentUser?.streakCount;
+      const beforeCheck = useUserStore.getState();
+      const initialStreak = beforeCheck.currentUser?.streakCount;
       
       // Check for missed day
       store.checkAndUpdateStreakForMissedDay();
