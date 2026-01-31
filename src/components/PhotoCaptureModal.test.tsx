@@ -305,7 +305,7 @@ describe('PhotoCaptureModal', () => {
         fireEvent.change(fileInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Please upload a JPEG, PNG, or HEIC image')).toBeInTheDocument();
+          expect(screen.getByText('Unsupported file format. Please upload a JPEG, PNG, or HEIC image.')).toBeInTheDocument();
         });
 
         // Now select a valid file
@@ -319,7 +319,7 @@ describe('PhotoCaptureModal', () => {
 
         // Error should be cleared (though preview might not show in test environment)
         await waitFor(() => {
-          expect(screen.queryByText('Please upload a JPEG, PNG, or HEIC image')).not.toBeInTheDocument();
+          expect(screen.queryByText('Unsupported file format. Please upload a JPEG, PNG, or HEIC image.')).not.toBeInTheDocument();
         });
       }
     });
