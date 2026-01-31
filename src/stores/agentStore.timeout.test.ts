@@ -61,7 +61,7 @@ describe('AgentStore - Timeout and Error Handling', () => {
       const { currentWorkflow } = useAgentStore.getState();
       expect(currentWorkflow).not.toBeNull();
       expect(currentWorkflow![0].status).toBe('failed');
-    });
+    }, 10000); // 10 second test timeout to allow for 5 second workflow timeout
 
     it('should handle workflow cleared during execution', async () => {
       const { executeStepWithTimeout, clearWorkflow } = useAgentStore.getState();
