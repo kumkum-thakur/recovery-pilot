@@ -254,7 +254,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Auto-dismiss after 2 seconds
     - _Requirements: 11.3_
   
-  - [-] 16.4 Add encouraging notification text
+  - [ ] 16.4 Add encouraging notification text
     - Implement friendly, humorous messages for mission completion
     - Examples: "You crushed that pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
     - _Requirements: 11.2_
