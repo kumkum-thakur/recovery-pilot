@@ -17,6 +17,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { LoginPage } from './LoginPage';
 import { useUserStore } from '../stores/userStore';
 import { UserRole } from '../types';
+import { persistenceService } from '../services/persistenceService';
+import { initializeSeedData } from '../services/seedData';
 
 // Mock react-router-dom navigate
 const mockNavigate = vi.fn();
@@ -42,6 +44,13 @@ describe('LoginPage', () => {
     // Clear all mocks before each test
     vi.clearAllMocks();
     
+    // Clear localStorage to start fresh
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Initialize seed data
+    initializeSeedData(persistenceService);
+    
     // Reset user store
     useUserStore.getState().logout();
   });
@@ -51,7 +60,7 @@ describe('LoginPage', () => {
       renderLoginPage();
       
       expect(screen.getByText('RecoveryPilot')).toBeInTheDocument();
-      expect(screen.getByText('Sign In')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.getByLabelText('Username')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
