@@ -19,10 +19,18 @@ import { MissionType } from '../types';
 
 export function MissionStream() {
   // Get missions and loading state from MissionStore
-  const { missions, isLoading, fetchMissions } = useMissionStore();
+  const { missions, isLoading, fetchMissions, uploadPhoto, completeMission } = useMissionStore();
   
   // Get current user from UserStore
   const { currentUser } = useUserStore();
+
+  // Get agent store for triggering AI analysis
+  const { startTriageWorkflow } = useAgentStore();
+
+  // State for PhotoCaptureModal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMissionId, setSelectedMissionId] = useState<string | null>(null);
+  const [selectedMissionTitle, setSelectedMissionTitle] = useState<string>('');
 
   // Fetch missions on mount
   useEffect(() => {
@@ -33,10 +41,69 @@ export function MissionStream() {
     }
   }, [currentUser?.id, fetchMissions]);
 
+  /**
+   * Handles mission action button click
+   * Opens PhotoCaptureModal for photo upload missions
+   * Completes mission directly for other mission types
+   * 
+   * Requirements: 4.4, 5.1
+   */
   const handleAction = (missionId: string) => {
-    console.log('Mission action triggered:', missionId);
-    // Action handling will be implemented in task 12 (Photo Capture)
-    // For now, just log the action
+    const mission = missions.find(m => m.id === missionId);
+    
+    if (!mission) {
+      console.error('Mission not found:', missionId);
+      return;
+    }
+
+    // Handle photo upload missions
+    if (mission.type === MissionType.PHOTO_UPLOAD) {
+      setSelectedMissionId(missionId);
+      setSelectedMissionTitle(mission.title);
+      setIsModalOpen(true);
+    } else {
+      // For other mission types, complete directly
+      completeMission(missionId).catch((error) => {
+        console.error('Failed to complete mission:', error);
+      });
+    }
+  };
+
+  /**
+   * Handles photo submission from PhotoCaptureModal
+   * Uploads photo and triggers AI triage analysis
+   * 
+   * Requirements: 5.3, 6.1
+   */
+  const handlePhotoSubmit = async (imageFile: File) => {
+    if (!selectedMissionId) {
+      throw new Error('No mission selected');
+    }
+
+    try {
+      // Upload photo to mission store
+      await uploadPhoto(selectedMissionId, imageFile);
+
+      // Trigger AI triage workflow
+      await startTriageWorkflow(imageFile);
+
+      // Close modal
+      setIsModalOpen(false);
+      setSelectedMissionId(null);
+      setSelectedMissionTitle('');
+    } catch (error) {
+      console.error('Failed to submit photo:', error);
+      throw error; // Re-throw to let modal handle the error
+    }
+  };
+
+  /**
+   * Handles modal close
+   */
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedMissionId(null);
+    setSelectedMissionTitle('');
   };
 
   // Loading state
@@ -86,6 +153,14 @@ export function MissionStream() {
           />
         ))}
       </div>
+
+      {/* PhotoCaptureModal for photo upload missions */}
+      <PhotoCaptureModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handlePhotoSubmit}
+        missionTitle={selectedMissionTitle}
+      />
     </div>
   );
 }
