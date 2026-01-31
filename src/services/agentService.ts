@@ -84,6 +84,125 @@ function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+/**
+ * Converts a File object to a data URL for storage
+ * 
+ * @param file - File to convert
+ * @returns Promise resolving to data URL string
+ */
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new Error('Failed to convert file to data URL'));
+      }
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Creates a triage action item for doctor review
+ * 
+ * Requirements: 6.4, 8.1, 12.2
+ * 
+ * @param triageData - Triage analysis data
+ * @returns Action item ID
+ */
+async function createTriageActionItem(triageData: {
+  imageUrl: string;
+  analysis: TriageAnalysis;
+  analysisText: string;
+  confidenceScore: number;
+}): Promise<string> {
+  // Import persistence service dynamically to avoid circular dependencies
+  const { persistenceService } = await import('./persistenceService');
+  const { ActionItemType, ActionItemStatus } = await import('../types');
+  
+  // Get current user to determine patient info
+  // For MVP, we'll use a hardcoded patient since we don't have context here
+  // In a real app, this would be passed as a parameter
+  const patientId = 'patient-1';
+  const patientName = 'Divya Patel';
+  
+  // Create action item model
+  const actionItemId = generateId();
+  const now = new Date().toISOString();
+  
+  const actionItem: ActionItemModel = {
+    id: actionItemId,
+    patientId,
+    patientName,
+    type: ActionItemType.TRIAGE,
+    status: ActionItemStatus.PENDING_DOCTOR,
+    createdAt: now,
+    updatedAt: now,
+    imageUrl: triageData.imageUrl,
+    triageAnalysis: triageData.analysis,
+    triageText: triageData.analysisText,
+    aiConfidenceScore: triageData.confidenceScore,
+  };
+  
+  // Save to persistence
+  persistenceService.saveActionItem(actionItem);
+  
+  return actionItemId;
+}
+
+/**
+ * Creates a refill action item for doctor review
+ * 
+ * Requirements: 7.2, 8.1, 12.2
+ * 
+ * @param refillData - Refill request data
+ * @returns Action item ID
+ */
+async function createRefillActionItem(refillData: {
+  medicationName: string;
+  insuranceStatus: InsuranceStatus;
+  inventoryStatus: InventoryStatus;
+}): Promise<string> {
+  // Import persistence service dynamically to avoid circular dependencies
+  const { persistenceService } = await import('./persistenceService');
+  const { ActionItemType, ActionItemStatus } = await import('../types');
+  
+  // Get current user to determine patient info
+  // For MVP, we'll use a hardcoded patient since we don't have context here
+  const patientId = 'patient-1';
+  const patientName = 'Divya Patel';
+  
+  // Create action item model
+  const actionItemId = generateId();
+  const now = new Date().toISOString();
+  
+  const actionItem: ActionItemModel = {
+    id: actionItemId,
+    patientId,
+    patientName,
+    type: ActionItemType.REFILL,
+    status: ActionItemStatus.PENDING_DOCTOR,
+    createdAt: now,
+    updatedAt: now,
+    medicationName: refillData.medicationName,
+    insuranceStatus: refillData.insuranceStatus,
+    inventoryStatus: refillData.inventoryStatus,
+  };
+  
+  // Save to persistence
+  persistenceService.saveActionItem(actionItem);
+  
+  return actionItemId;
+}
+
 // ============================================================================
 // Mock Agent Service Implementation
 // ============================================================================
@@ -114,8 +233,72 @@ export function createAgentService(): AgentService {
       imageFile: File,
       scenario: DemoScenario
     ): Promise<TriageResult> {
-      // This will be implemented in task 7.2
-      throw new Error('Not implemented yet - will be completed in task 7.2');
+      // Define the multi-step workflow for triage analysis
+      // Requirements: 7.1 - Three steps with 1s delays each
+      const steps: AgentStep[] = [
+        { 
+          id: '1', 
+          label: 'Analyzing Image...', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 1000 
+        },
+        { 
+          id: '2', 
+          label: 'Drafting Clinical Note...', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 1000 
+        },
+        { 
+          id: '3', 
+          label: 'Creating Appointment Slot...', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 1000 
+        }
+      ];
+      
+      // Execute workflow steps with delays
+      // This simulates the AI "working" on behalf of the patient
+      // Note: The actual step updates are handled by the AgentStore
+      // which calls simulateWorkflowSteps and updates UI in real-time
+      for await (const step of simulateWorkflowSteps(steps)) {
+        // Steps are yielded as they progress
+        // The AgentStore will handle displaying these to the user
+      }
+      
+      // Determine result based on demo scenario
+      // Requirements: 15.2 - Scenario-based deterministic behavior
+      if (scenario === 'SCENARIO_RISK_DETECTED') {
+        // RED RESULT: Risk detected, create action item for doctor review
+        // Requirements: 6.2, 6.4, 6.5
+        
+        // Create a data URL from the image file for storage
+        const imageUrl = await fileToDataUrl(imageFile);
+        
+        // Create action item for doctor review
+        const actionItemId = await createTriageActionItem({
+          imageUrl,
+          analysis: 'red' as TriageAnalysis,
+          analysisText: 'Redness detected around incision site. Possible infection.',
+          confidenceScore: 0.87,
+        });
+        
+        // Return Red result with action item
+        // Requirements: 6.3, 6.4
+        return {
+          analysis: 'red' as TriageAnalysis,
+          analysisText: 'Redness detected. I have auto-drafted a message to Dr. Smith.',
+          confidenceScore: 0.87,
+          actionItemId,
+        };
+      }
+      
+      // GREEN RESULT: Healing well, no action item needed
+      // Requirements: 6.2, 6.3, 6.5
+      return {
+        analysis: 'green' as TriageAnalysis,
+        analysisText: 'Healing well. Keep it dry.',
+        confidenceScore: 0.92,
+      };
     },
 
     /**
