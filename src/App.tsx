@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <div className="min-h-screen bg-medical-bg text-medical-text">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-medical-primary mb-4">
+          RecoveryPilot
+        </h1>
+        <p className="text-lg">
+          Autonomous care orchestrator for post-operative recovery logistics
         </p>
+        <div className="mt-8 space-y-4">
+          <div className="p-4 bg-white rounded-lg shadow">
+            <h2 className="text-xl font-semibold text-gamification-accent">
+              Gamification Theme
+            </h2>
+            <p className="text-gamification-success">Success color</p>
+            <p className="text-gamification-agent">Agent active color</p>
+          </div>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
