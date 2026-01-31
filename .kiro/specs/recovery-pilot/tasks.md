@@ -129,7 +129,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Add configurable delays for each step
     - _Requirements: 7.1, 7.2_
   
-  - [-] 7.2 Implement triage workflow (analyzeWoundImage)
+  - [x] 7.2 Implement triage workflow (analyzeWoundImage)
     - Create multi-step workflow: Analyzing, Drafting Note, Creating Appointment
     - Implement scenario-based results (Green vs Red)
     - Create action items for Red results
