@@ -5,8 +5,10 @@
  * - useUserStore: User authentication and profile management
  * - useMissionStore: Patient mission management
  * - useAgentStore: AI workflow management
+ * - useActionItemStore: Doctor action item review management
  */
 
 export { useUserStore } from './userStore';
 export { useMissionStore } from './missionStore';
 export { useAgentStore } from './agentStore';
+export { useActionItemStore } from './actionItemStore';
