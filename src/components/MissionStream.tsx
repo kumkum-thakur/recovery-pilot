@@ -196,6 +196,78 @@ export function MissionStream() {
         onSubmit={handlePhotoSubmit}
         missionTitle={selectedMissionTitle}
       />
+
+      {/* Triage Result Display */}
+      {showTriageResult && triageResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+            {/* Result header */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-medical-text">
+                Analysis Complete
+              </h3>
+              <button
+                onClick={handleTriageResultClose}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Close result"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Result content */}
+            <div className={`p-4 rounded-lg ${
+              triageResult.analysis === 'green' 
+                ? 'bg-gamification-success/10 border border-gamification-success/20' 
+                : 'bg-red-50 border border-red-200'
+            }`}>
+              {/* Status icon and text */}
+              <div className="flex items-start gap-3">
+                {triageResult.analysis === 'green' ? (
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gamification-success flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h4 className={`font-semibold mb-1 ${
+                    triageResult.analysis === 'green' ? 'text-gamification-success' : 'text-red-700'
+                  }`}>
+                    {triageResult.analysis === 'green' ? 'Healing Well! ✨' : 'Attention Needed ⚠️'}
+                  </h4>
+                  <p className="text-medical-text text-base">
+                    {triageResult.analysisText}
+                  </p>
+                </div>
+              </div>
+
+              {/* Confidence score */}
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  AI Confidence: <span className="font-semibold">{(triageResult.confidenceScore * 100).toFixed(0)}%</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Action button */}
+            <button
+              onClick={handleTriageResultClose}
+              className="w-full px-6 py-3 bg-medical-primary text-white rounded-lg hover:bg-medical-primary-dark transition-colors font-medium"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
