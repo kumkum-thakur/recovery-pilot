@@ -288,6 +288,11 @@ describe('Agent Service - Triage Workflow', () => {
     // Clear localStorage before each test
     localStorage.clear();
     vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('analyzeWoundImage', () => {
@@ -298,8 +303,14 @@ describe('Agent Service - Triage Workflow', () => {
       // Create a mock image file
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
-      // Analyze with happy path scenario
-      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      // Start the analysis
+      const promise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
       
       // Verify green result
       expect(result.analysis).toBe('green');
@@ -315,8 +326,14 @@ describe('Agent Service - Triage Workflow', () => {
       // Create a mock image file
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
-      // Analyze with risk detected scenario
-      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      // Start the analysis
+      const promise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
       
       // Verify red result
       expect(result.analysis).toBe('red');
@@ -333,8 +350,14 @@ describe('Agent Service - Triage Workflow', () => {
       // Create a mock image file
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
-      // Analyze with risk detected scenario
-      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      // Start the analysis
+      const promise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
       
       // Verify action item was created
       expect(result.actionItemId).toBeDefined();
@@ -360,11 +383,18 @@ describe('Agent Service - Triage Workflow', () => {
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
       // Test green result
-      const greenResult = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      const greenPromise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const greenResult = await greenPromise;
       expect(greenResult.confidenceScore).toBe(0.92);
       
+      // Clear timers for next test
+      vi.clearAllTimers();
+      
       // Test red result
-      const redResult = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      const redPromise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      await vi.runAllTimersAsync();
+      const redResult = await redPromise;
       expect(redResult.confidenceScore).toBe(0.87);
     });
 
@@ -376,8 +406,14 @@ describe('Agent Service - Triage Workflow', () => {
       // Create a mock image file
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
-      // Analyze with risk detected scenario (which stores the image)
-      const result = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      // Start the analysis (which stores the image)
+      const promise = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_RISK_DETECTED);
+      
+      // Fast-forward through all timers
+      await vi.runAllTimersAsync();
+      
+      // Wait for the promise to resolve
+      const result = await promise;
       
       // Retrieve the action item
       const actionItem = persistenceService.getActionItem(result.actionItemId!);
@@ -391,8 +427,6 @@ describe('Agent Service - Triage Workflow', () => {
       const { agentService } = await import('./agentService');
       const { DemoScenario } = await import('../types');
       
-      vi.useFakeTimers();
-      
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
       // Start the analysis
@@ -405,8 +439,6 @@ describe('Agent Service - Triage Workflow', () => {
       const result = await promise;
       
       expect(result.analysis).toBe('green');
-      
-      vi.restoreAllMocks();
     });
 
     it('should be deterministic for same scenario', async () => {
@@ -415,9 +447,18 @@ describe('Agent Service - Triage Workflow', () => {
       
       const mockFile = new File(['mock image data'], 'wound.jpg', { type: 'image/jpeg' });
       
-      // Run multiple times with same scenario
-      const result1 = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
-      const result2 = await agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      // Run first analysis
+      const promise1 = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result1 = await promise1;
+      
+      // Clear timers for next test
+      vi.clearAllTimers();
+      
+      // Run second analysis
+      const promise2 = agentService.analyzeWoundImage(mockFile, DemoScenario.SCENARIO_HAPPY_PATH);
+      await vi.runAllTimersAsync();
+      const result2 = await promise2;
       
       // Results should be identical (except for action item IDs which are time-based)
       expect(result1.analysis).toBe(result2.analysis);
