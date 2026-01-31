@@ -94,7 +94,7 @@ export function MissionStream() {
    * Opens PhotoCaptureModal for photo upload missions
    * Completes mission directly for other mission types
    * 
-   * Requirements: 4.4, 5.1
+   * Requirements: 4.4, 5.1, 10.1
    */
   const handleAction = (missionId: string) => {
     const mission = missions.find(m => m.id === missionId);
@@ -111,9 +111,14 @@ export function MissionStream() {
       setIsModalOpen(true);
     } else {
       // For other mission types, complete directly
-      completeMission(missionId).catch((error) => {
-        console.error('Failed to complete mission:', error);
-      });
+      completeMission(missionId)
+        .then(() => {
+          // Check and update streak after mission completion
+          checkAndUpdateStreak();
+        })
+        .catch((error) => {
+          console.error('Failed to complete mission:', error);
+        });
     }
   };
 
@@ -121,7 +126,7 @@ export function MissionStream() {
    * Handles photo submission from PhotoCaptureModal
    * Uploads photo, triggers AI triage workflow, and performs AI analysis
    * 
-   * Requirements: 5.3, 6.1, 7.1
+   * Requirements: 5.3, 6.1, 7.1, 10.1
    */
   const handlePhotoSubmit = async (imageFile: File) => {
     if (!selectedMissionId) {
@@ -150,7 +155,10 @@ export function MissionStream() {
       setTriageResult(result);
       setShowTriageResult(true);
 
-      // Step 5: Clear the agent workflow after a short delay
+      // Step 5: Check and update streak after photo upload mission completion
+      checkAndUpdateStreak();
+
+      // Step 6: Clear the agent workflow after a short delay
       // This allows the UI to show the completed workflow before clearing
       setTimeout(() => {
         clearWorkflow();
