@@ -99,7 +99,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Integrate with PersistenceService
     - _Requirements: 8.1, 9.1, 9.2, 9.3, 9.4_
 
-- [x] 6. Checkpoint - Core infrastructure complete
+- [-] 6. Checkpoint - Core infrastructure complete
   - Verify all stores are working with persistence
   - Verify authentication flow works end-to-end
   - Test that seed data loads correctly
