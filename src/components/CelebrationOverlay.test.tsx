@@ -180,4 +180,231 @@ describe('CelebrationOverlay', () => {
       );
       
       // Should show milestone message
-      expect(screen.getByText('7 Day Milestone!')
+      expect(screen.getByText('7 Day Milestone!')).toBeInTheDocument();
+      expect(screen.getByText("You're crushing it! Keep going! 💪")).toBeInTheDocument();
+    });
+
+    it('should show milestone message for 30-day streak', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={30}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should show milestone message
+      expect(screen.getByText('30 Day Milestone!')).toBeInTheDocument();
+    });
+
+    it('should show milestone message for 100-day streak', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={100}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should show milestone message
+      expect(screen.getByText('100 Day Milestone!')).toBeInTheDocument();
+    });
+
+    it('should not show regular completion message for milestones', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={7}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should not show regular message
+      expect(screen.queryByText('Mission Complete!')).toBeNull();
+    });
+
+    it('should not show milestone message for near-milestone streaks', () => {
+      const onComplete = vi.fn();
+      
+      // Test 6 days (just before 7-day milestone)
+      const { rerender } = render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={6}
+          onComplete={onComplete}
+        />
+      );
+      
+      expect(screen.queryByText(/Day Milestone!/)).toBeNull();
+      expect(screen.getByText('Mission Complete!')).toBeInTheDocument();
+      
+      // Test 8 days (just after 7-day milestone)
+      rerender(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={8}
+          onComplete={onComplete}
+        />
+      );
+      
+      expect(screen.queryByText(/Day Milestone!/)).toBeNull();
+      expect(screen.getByText('Mission Complete!')).toBeInTheDocument();
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA attributes', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      const overlay = screen.getByRole('presentation');
+      
+      // Should have aria-live for screen reader announcements
+      expect(overlay).toHaveAttribute('aria-live', 'polite');
+      
+      // Should have aria-label for context
+      expect(overlay).toHaveAttribute('aria-label', 'Celebration animation');
+    });
+
+    it('should have pointer-events-none to avoid blocking interaction', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      const overlay = screen.getByRole('presentation');
+      
+      // Should have pointer-events-none class
+      expect(overlay).toHaveClass('pointer-events-none');
+    });
+  });
+
+  describe('Confetti Generation', () => {
+    it('should generate confetti when visible', () => {
+      const onComplete = vi.fn();
+      
+      const { container } = render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should have confetti pieces (divs with absolute positioning)
+      const confettiPieces = container.querySelectorAll('.absolute');
+      
+      // Should have at least some confetti pieces
+      // (Exact count may vary due to randomization, but should be > 0)
+      expect(confettiPieces.length).toBeGreaterThan(0);
+    });
+
+    it('should not generate confetti when not visible', () => {
+      const onComplete = vi.fn();
+      
+      const { container } = render(
+        <CelebrationOverlay
+          isVisible={false}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should not have confetti pieces
+      const confettiPieces = container.querySelectorAll('.absolute');
+      expect(confettiPieces.length).toBe(0);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle zero streak count', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={0}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should show regular completion message
+      expect(screen.getByText('Mission Complete!')).toBeInTheDocument();
+    });
+
+    it('should handle negative streak count', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={-1}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should show regular completion message (not milestone)
+      expect(screen.getByText('Mission Complete!')).toBeInTheDocument();
+    });
+
+    it('should handle very large streak count', () => {
+      const onComplete = vi.fn();
+      
+      render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={999}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Should show regular completion message (not a defined milestone)
+      expect(screen.getByText('Mission Complete!')).toBeInTheDocument();
+    });
+
+    it('should handle rapid visibility changes', () => {
+      const onComplete = vi.fn();
+      
+      const { rerender } = render(
+        <CelebrationOverlay
+          isVisible={true}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Hide immediately
+      rerender(
+        <CelebrationOverlay
+          isVisible={false}
+          streakCount={5}
+          onComplete={onComplete}
+        />
+      );
+      
+      // Fast-forward time
+      vi.advanceTimersByTime(2000);
+      
+      // Should not call onComplete (timer was cleaned up)
+      expect(onComplete).not.toHaveBeenCalled();
+    });
+  });
+});
