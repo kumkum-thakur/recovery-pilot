@@ -167,8 +167,30 @@ export function PhotoCaptureModal({
       await onSubmit(selectedFile);
       handleClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload photo');
+      // Handle different types of errors with user-friendly messages
+      let errorMessage = 'Failed to upload photo. Please try again.';
+      
+      if (err instanceof Error) {
+        // Check for specific error messages from the upload process
+        if (err.message.includes('not found')) {
+          errorMessage = 'Mission not found. Please refresh the page and try again.';
+        } else if (err.message.includes('not a photo upload mission')) {
+          errorMessage = 'This mission does not support photo uploads.';
+        } else if (err.message.includes('image') || err.message.includes('format')) {
+          errorMessage = err.message; // Use the specific validation error
+        } else if (err.message.includes('size')) {
+          errorMessage = err.message; // Use the specific size error
+        } else if (err.message.includes('network') || err.message.includes('connection')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          // Use the error message if it's user-friendly, otherwise use default
+          errorMessage = err.message || errorMessage;
+        }
+      }
+      
+      setError(errorMessage);
       setIsSubmitting(false);
+      console.error('Photo upload error:', err);
     }
   };
 
@@ -297,7 +319,6 @@ export function PhotoCaptureModal({
               accept="image/jpeg,image/jpg,image/png,image/heic,image/heif"
               capture="environment"
               onChange={handleFileSelect}
-              onError={handleCameraError}
               className="hidden"
               aria-hidden="true"
             />
