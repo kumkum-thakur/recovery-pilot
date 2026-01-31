@@ -109,27 +109,26 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
    * Requirements: 15.1
    */
   setMockDelay: (delayMs: number) => {
-    const { config } = get();
-    
     // Validate delay
     if (delayMs < 0) {
       console.warn('[ConfigStore] Mock delay cannot be negative, using 0');
       delayMs = 0;
     }
     
-    // Update config
-    const updatedConfig: ConfigModel = {
-      ...config,
-      mockDelayMs: delayMs,
-    };
-    
-    // Persist to storage
-    persistenceService.saveConfig(updatedConfig);
-    
-    // Update state
-    set({ config: updatedConfig });
-    
-    console.log(`[ConfigStore] Mock delay set to: ${delayMs}ms`);
+    // Update state using functional update
+    set((state) => {
+      const updatedConfig: ConfigModel = {
+        ...state.config,
+        mockDelayMs: delayMs,
+      };
+      
+      // Persist to storage
+      persistenceService.saveConfig(updatedConfig);
+      
+      console.log(`[ConfigStore] Mock delay set to: ${delayMs}ms`);
+      
+      return { config: updatedConfig };
+    });
   },
 
   /**
