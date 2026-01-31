@@ -11,12 +11,13 @@
 import { useEffect, useState } from 'react';
 import { MissionCard } from './MissionCard';
 import { PhotoCaptureModal } from './PhotoCaptureModal';
+import { TriageResultCard } from './TriageResultCard';
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
 import { useAgentStore } from '../stores/agentStore';
 import { useConfigStore } from '../stores/configStore';
 import { agentService } from '../services/agentService';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, X } from 'lucide-react';
 import { MissionType } from '../types';
 import type { TriageResult } from '../types';
 
