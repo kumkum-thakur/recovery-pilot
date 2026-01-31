@@ -50,16 +50,20 @@ export function PhotoCaptureModal({
    * Requirements: 5.4
    */
   const validateImageFile = (file: File): string | null => {
-    // Check file type
+    // Check file type - support common image formats
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif'];
-    if (!validTypes.includes(file.type.toLowerCase())) {
-      return 'Please upload a JPEG, PNG, or HEIC image';
+    const fileType = file.type.toLowerCase();
+    
+    if (!validTypes.includes(fileType)) {
+      // Provide helpful error message with supported formats
+      return 'Unsupported file format. Please upload a JPEG, PNG, or HEIC image.';
     }
 
     // Check file size (10MB limit)
     const MAX_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_SIZE) {
-      return 'Image must be under 10MB';
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      return `Image is too large (${sizeMB}MB). Please upload an image under 10MB.`;
     }
 
     return null;
@@ -94,11 +98,47 @@ export function PhotoCaptureModal({
 
   /**
    * Handles camera button click
-   * Requirements: 5.1
+   * Attempts to check camera permissions before opening camera input
+   * Requirements: 5.1, 5.4
    */
-  const handleCameraClick = () => {
+  const handleCameraClick = async () => {
     setError(null);
-    cameraInputRef.current?.click();
+    
+    // Check if MediaDevices API is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError('Camera is not available on this device. Please use the Upload Image option.');
+      return;
+    }
+    
+    try {
+      // Request camera permission to check if it's available
+      // We'll immediately stop the stream - we just need to check permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } // Prefer back camera for wound photos
+      });
+      
+      // Stop the stream immediately - we just needed to check permission
+      stream.getTracks().forEach(track => track.stop());
+      
+      // Permission granted, open the file input with camera capture
+      cameraInputRef.current?.click();
+    } catch (err) {
+      // Handle different types of camera errors
+      if (err instanceof Error) {
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          setError('Camera access denied. Please enable camera permissions in your browser settings, or use the Upload Image option.');
+        } else if (err.name === 'NotFoundError') {
+          setError('No camera found on this device. Please use the Upload Image option.');
+        } else if (err.name === 'NotReadableError') {
+          setError('Camera is already in use by another application. Please close other apps and try again.');
+        } else {
+          setError('Unable to access camera. Please use the Upload Image option.');
+        }
+      } else {
+        setError('Unable to access camera. Please use the Upload Image option.');
+      }
+      console.error('Camera access error:', err);
+    }
   };
 
   /**
@@ -149,14 +189,6 @@ export function PhotoCaptureModal({
     
     // Call parent close handler
     onClose();
-  };
-
-  /**
-   * Handles camera permission errors
-   * Requirements: 5.4
-   */
-  const handleCameraError = () => {
-    setError('Camera access is required. Please enable it in your browser settings.');
   };
 
   return (
