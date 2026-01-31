@@ -68,7 +68,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - _Requirements: 1.2, 2.2_
 
 - [ ] 5. Implement Zustand stores
-  - [-] 5.1 Create UserStore
+  - [x] 5.1 Create UserStore
     - Implement state: currentUser, isAuthenticated
     - Implement actions: login, logout, updateStreak
     - Integrate with AuthService and PersistenceService
