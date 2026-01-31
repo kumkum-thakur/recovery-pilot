@@ -244,7 +244,7 @@ describe('Application Initialization', () => {
       
       expect(() => {
         persistenceService.getAllUsers();
-      }).toThrow('Invalid JSON format');
+      }).toThrow('Failed to retrieve all users');
     });
 
     it('should recover from corruption during initialization', () => {
