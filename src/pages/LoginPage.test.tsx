@@ -185,4 +185,102 @@ describe('LoginPage', () => {
       
       const usernameInput = screen.getByLabelText('Username') as HTMLInputElement;
       const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
-      const submitButton = screen.getByRo
+      const submitButton = screen.getByRole('button', { name: /sign in/i }) as HTMLButtonElement;
+      
+      fireEvent.change(usernameInput, { target: { value: 'divya' } });
+      fireEvent.change(passwordInput, { target: { value: 'divya' } });
+      fireEvent.click(submitButton);
+      
+      // Inputs should be disabled during loading
+      expect(usernameInput.disabled).toBe(true);
+      expect(passwordInput.disabled).toBe(true);
+      expect(submitButton.disabled).toBe(true);
+      
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should display error for invalid credentials', async () => {
+      renderLoginPage();
+      
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      
+      fireEvent.change(usernameInput, { target: { value: 'invalid' } });
+      fireEvent.change(passwordInput, { target: { value: 'wrong' } });
+      fireEvent.click(submitButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Invalid username or password')).toBeInTheDocument();
+      });
+      
+      // Should not navigate
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('should display error for wrong password', async () => {
+      renderLoginPage();
+      
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      
+      fireEvent.change(usernameInput, { target: { value: 'divya' } });
+      fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
+      fireEvent.click(submitButton);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Invalid username or password')).toBeInTheDocument();
+      });
+    });
+
+    it('should show error icon with error message', async () => {
+      renderLoginPage();
+      
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      fireEvent.click(submitButton);
+      
+      await waitFor(() => {
+        const errorMessage = screen.getByText('Username is required');
+        expect(errorMessage).toBeInTheDocument();
+        
+        // Check that error container has proper styling
+        const errorContainer = errorMessage.closest('div');
+        expect(errorContainer).toHaveClass('bg-red-50');
+      });
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper labels for form inputs', () => {
+      renderLoginPage();
+      
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      
+      expect(usernameInput).toHaveAttribute('id', 'username');
+      expect(passwordInput).toHaveAttribute('id', 'password');
+    });
+
+    it('should have autocomplete attributes', () => {
+      renderLoginPage();
+      
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      
+      expect(usernameInput).toHaveAttribute('autocomplete', 'username');
+      expect(passwordInput).toHaveAttribute('autocomplete', 'current-password');
+    });
+
+    it('should have proper button type', () => {
+      renderLoginPage();
+      
+      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      expect(submitButton).toHaveAttribute('type', 'submit');
+    });
+  });
+});
