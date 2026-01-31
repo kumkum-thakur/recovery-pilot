@@ -47,7 +47,8 @@ describe('UserStore - Streak Tracking', () => {
         password: 'password123',
       });
       
-      expect(store.currentUser?.streakCount).toBe(5);
+      const initialState = useUserStore.getState();
+      expect(initialState.currentUser?.streakCount).toBe(5);
       
       // Increment streak
       store.incrementStreak();
