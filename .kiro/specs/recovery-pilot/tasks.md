@@ -334,204 +334,232 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Test reject with reason
     - Test empty inbox state
   
-  - [ ] 23.3 Test demo scenarthat pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
-    - _Requirements: 11.2_
-
-- [ ] 17. Build Doctor Dashboard core layout
-  - [ ] 17.1 Create DoctorDashboard page component
-    - Implement desktop-optimized layout (1024px+)
-    - Add Header with NotificationBadge and ProfileButton
-    - Add main content area for TriageInbox
-    - Implement multi-column layout for wide screens
-    - Add keyboard navigation shortcuts
-    - _Requirements: 14.1, 14.2, 14.3_
-  
-  - [ ]* 17.2 Write property test for multi-column layout activation
-    - **Property 32: Multi-Column Layout Activation**
-    - **Validates: Requirements 14.2**
-  
-  - [ ]* 17.3 Write property test for keyboard navigation support
-    - **Property 33: Keyboard Navigation Support**
-    - **Validates: Requirements 14.3**
-
-- [ ] 18. Build Triage Inbox components
-  - [ ] 18.1 Create ActionItemCard component
-    - Display patient name, request type, created date
-    - Conditionally render TriageDetails or RefillDetails based on type
-    - Show Approve and Reject buttons
-    - Style with clean medical aesthetic
-    - _Requirements: 8.2, 8.3, 8.4, 9.1_
-  
-  - [ ]* 18.2 Write property test for action item display completeness
-    - **Property 18: Action Item Display Completeness**
-    - **Validates: Requirements 8.2, 8.3, 8.4**
-  
-  - [ ]* 18.3 Write property test for action item review buttons
-    - **Property 19: Action Item Review Buttons**
-    - **Validates: Requirements 9.1**
-  
-  - [ ] 18.4 Create TriageDetails sub-component
-    - Display wound image
-    - Display AI analysis text and category (Green/Red)
-    - Display confidence score
-    - _Requirements: 8.4_
-  
-  - [ ] 18.5 Create RefillDetails sub-component
-    - Display medication name
-    - Display insurance verification status
-    - Display inventory availability
-    - _Requirements: 8.3_
-  
-  - [ ] 18.6 Create TriageInbox component
-    - Fetch action items from ActionItemStore on mount
-    - Render list of ActionItemCard components in priority order
-    - Implement empty state: "All caught up! No pending items to review. ✨"
-    - Handle loading states
-    - _Requirements: 8.1_
-  
-  - [ ]* 18.7 Write property test for doctor inbox display
-    - **Property 17: Doctor Inbox Display**
-    - **Validates: Requirements 8.1**
-
-- [ ] 19. Build Action Item Review functionality
-  - [ ] 19.1 Implement approve action
-    - Connect Approve button to ActionItemStore.approveItem
-    - Update action item status to "approved"
-    - Record timestamp
-    - Show success toast notification
-    - _Requirements: 9.2, 9.4_
-  
-  - [ ]* 19.2 Write property test for approval state transition
-    - **Property 20: Approval State Transition**
-    - **Validates: Requirements 9.2**
-  
-  - [ ] 19.3 Create RejectionModal component
-    - Display textarea for rejection reason
-    - Add submit and cancel buttons
-    - Validate that reason is not empty
-    - _Requirements: 9.3_
-  
-  - [ ] 19.4 Implement reject action
-    - Connect Reject button to open RejectionModal
-    - Connect modal submit to ActionItemStore.rejectItem
-    - Update action item status to "rejected"
-    - Record timestamp and reason
-    - Show success toast notification
-    - _Requirements: 9.3, 9.4_
-  
-  - [ ]* 19.5 Write property test for rejection state transition
-    - **Property 21: Rejection State Transition**
-    - **Validates: Requirements 9.3**
-  
-  - [ ]* 19.6 Write property test for decision recording
-    - **Property 22: Decision Recording**
-    - **Validates: Requirements 9.4**
-  
-  - [ ]* 19.7 Write unit tests for rejection edge cases
-    - Test empty rejection reason is blocked
-    - Test rejection modal cancel preserves pending state
-    - _Requirements: 9.3_
-
-- [ ] 20. Checkpoint - Doctor dashboard complete
-  - Test action item inbox displays correctly
-  - Test approve and reject workflows end-to-end
-  - Test multi-column layout on wide screens
-  - Test keyboard shortcuts work
-  - Ask user if questions arise
-
-- [ ] 21. Implement error handling and edge cases
-  - [ ] 21.1 Add error boundaries for React components
-    - Catch and display component errors gracefully
-    - Log errors for debugging
-  
-  - [ ] 21.2 Add error handling for authentication
-    - Display user-friendly error messages
-    - Handle session expiration
-    - _Requirements: 1.2, 2.2_
-  
-  - [ ] 21.3 Add error handling for photo upload
-    - Handle unsupported formats
-    - Handle file size limits
-    - Handle camera access denied
-    - _Requirements: 5.4_
-  
-  - [ ] 21.4 Add error handling for agent workflows
-    - Handle workflow timeouts
-    - Handle partial workflow completion
-    - Display retry options
-    - _Requirements: 7.1, 7.2_
-  
-  - [ ] 21.5 Add error handling for data persistence
-    - Handle LocalStorage full
-    - Handle data corruption
-    - Reinitialize with seed data on corruption
-    - _Requirements: 12.4_
-  
-  - [ ]* 21.6 Write unit tests for all error scenarios
-    - Test each error handler displays correct message
-    - Test error recovery flows
-
-- [ ] 22. Polish and accessibility
-  - [ ] 22.1 Add loading states and skeletons
-    - Add skeleton loaders for mission stream
-    - Add skeleton loaders for action item inbox
-    - Add loading spinners for async actions
-  
-  - [ ] 22.2 Add animations and transitions
-    - Add smooth transitions for mission completion
-    - Add hover effects on interactive elements
-    - Add focus indicators for keyboard navigation
-  
-  - [ ] 22.3 Improve accessibility
-    - Add ARIA labels to all interactive elements
-    - Ensure keyboard navigation works throughout
-    - Test with screen reader
-    - Ensure color contrast meets WCAG AA standards
-  
-  - [ ] 22.4 Add empty states
-    - Implement encouraging empty state for missions
-    - Implement positive empty state for action items
-    - _Requirements: 3.1, 8.1_
-
-- [ ] 23. Final integration and testing
-  - [ ] 23.1 End-to-end testing of patient flow
-    - Test login → view missions → upload photo → see triage result → streak update
-    - Test both Green and Red triage scenarios
-    - Test refill request workflow
-  
-  - [ ] 23.2 End-to-end testing of doctor flow
-    - Test login → view action items → approve item → verify patient notification
-    - Test reject with reason
-    - Test empty inbox state
-  
   - [ ] 23.3 Test demo scenario switching
     - Verify SCENARIO_HAPPY_PATH produces Green results
     - Verify SCENARIO_RISK_DETECTED produces Red results
     - Test deterministic behavior across multiple runs
     - _Requirements: 15.1, 15.2_
-  
-  - [ ]* 23.4 Run full property test suite
-    - Execute all property tests with 100 iterations
-    - Verify all 34 properties pass
-    - Fix any failures
-  
-  - [ ]* 23.5 Run full unit test suite
-    - Execute all unit tests
-    - Verify coverage meets goals (80% line, 75% branch)
-    - Fix any failures
 
-- [ ] 24. Final checkpoint - Complete application
+- [ ] 24. Checkpoint - Application complete and ready for testing
   - Verify all features work end-to-end
   - Test on multiple devices and browsers
   - Verify responsive design on mobile and desktop
   - Ensure all error handling works correctly
-  - Ask user for final feedback
+  - Ask user for final feedback before adding tests
+
+---
+
+## TESTING PHASE - Add tests after app is working
+
+- [ ] 25. Unit tests for project configuration
+  - [ ] 25.1 Write unit tests for project configuration
+    - Test that Tailwind theme colors are correctly configured
+    - Test that all required dependencies are installed
+    - _Requirements: Technical Constraints 1_
+
+- [ ] 26. Property tests for Persistence Service
+  - [ ] 26.1 Write property test for JSON serialization validity
+    - **Property 28: JSON Serialization Validity**
+    - **Validates: Requirements 12.4**
+  
+  - [ ] 26.2 Write property test for data persistence round-trip
+    - **Property 27: Data Persistence Round-Trip**
+    - **Validates: Requirements 12.2, 12.3**
+
+- [ ] 27. Tests for Authentication Service
+  - [ ] 27.1 Write property test for authentication success and failure
+    - **Property 1: Authentication Success and Failure**
+    - **Validates: Requirements 1.1, 1.2, 2.1, 2.2**
+  
+  - [ ] 27.2 Write unit tests for authentication edge cases
+    - Test empty credentials
+    - Test SQL injection attempts
+    - Test session expiration
+    - _Requirements: 1.2, 2.2_
+
+- [ ] 28. Property tests for Zustand stores
+  - [ ] 28.1 Write property test for profile persistence round-trip
+    - **Property 2: Profile Data Persistence Round-Trip**
+    - **Validates: Requirements 1.3, 2.3, 12.1**
+  
+  - [ ] 28.2 Write property test for streak persistence round-trip
+    - **Property 3: Streak Persistence Round-Trip**
+    - **Validates: Requirements 1.4, 10.4**
+
+- [ ] 29. Tests for Mock Agent Service
+  - [ ] 29.1 Write property test for triage workflow execution
+    - **Property 14: Red Triage Workflow Execution**
+    - **Validates: Requirements 7.1**
+  
+  - [ ] 29.2 Write property test for triage result categorization
+    - **Property 10: Triage Result Categorization**
+    - **Validates: Requirements 6.2**
+  
+  - [ ] 29.3 Write property test for refill workflow execution
+    - **Property 15: Refill Workflow Execution**
+    - **Validates: Requirements 7.2**
+  
+  - [ ] 29.4 Write property test for scenario determinism
+    - **Property 34: Scenario Determinism**
+    - **Validates: Requirements 15.2**
+
+- [ ] 30. Tests for routing and navigation
+  - [ ] 30.1 Write unit tests for routing logic
+    - Test unauthenticated users redirect to /login
+    - Test patients cannot access /doctor
+    - Test doctors cannot access /patient
+    - _Requirements: 1.1, 2.1_
+
+- [ ] 31. Tests for Login page
+  - [ ] 31.1 Write unit tests for login form
+    - Test form validation
+    - Test error message display
+    - Test successful login redirects
+    - _Requirements: 1.2, 2.2_
+
+- [ ] 32. Tests for Patient Dashboard
+  - [ ] 32.1 Write property test for responsive viewport rendering
+    - **Property 29: Responsive Viewport Rendering**
+    - **Validates: Requirements 13.1, 13.3, 14.1**
+  
+  - [ ] 32.2 Write property test for touch target minimum size
+    - **Property 30: Touch Target Minimum Size**
+    - **Validates: Requirements 13.2**
+  
+  - [ ] 32.3 Write property test for text readability size
+    - **Property 31: Text Readability Size**
+    - **Validates: Requirements 13.4**
+
+- [ ] 33. Tests for Mission Stream components
+  - [ ] 33.1 Write property test for mission display completeness
+    - **Property 4: Mission Stream Display Completeness**
+    - **Validates: Requirements 3.1, 3.2, 3.3**
+  
+  - [ ] 33.2 Write property test for smart action button adaptation
+    - **Property 5: Smart Action Button Context Adaptation**
+    - **Validates: Requirements 4.1, 4.2, 4.3**
+  
+  - [ ] 33.3 Write property test for action button execution
+    - **Property 6: Action Button Execution**
+    - **Validates: Requirements 4.4**
+
+- [ ] 34. Tests for Photo Capture functionality
+  - [ ] 34.1 Write property test for photo preview display
+    - **Property 7: Photo Preview Display**
+    - **Validates: Requirements 5.2**
+  
+  - [ ] 34.2 Write unit tests for photo upload edge cases
+    - Test unsupported file formats
+    - Test file size limits
+    - Test camera access denied
+    - _Requirements: 5.4_
+  
+  - [ ] 34.3 Write property test for photo submission triggers analysis
+    - **Property 8: Photo Submission Triggers Analysis**
+    - **Validates: Requirements 5.3**
+
+- [ ] 35. Tests for Agent Status Toast
+  - [ ] 35.1 Write property test for agent workflow visibility
+    - **Property 16: Agent Workflow Visibility**
+    - **Validates: Requirements 7.3**
+
+- [ ] 36. Tests for Triage Result Display
+  - [ ] 36.1 Write property test for green result feedback
+    - **Property 11: Green Result Feedback**
+    - **Validates: Requirements 6.3**
+  
+  - [ ] 36.2 Write property test for red result action item creation
+    - **Property 12: Red Result Action Item Creation**
+    - **Validates: Requirements 6.4**
+  
+  - [ ] 36.3 Write property test for confidence score storage
+    - **Property 13: Confidence Score Storage**
+    - **Validates: Requirements 6.5**
+
+- [ ] 37. Tests for Gamification features
+  - [ ] 37.1 Write property test for streak display visibility
+    - **Property 25: Streak Display Visibility**
+    - **Validates: Requirements 10.3**
+  
+  - [ ] 37.2 Write property test for streak increment
+    - **Property 23: Streak Increment on Completion**
+    - **Validates: Requirements 10.1**
+  
+  - [ ] 37.3 Write property test for streak reset
+    - **Property 24: Streak Reset on Miss**
+    - **Validates: Requirements 10.2**
+  
+  - [ ] 37.4 Write property test for milestone confetti trigger
+    - **Property 26: Milestone Confetti Trigger**
+    - **Validates: Requirements 11.3**
+
+- [ ] 38. Tests for Doctor Dashboard
+  - [ ] 38.1 Write property test for multi-column layout activation
+    - **Property 32: Multi-Column Layout Activation**
+    - **Validates: Requirements 14.2**
+  
+  - [ ] 38.2 Write property test for keyboard navigation support
+    - **Property 33: Keyboard Navigation Support**
+    - **Validates: Requirements 14.3**
+
+- [ ] 39. Tests for Triage Inbox components
+  - [ ] 39.1 Write property test for action item display completeness
+    - **Property 18: Action Item Display Completeness**
+    - **Validates: Requirements 8.2, 8.3, 8.4**
+  
+  - [ ] 39.2 Write property test for action item review buttons
+    - **Property 19: Action Item Review Buttons**
+    - **Validates: Requirements 9.1**
+  
+  - [ ] 39.3 Write property test for doctor inbox display
+    - **Property 17: Doctor Inbox Display**
+    - **Validates: Requirements 8.1**
+
+- [ ] 40. Tests for Action Item Review functionality
+  - [ ] 40.1 Write property test for approval state transition
+    - **Property 20: Approval State Transition**
+    - **Validates: Requirements 9.2**
+  
+  - [ ] 40.2 Write property test for rejection state transition
+    - **Property 21: Rejection State Transition**
+    - **Validates: Requirements 9.3**
+  
+  - [ ] 40.3 Write property test for decision recording
+    - **Property 22: Decision Recording**
+    - **Validates: Requirements 9.4**
+  
+  - [ ] 40.4 Write unit tests for rejection edge cases
+    - Test empty rejection reason is blocked
+    - Test rejection modal cancel preserves pending state
+    - _Requirements: 9.3_
+
+- [ ] 41. Tests for error handling
+  - [ ] 41.1 Write unit tests for all error scenarios
+    - Test each error handler displays correct message
+    - Test error recovery flows
+
+- [ ] 42. Run full test suite
+  - [ ] 42.1 Run full property test suite
+    - Execute all property tests with 100 iterations
+    - Verify all 34 properties pass
+    - Fix any failures
+  
+  - [ ] 42.2 Run full unit test suite
+    - Execute all unit tests
+    - Verify coverage meets goals (80% line, 75% branch)
+    - Fix any failures
+
+- [ ] 43. Final checkpoint - Testing complete
+  - All tests passing
+  - Coverage goals met
+  - Application fully tested and ready for deployment
 
 ## Notes
 
-- Tasks marked with `*` are optional and can be skipped for faster MVP delivery
+- **BUILD FIRST**: Focus on getting the application working end-to-end before writing tests
+- All testing tasks have been moved to tasks 25-43
 - Each task references specific requirements for traceability
 - Checkpoints ensure incremental validation and allow for user feedback
 - Property tests validate universal correctness properties with 100+ iterations
 - Unit tests validate specific examples, edge cases, and error conditions
-- The implementation follows a bottom-up approach: infrastructure → patient features → doctor features → polish
+- The implementation follows a bottom-up approach: infrastructure → patient features → doctor features → polish → tests
