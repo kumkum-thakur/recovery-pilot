@@ -82,36 +82,36 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 3: Streak Persistence Round-Trip**
     - **Validates: Requirements 1.4, 10.4**
   
-  - [-] 5.4 Create MissionStore
+  - [ ] 5.4 Create MissionStore
     - Implement state: missions, isLoading
     - Implement actions: fetchMissions, completeMission, uploadPhoto
     - Integrate with PersistenceService
     - _Requirements: 3.1, 3.2, 3.3, 5.3, 10.1_
   
-  - [~] 5.5 Create AgentStore
+  - [ ] 5.5 Create AgentStore
     - Implement state: currentWorkflow, isProcessing
     - Implement actions: startTriageWorkflow, startRefillWorkflow, clearWorkflow
     - _Requirements: 7.1, 7.2, 7.3_
   
-  - [~] 5.6 Create ActionItemStore
+  - [ ] 5.6 Create ActionItemStore
     - Implement state: actionItems, isLoading
     - Implement actions: fetchActionItems, approveItem, rejectItem
     - Integrate with PersistenceService
     - _Requirements: 8.1, 9.1, 9.2, 9.3, 9.4_
 
-- [~] 6. Checkpoint - Core infrastructure complete
+- [ ] 6. Checkpoint - Core infrastructure complete
   - Verify all stores are working with persistence
   - Verify authentication flow works end-to-end
   - Test that seed data loads correctly
   - Ask user if questions arise
 
 - [ ] 7. Implement Mock Agent Service
-  - [~] 7.1 Create workflow step simulator
+  - [ ] 7.1 Create workflow step simulator
     - Implement simulateWorkflowSteps generator function
     - Add configurable delays for each step
     - _Requirements: 7.1, 7.2_
   
-  - [~] 7.2 Implement triage workflow (analyzeWoundImage)
+  - [ ] 7.2 Implement triage workflow (analyzeWoundImage)
     - Create multi-step workflow: Analyzing, Drafting Note, Creating Appointment
     - Implement scenario-based results (Green vs Red)
     - Create action items for Red results
@@ -126,7 +126,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 10: Triage Result Categorization**
     - **Validates: Requirements 6.2**
   
-  - [~] 7.5 Implement refill workflow (processRefillRequest)
+  - [ ] 7.5 Implement refill workflow (processRefillRequest)
     - Create multi-step workflow: Checking Inventory, Verifying Insurance, Order Placed
     - Implement mock insurance/inventory checks
     - Create action items for doctor review
@@ -136,7 +136,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 15: Refill Workflow Execution**
     - **Validates: Requirements 7.2**
   
-  - [~] 7.7 Implement demo scenario configuration
+  - [ ] 7.7 Implement demo scenario configuration
     - Create ConfigModel for scenario switching
     - Implement SCENARIO_HAPPY_PATH and SCENARIO_RISK_DETECTED
     - Add debug menu toggle (hidden UI or code flag)
@@ -146,7 +146,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 34: Scenario Determinism**
     - **Validates: Requirements 15.2**
 
-- [~] 8. Implement routing and navigation
+- [ ] 8. Implement routing and navigation
   - Set up React Router with routes: /, /login, /patient, /doctor
   - Create ProtectedRoute component for authenticated routes
   - Implement role-based routing (patients → /patient, doctors → /doctor)
@@ -160,7 +160,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
   - _Requirements: 1.1, 2.1_
 
 - [ ] 9. Build Login page
-  - [~] 9.1 Create LoginPage component
+  - [ ] 9.1 Create LoginPage component
     - Build form with username and password fields
     - Add role selection (patient/doctor) or auto-detect from credentials
     - Implement form validation
@@ -175,7 +175,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - _Requirements: 1.2, 2.2_
 
 - [ ] 10. Build Patient Dashboard core layout
-  - [~] 10.1 Create PatientDashboard page component
+  - [ ] 10.1 Create PatientDashboard page component
     - Implement mobile-first responsive layout
     - Add Header with StreakDisplay and ProfileButton
     - Add main content area for MissionStream
@@ -196,7 +196,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Validates: Requirements 13.4**
 
 - [ ] 11. Build Mission Stream components
-  - [~] 11.1 Create MissionCard component
+  - [ ] 11.1 Create MissionCard component
     - Display mission title, description, status
     - Implement SmartActionButton with context-aware text
     - Add mission icons from lucide-react
@@ -211,7 +211,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 5: Smart Action Button Context Adaptation**
     - **Validates: Requirements 4.1, 4.2, 4.3**
   
-  - [~] 11.4 Create MissionStream component
+  - [ ] 11.4 Create MissionStream component
     - Fetch missions from MissionStore on mount
     - Render list of MissionCard components
     - Implement empty state with encouraging message
@@ -223,7 +223,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Validates: Requirements 4.4**
 
 - [ ] 12. Build Photo Capture functionality
-  - [~] 12.1 Create PhotoCaptureModal component
+  - [ ] 12.1 Create PhotoCaptureModal component
     - Implement camera access using browser File API
     - Add file upload fallback
     - Display image preview before submission
@@ -241,7 +241,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Test camera access denied
     - _Requirements: 5.4_
   
-  - [~] 12.4 Integrate photo upload with MissionStore
+  - [ ] 12.4 Integrate photo upload with MissionStore
     - Connect PhotoCaptureModal to uploadPhoto action
     - Trigger AI analysis on submission
     - Update mission status to completed
@@ -252,7 +252,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Validates: Requirements 5.3**
 
 - [ ] 13. Build Agent Status Toast
-  - [~] 13.1 Create AgentStatusToast component
+  - [ ] 13.1 Create AgentStatusToast component
     - Display workflow steps in a toast/card UI
     - Show step status: pending, in_progress, completed
     - Animate step transitions
@@ -263,14 +263,14 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 16: Agent Workflow Visibility**
     - **Validates: Requirements 7.3**
   
-  - [~] 13.2 Integrate with AgentStore
+  - [ ] 13.2 Integrate with AgentStore
     - Subscribe to currentWorkflow state
     - Display toast when workflow starts
     - Update steps as workflow progresses
     - _Requirements: 7.1, 7.2, 7.3_
 
 - [ ] 14. Build Triage Result Display
-  - [~] 14.1 Create TriageResultCard component
+  - [ ] 14.1 Create TriageResultCard component
     - Display Green results with positive feedback
     - Display Red results with action item notification
     - Show confidence score
@@ -289,7 +289,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 13: Confidence Score Storage**
     - **Validates: Requirements 6.5**
 
-- [~] 15. Checkpoint - Patient dashboard core features complete
+- [ ] 15. Checkpoint - Patient dashboard core features complete
   - Test mission stream displays correctly
   - Test photo upload and triage workflow end-to-end
   - Test agent status toast shows workflow steps
@@ -297,7 +297,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
   - Ask user if questions arise
 
 - [ ] 16. Build Gamification features
-  - [~] 16.1 Create StreakDisplay component
+  - [ ] 16.1 Create StreakDisplay component
     - Display current streak count prominently
     - Add fire emoji or icon for visual appeal
     - Style with gamification colors (orange/purple)
@@ -307,7 +307,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 25: Streak Display Visibility**
     - **Validates: Requirements 10.3**
   
-  - [~] 16.3 Implement streak tracking logic
+  - [ ] 16.3 Implement streak tracking logic
     - Increment streak on all missions completed
     - Reset streak on missed day
     - Persist streak across sessions
@@ -321,7 +321,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 24: Streak Reset on Miss**
     - **Validates: Requirements 10.2**
   
-  - [~] 16.6 Create CelebrationOverlay component
+  - [ ] 16.6 Create CelebrationOverlay component
     - Implement confetti animation using framer-motion
     - Trigger on mission completion
     - Trigger enhanced animation on streak milestones
@@ -332,13 +332,13 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 26: Milestone Confetti Trigger**
     - **Validates: Requirements 11.3**
   
-  - [~] 16.8 Add encouraging notification text
+  - [ ] 16.8 Add encouraging notification text
     - Implement friendly, humorous messages for mission completion
     - Examples: "You crushed that pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
     - _Requirements: 11.2_
 
 - [ ] 17. Build Doctor Dashboard core layout
-  - [~] 17.1 Create DoctorDashboard page component
+  - [ ] 17.1 Create DoctorDashboard page component
     - Implement desktop-optimized layout (1024px+)
     - Add Header with NotificationBadge and ProfileButton
     - Add main content area for TriageInbox
@@ -355,7 +355,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Validates: Requirements 14.3**
 
 - [ ] 18. Build Triage Inbox components
-  - [~] 18.1 Create ActionItemCard component
+  - [ ] 18.1 Create ActionItemCard component
     - Display patient name, request type, created date
     - Conditionally render TriageDetails or RefillDetails based on type
     - Show Approve and Reject buttons
@@ -370,19 +370,19 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 19: Action Item Review Buttons**
     - **Validates: Requirements 9.1**
   
-  - [~] 18.4 Create TriageDetails sub-component
+  - [ ] 18.4 Create TriageDetails sub-component
     - Display wound image
     - Display AI analysis text and category (Green/Red)
     - Display confidence score
     - _Requirements: 8.4_
   
-  - [~] 18.5 Create RefillDetails sub-component
+  - [ ] 18.5 Create RefillDetails sub-component
     - Display medication name
     - Display insurance verification status
     - Display inventory availability
     - _Requirements: 8.3_
   
-  - [~] 18.6 Create TriageInbox component
+  - [ ] 18.6 Create TriageInbox component
     - Fetch action items from ActionItemStore on mount
     - Render list of ActionItemCard components in priority order
     - Implement empty state: "All caught up! No pending items to review. ✨"
@@ -394,7 +394,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Validates: Requirements 8.1**
 
 - [ ] 19. Build Action Item Review functionality
-  - [~] 19.1 Implement approve action
+  - [ ] 19.1 Implement approve action
     - Connect Approve button to ActionItemStore.approveItem
     - Update action item status to "approved"
     - Record timestamp
@@ -405,13 +405,13 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - **Property 20: Approval State Transition**
     - **Validates: Requirements 9.2**
   
-  - [~] 19.3 Create RejectionModal component
+  - [ ] 19.3 Create RejectionModal component
     - Display textarea for rejection reason
     - Add submit and cancel buttons
     - Validate that reason is not empty
     - _Requirements: 9.3_
   
-  - [~] 19.4 Implement reject action
+  - [ ] 19.4 Implement reject action
     - Connect Reject button to open RejectionModal
     - Connect modal submit to ActionItemStore.rejectItem
     - Update action item status to "rejected"
@@ -432,7 +432,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Test rejection modal cancel preserves pending state
     - _Requirements: 9.3_
 
-- [~] 20. Checkpoint - Doctor dashboard complete
+- [ ] 20. Checkpoint - Doctor dashboard complete
   - Test action item inbox displays correctly
   - Test approve and reject workflows end-to-end
   - Test multi-column layout on wide screens
@@ -440,28 +440,28 @@ Each task builds on previous work, with checkpoints to validate functionality. T
   - Ask user if questions arise
 
 - [ ] 21. Implement error handling and edge cases
-  - [~] 21.1 Add error boundaries for React components
+  - [ ] 21.1 Add error boundaries for React components
     - Catch and display component errors gracefully
     - Log errors for debugging
   
-  - [~] 21.2 Add error handling for authentication
+  - [ ] 21.2 Add error handling for authentication
     - Display user-friendly error messages
     - Handle session expiration
     - _Requirements: 1.2, 2.2_
   
-  - [~] 21.3 Add error handling for photo upload
+  - [ ] 21.3 Add error handling for photo upload
     - Handle unsupported formats
     - Handle file size limits
     - Handle camera access denied
     - _Requirements: 5.4_
   
-  - [~] 21.4 Add error handling for agent workflows
+  - [ ] 21.4 Add error handling for agent workflows
     - Handle workflow timeouts
     - Handle partial workflow completion
     - Display retry options
     - _Requirements: 7.1, 7.2_
   
-  - [~] 21.5 Add error handling for data persistence
+  - [ ] 21.5 Add error handling for data persistence
     - Handle LocalStorage full
     - Handle data corruption
     - Reinitialize with seed data on corruption
@@ -472,39 +472,39 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Test error recovery flows
 
 - [ ] 22. Polish and accessibility
-  - [~] 22.1 Add loading states and skeletons
+  - [ ] 22.1 Add loading states and skeletons
     - Add skeleton loaders for mission stream
     - Add skeleton loaders for action item inbox
     - Add loading spinners for async actions
   
-  - [~] 22.2 Add animations and transitions
+  - [ ] 22.2 Add animations and transitions
     - Add smooth transitions for mission completion
     - Add hover effects on interactive elements
     - Add focus indicators for keyboard navigation
   
-  - [~] 22.3 Improve accessibility
+  - [ ] 22.3 Improve accessibility
     - Add ARIA labels to all interactive elements
     - Ensure keyboard navigation works throughout
     - Test with screen reader
     - Ensure color contrast meets WCAG AA standards
   
-  - [~] 22.4 Add empty states
+  - [ ] 22.4 Add empty states
     - Implement encouraging empty state for missions
     - Implement positive empty state for action items
     - _Requirements: 3.1, 8.1_
 
 - [ ] 23. Final integration and testing
-  - [~] 23.1 End-to-end testing of patient flow
+  - [ ] 23.1 End-to-end testing of patient flow
     - Test login → view missions → upload photo → see triage result → streak update
     - Test both Green and Red triage scenarios
     - Test refill request workflow
   
-  - [~] 23.2 End-to-end testing of doctor flow
+  - [ ] 23.2 End-to-end testing of doctor flow
     - Test login → view action items → approve item → verify patient notification
     - Test reject with reason
     - Test empty inbox state
   
-  - [~] 23.3 Test demo scenario switching
+  - [ ] 23.3 Test demo scenario switching
     - Verify SCENARIO_HAPPY_PATH produces Green results
     - Verify SCENARIO_RISK_DETECTED produces Red results
     - Test deterministic behavior across multiple runs
@@ -520,7 +520,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - Verify coverage meets goals (80% line, 75% branch)
     - Fix any failures
 
-- [~] 24. Final checkpoint - Complete application
+- [ ] 24. Final checkpoint - Complete application
   - Verify all features work end-to-end
   - Test on multiple devices and browsers
   - Verify responsive design on mobile and desktop
