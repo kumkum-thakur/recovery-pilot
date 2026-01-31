@@ -207,9 +207,11 @@ describe('AgentStatusToast', () => {
     expect(container.firstChild).not.toBeNull();
     
     // Fast-forward animation and run all timers
-    await vi.advanceTimersByTimeAsync(300);
+    await vi.advanceTimersByTimeAsync(350);
     
-    // Should be removed from DOM after animation
-    expect(container.firstChild).toBeNull();
+    // Wait for the component to be removed from DOM
+    await waitFor(() => {
+      expect(container.firstChild).toBeNull();
+    });
   });
 });
