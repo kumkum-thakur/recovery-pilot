@@ -230,10 +230,13 @@ class AuthServiceImpl implements IAuthService {
    * Updates the current user's data in the session
    * 
    * This is useful when user data changes (e.g., streak count update)
-   * and we need to refresh the session without re-authenticating
+   * and we need to refresh the session without re-authenticating.
+   * Also refreshes the session expiry time.
    * 
    * @param user - Updated user data
    * @throws AuthenticationError if no user is currently authenticated
+   * 
+   * Requirements: 1.2, 2.2
    */
   updateCurrentUser(user: User): void {
     if (!this.isAuthenticated()) {
@@ -241,6 +244,95 @@ class AuthServiceImpl implements IAuthService {
     }
 
     this.setCurrentUser(user);
+  }
+
+  /**
+   * Checks if the current session has expired
+   * 
+   * @returns true if session has expired, false otherwise
+   * @private
+   * 
+   * Requirements: 1.2, 2.2
+   */
+  private isSessionExpired(): boolean {
+    try {
+      const expiryTimeStr = sessionStorage.getItem(SESSION_EXPIRY_KEY);
+      
+      if (!expiryTimeStr) {
+        // No expiry time set, consider expired
+        return true;
+      }
+
+      const expiryTime = parseInt(expiryTimeStr, 10);
+      
+      if (isNaN(expiryTime)) {
+        // Invalid expiry time, consider expired
+        return true;
+      }
+
+      return Date.now() > expiryTime;
+    } catch (error) {
+      console.error('Error checking session expiry:', error);
+      // On error, consider expired for safety
+      return true;
+    }
+  }
+
+  /**
+   * Refreshes the current session by extending the expiry time
+   * 
+   * This should be called on user activity to keep the session alive.
+   * 
+   * @returns true if session was refreshed, false if no active session
+   * 
+   * Requirements: 1.2, 2.2
+   */
+  refreshSession(): boolean {
+    try {
+      const user = this.getCurrentUser();
+      
+      if (!user) {
+        return false;
+      }
+
+      // Update expiry time
+      const expiryTime = Date.now() + SESSION_TIMEOUT_MS;
+      sessionStorage.setItem(SESSION_EXPIRY_KEY, expiryTime.toString());
+      
+      return true;
+    } catch (error) {
+      console.error('Error refreshing session:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Gets the remaining time until session expires
+   * 
+   * @returns Remaining time in milliseconds, or 0 if no active session
+   * 
+   * Requirements: 1.2, 2.2
+   */
+  getSessionTimeRemaining(): number {
+    try {
+      const expiryTimeStr = sessionStorage.getItem(SESSION_EXPIRY_KEY);
+      
+      if (!expiryTimeStr) {
+        return 0;
+      }
+
+      const expiryTime = parseInt(expiryTimeStr, 10);
+      
+      if (isNaN(expiryTime)) {
+        return 0;
+      }
+
+      const remaining = expiryTime - Date.now();
+      return Math.max(0, remaining);
+    } catch (error) {
+      console.error('Error getting session time remaining:', error);
+      return 0;
+    }
   }
 }
 
