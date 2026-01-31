@@ -183,7 +183,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Style with Tailwind (medical whites/blues)
     - _Requirements: 3.2, 3.3, 4.1, 4.2, 4.3_
   
-  - [~] 11.2 Create MissionStream component
+  - [-] 11.2 Create MissionStream component
     - Fetch missions from MissionStore on mount
     - Render list of MissionCard components
     - Implement empty state with encouraging message
