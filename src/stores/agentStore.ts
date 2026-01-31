@@ -114,13 +114,15 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
    * The workflow steps are displayed to the user via the AgentStatusToast
    * component, showing the AI "working" on their behalf.
    * 
+   * Includes timeout handling (5s per step) and partial completion support.
+   * 
    * @param imageFile - The wound photo to analyze
-   * @throws Error if a workflow is already in progress
+   * @throws Error if a workflow is already in progress or if workflow times out
    * 
    * Requirements: 7.1
    */
   startTriageWorkflow: async (imageFile: File) => {
-    const { isProcessing } = get();
+    const { isProcessing, executeStepWithTimeout } = get();
     
     // Prevent concurrent workflows
     if (isProcessing) {
@@ -156,48 +158,23 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
     });
     
     try {
-      // Execute workflow steps sequentially
+      // Execute workflow steps sequentially with timeout handling
       for (let i = 0; i < steps.length; i++) {
-        // Get current workflow state
-        let { currentWorkflow } = get();
+        const { currentWorkflow } = get();
         if (!currentWorkflow) break;
         
-        // Update step to in_progress
-        let updatedSteps = [...currentWorkflow];
-        updatedSteps[i] = { ...updatedSteps[i], status: 'in_progress' };
-        set({ currentWorkflow: updatedSteps });
-        
-        // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, steps[i].duration || 1000));
-        
-        // Get current workflow state again
-        ({ currentWorkflow } = get());
-        if (!currentWorkflow) break;
-        
-        // Update step to completed
-        updatedSteps = [...currentWorkflow];
-        updatedSteps[i] = { ...updatedSteps[i], status: 'completed' };
-        set({ currentWorkflow: updatedSteps });
+        // Execute step with timeout protection
+        await executeStepWithTimeout(steps[i], i);
       }
       
       // Workflow complete - keep steps visible for UI to handle cleanup
       set({ isProcessing: false });
       
     } catch (error) {
-      // Mark current step as failed
-      const { currentWorkflow } = get();
-      if (currentWorkflow) {
-        const failedSteps = currentWorkflow.map(step => 
-          step.status === 'in_progress' 
-            ? { ...step, status: 'failed' as const }
-            : step
-        );
-        set({
-          currentWorkflow: failedSteps,
-          isProcessing: false,
-        });
-      }
+      // Mark workflow as failed but keep partial progress visible
+      set({ isProcessing: false });
       
+      // Re-throw error for UI to handle
       throw error;
     }
   },
