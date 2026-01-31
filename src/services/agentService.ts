@@ -317,8 +317,59 @@ export function createAgentService(): AgentService {
       medicationName: string,
       scenario: DemoScenario
     ): Promise<RefillResult> {
-      // This will be implemented in task 7.3
-      throw new Error('Not implemented yet - will be completed in task 7.3');
+      // Define the multi-step workflow for refill processing
+      // Requirements: 7.2 - Three steps: Inventory check, Insurance verification, Order placement
+      const steps: AgentStep[] = [
+        { 
+          id: '1', 
+          label: 'Checking Pharmacy Inventory (Mock API)...', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 1000 
+        },
+        { 
+          id: '2', 
+          label: 'Verifying Insurance Coverage...', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 1000 
+        },
+        { 
+          id: '3', 
+          label: 'Order Placed.', 
+          status: 'pending' as AgentStepStatus, 
+          duration: 500 
+        }
+      ];
+      
+      // Execute workflow steps with delays
+      // This simulates the AI "working" on behalf of the patient
+      // Note: The actual step updates are handled by the AgentStore
+      // which calls simulateWorkflowSteps and updates UI in real-time
+      for await (const step of simulateWorkflowSteps(steps)) {
+        // Steps are yielded as they progress
+        // The AgentStore will handle displaying these to the user
+      }
+      
+      // Determine result based on demo scenario
+      // Requirements: 15.2 - Scenario-based deterministic behavior
+      // For refills, both scenarios result in approval (happy path)
+      // In a real system, SCENARIO_RISK_DETECTED might deny insurance
+      const insuranceStatus = 'approved' as InsuranceStatus;
+      const inventoryStatus = 'in_stock' as InventoryStatus;
+      
+      // Create action item for doctor review
+      // Requirements: 7.2, 8.1, 8.3
+      const actionItemId = await createRefillActionItem({
+        medicationName,
+        insuranceStatus,
+        inventoryStatus,
+      });
+      
+      // Return refill result
+      return {
+        insuranceStatus,
+        inventoryStatus,
+        actionItemId,
+      };
     },
   };
 }
