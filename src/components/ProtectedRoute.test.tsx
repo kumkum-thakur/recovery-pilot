@@ -93,6 +93,8 @@ describe('ProtectedRoute', () => {
         },
       });
 
+      window.history.pushState({}, '', '/');
+
       render(
         <BrowserRouter>
           <Routes>
@@ -120,6 +122,8 @@ describe('ProtectedRoute', () => {
           role: UserRole.DOCTOR,
         },
       });
+
+      window.history.pushState({}, '', '/');
 
       render(
         <BrowserRouter>
@@ -152,6 +156,8 @@ describe('ProtectedRoute', () => {
         },
       });
 
+      window.history.pushState({}, '', '/');
+
       render(
         <BrowserRouter>
           <Routes>
@@ -179,6 +185,8 @@ describe('ProtectedRoute', () => {
           role: UserRole.DOCTOR,
         },
       });
+
+      window.history.pushState({}, '', '/');
 
       render(
         <BrowserRouter>
@@ -277,6 +285,8 @@ describe('ProtectedRoute', () => {
           streakCount: 0,
         },
       });
+
+      window.history.pushState({}, '', '/');
 
       render(
         <BrowserRouter>
