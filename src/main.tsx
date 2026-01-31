@@ -2,11 +2,80 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { persistenceService } from './services/persistenceService'
-import { initializeSeedData } from './services/seedData'
+import { initializeApp, InitializationError } from './services/initializeApp'
 
-// Initialize seed data on app startup
-initializeSeedData(persistenceService);
+// Initialize app with error handling
+try {
+  initializeApp();
+} catch (error) {
+  if (error instanceof InitializationError) {
+    // Display user-friendly error message
+    console.error('Application failed to start:', error.message);
+    
+    // Show error in the UI
+    const root = document.getElementById('root');
+    if (root) {
+      root.innerHTML = `
+        <div style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 2rem;
+          text-align: center;
+          font-family: system-ui, -apple-system, sans-serif;
+          background-color: #f8fafc;
+        ">
+          <div style="
+            max-width: 500px;
+            padding: 2rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          ">
+            <h1 style="
+              color: #dc2626;
+              font-size: 1.5rem;
+              font-weight: 600;
+              margin-bottom: 1rem;
+            ">
+              ⚠️ Initialization Error
+            </h1>
+            <p style="
+              color: #475569;
+              margin-bottom: 1.5rem;
+              line-height: 1.6;
+            ">
+              ${error.message}
+            </p>
+            <button
+              onclick="location.reload()"
+              style="
+                background-color: #2563eb;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 0.375rem;
+                font-size: 1rem;
+                font-weight: 500;
+                cursor: pointer;
+              "
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Don't render the app
+    throw error;
+  }
+  
+  // Unknown error, rethrow
+  throw error;
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
