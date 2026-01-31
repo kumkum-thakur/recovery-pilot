@@ -51,7 +51,7 @@ Each task builds on previous work, with checkpoints to validate functionality. T
     - _Requirements: 1.1, 2.1, 3.1_
 
 - [ ] 4. Implement Authentication Service
-  - [-] 4.1 Create AuthService with login/logout functionality
+  - [x] 4.1 Create AuthService with login/logout functionality
     - Implement simple password hashing for MVP
     - Implement credential validation
     - Implement session management
