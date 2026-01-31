@@ -91,6 +91,9 @@ function App() {
         {/* Catch-all Route - Redirect to root */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      
+      {/* Debug Menu - Toggle with Ctrl+Shift+D */}
+      <DebugMenu />
     </BrowserRouter>
   );
 }
