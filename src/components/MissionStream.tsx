@@ -75,7 +75,7 @@ export function MissionStream() {
    * 
    * This should be called after any mission is completed.
    * 
-   * Requirements: 10.1, 10.4
+   * Requirements: 10.1, 10.4, 11.2
    */
   const checkAndUpdateStreak = () => {
     // Only check for patients
@@ -91,6 +91,10 @@ export function MissionStream() {
       // Update last mission check date to today
       updateLastMissionCheckDate(new Date().toISOString());
       
+      // Show celebration with special message for completing all missions
+      setCelebrationMessage(getAllMissionsCompleteMessage());
+      setShowCelebration(true);
+      
       console.log('🎉 All daily missions completed! Streak incremented.');
     }
   };
@@ -100,7 +104,7 @@ export function MissionStream() {
    * Opens PhotoCaptureModal for photo upload missions
    * Completes mission directly for other mission types
    * 
-   * Requirements: 4.4, 5.1, 10.1
+   * Requirements: 4.4, 5.1, 10.1, 11.2
    */
   const handleAction = (missionId: string) => {
     const mission = missions.find(m => m.id === missionId);
@@ -116,11 +120,19 @@ export function MissionStream() {
       setSelectedMissionTitle(mission.title);
       setIsModalOpen(true);
     } else {
-      // For other mission types, complete directly
+      // For other mission types, complete directly with encouraging message
       completeMission(missionId)
         .then(() => {
+          // Show celebration with mission-specific encouraging message
+          const encouragingMsg = getEncouragingMessage(mission.type);
+          setCelebrationMessage(encouragingMsg);
+          setShowCelebration(true);
+          
           // Check and update streak after mission completion
-          checkAndUpdateStreak();
+          // This will show another celebration if all missions are complete
+          setTimeout(() => {
+            checkAndUpdateStreak();
+          }, 2500); // Wait for first celebration to finish
         })
         .catch((error) => {
           console.error('Failed to complete mission:', error);
