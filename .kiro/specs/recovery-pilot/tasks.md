@@ -268,7 +268,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Add keyboard navigation shortcuts
     - _Requirements: 14.1, 14.2, 14.3_
 
-- [~] 18. Build Triage Inbox components
+- [x] 18. Build Triage Inbox components
   - [x] 18.1 Create ActionItemCard component
     - Display patient name, request type, created date
     - Conditionally render TriageDetails or RefillDetails based on type
@@ -295,7 +295,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle loading states
     - _Requirements: 8.1_
 
-- [~] 19. Build Action Item Review functionality
+- [x] 19. Build Action Item Review functionality
   - [x] 19.1 Implement approve action
     - Connect Approve button to ActionItemStore.approveItem
     - Update action item status to "approved"
@@ -356,7 +356,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 2 TASKS - Polish & Accessibility
 
-- [~] 22. Polish and accessibility
+- [x] 22. Polish and accessibility
   - [x] 22.1 Add loading states and skeletons
     - Add skeleton loaders for mission stream
     - Add skeleton loaders for action item inbox
@@ -378,7 +378,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Implement positive empty state for action items
     - _Requirements: 3.1, 8.1_
 
-- [~] 23. Manual end-to-end testing
+- [x] 23. Manual end-to-end testing
   - [x] 23.1 End-to-end testing of patient flow
     - Test login → view missions → upload photo → see triage result → streak update
     - Test both Green and Red triage scenarios
