@@ -409,7 +409,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### AGENT 1 TASKS - Backend & Service Testing
 
 - [-] 25. Unit tests for project configuration
-  - [~] 25.1 Write unit tests for project configuration
+  - [-] 25.1 Write unit tests for project configuration
     - Test that Tailwind theme colors are correctly configured
     - Test that all required dependencies are installed
     - _Requirements: Technical Constraints 1_
