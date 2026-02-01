@@ -104,15 +104,19 @@ describe('App Routing', () => {
     });
 
     it('should redirect authenticated patient to /patient from /login', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Test Patient',
+        role: UserRole.PATIENT,
+        streakCount: 3,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Test Patient',
-          role: UserRole.PATIENT,
-          streakCount: 3,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/login');
       render(<App />);
@@ -123,14 +127,18 @@ describe('App Routing', () => {
     });
 
     it('should redirect authenticated doctor to /doctor from /login', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Test Doctor',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Test Doctor',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/login');
       render(<App />);
@@ -143,15 +151,19 @@ describe('App Routing', () => {
 
   describe('Patient Route (/patient)', () => {
     it('should show patient dashboard for authenticated patient', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Divya Patel',
+        role: UserRole.PATIENT,
+        streakCount: 7,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Divya Patel',
-          role: UserRole.PATIENT,
-          streakCount: 7,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/patient');
       render(<App />);
@@ -169,14 +181,18 @@ describe('App Routing', () => {
     });
 
     it('should redirect doctor to /doctor when accessing /patient', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Dr. Smith',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Dr. Smith',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/patient');
       render(<App />);
@@ -189,14 +205,18 @@ describe('App Routing', () => {
 
   describe('Doctor Route (/doctor)', () => {
     it('should show doctor dashboard for authenticated doctor', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Dr. Sarah Smith',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Dr. Sarah Smith',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/doctor');
       render(<App />);
