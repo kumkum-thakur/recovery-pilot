@@ -486,6 +486,7 @@ describe('Task 6: Core Infrastructure Verification', () => {
         status: ActionItemStatus.PENDING_DOCTOR,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        doctorId: 'doctor-1',
         imageUrl: 'data:image/jpeg;base64,test',
         triageAnalysis: 'red',
         triageText: 'Redness detected',
@@ -502,13 +503,15 @@ describe('Task 6: Core Infrastructure Verification', () => {
       const actionItemStore = useActionItemStore.getState();
       await actionItemStore.fetchActionItems('doctor-1');
       
-      expect(useActionItemStore.getState().actionItems).toHaveLength(1);
+      const state = useActionItemStore.getState();
+      expect(state.actionItems).toHaveLength(1);
       
       // 3. Approve action item
-      const itemId = useActionItemStore.getState().actionItems[0].id;
+      const itemId = state.actionItems[0].id;
       await actionItemStore.approveItem(itemId);
       
-      expect(useActionItemStore.getState().actionItems).toHaveLength(0);
+      const updatedState = useActionItemStore.getState();
+      expect(updatedState.actionItems).toHaveLength(0);
       
       // Verify persistence
       const itemModel = persistenceService.getActionItem(itemId);
