@@ -415,86 +415,86 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: Technical Constraints 1_
 
 - [~] 26. Property tests for Persistence Service
-  - [~] 26.1 Write property test for JSON serialization validity
+  - [x] 26.1 Write property test for JSON serialization validity
     - **Property 28: JSON Serialization Validity**
     - **Validates: Requirements 12.4**
   
-  - [~] 26.2 Write property test for data persistence round-trip
+  - [x] 26.2 Write property test for data persistence round-trip
     - **Property 27: Data Persistence Round-Trip**
     - **Validates: Requirements 12.2, 12.3**
 
 - [~] 27. Tests for Authentication Service
-  - [~] 27.1 Write property test for authentication success and failure
+  - [x] 27.1 Write property test for authentication success and failure
     - **Property 1: Authentication Success and Failure**
     - **Validates: Requirements 1.1, 1.2, 2.1, 2.2**
   
-  - [~] 27.2 Write unit tests for authentication edge cases
+  - [x] 27.2 Write unit tests for authentication edge cases
     - Test empty credentials
     - Test SQL injection attempts
     - Test session expiration
     - _Requirements: 1.2, 2.2_
 
 - [~] 28. Property tests for Zustand stores
-  - [~] 28.1 Write property test for profile persistence round-trip
+  - [x] 28.1 Write property test for profile persistence round-trip
     - **Property 2: Profile Data Persistence Round-Trip**
     - **Validates: Requirements 1.3, 2.3, 12.1**
   
-  - [~] 28.2 Write property test for streak persistence round-trip
+  - [x] 28.2 Write property test for streak persistence round-trip
     - **Property 3: Streak Persistence Round-Trip**
     - **Validates: Requirements 1.4, 10.4**
 
 - [~] 29. Tests for Mock Agent Service
-  - [~] 29.1 Write property test for triage workflow execution
+  - [x] 29.1 Write property test for triage workflow execution
     - **Property 14: Red Triage Workflow Execution**
     - **Validates: Requirements 7.1**
   
-  - [~] 29.2 Write property test for triage result categorization
+  - [x] 29.2 Write property test for triage result categorization
     - **Property 10: Triage Result Categorization**
     - **Validates: Requirements 6.2**
   
-  - [~] 29.3 Write property test for refill workflow execution
+  - [x] 29.3 Write property test for refill workflow execution
     - **Property 15: Refill Workflow Execution**
     - **Validates: Requirements 7.2**
   
-  - [~] 29.4 Write property test for scenario determinism
+  - [x] 29.4 Write property test for scenario determinism
     - **Property 34: Scenario Determinism**
     - **Validates: Requirements 15.2**
 
 ### AGENT 2 TASKS - Frontend Component Testing
 
 - [~] 30. Tests for routing and navigation
-  - [~] 30.1 Write unit tests for routing logic
+  - [x] 30.1 Write unit tests for routing logic
     - Test unauthenticated users redirect to /login
     - Test patients cannot access /doctor
     - Test doctors cannot access /patient
     - _Requirements: 1.1, 2.1_
 
 - [~] 31. Tests for Login page
-  - [~] 31.1 Write unit tests for login form
+  - [x] 31.1 Write unit tests for login form
     - Test form validation
     - Test error message display
     - Test successful login redirects
     - _Requirements: 1.2, 2.2_
 
 - [~] 32. Tests for Patient Dashboard
-  - [~] 32.1 Write property test for responsive viewport rendering
+  - [x] 32.1 Write property test for responsive viewport rendering
     - **Property 29: Responsive Viewport Rendering**
     - **Validates: Requirements 13.1, 13.3, 14.1**
   
-  - [~] 32.2 Write property test for touch target minimum size
+  - [x] 32.2 Write property test for touch target minimum size
     - **Property 30: Touch Target Minimum Size**
     - **Validates: Requirements 13.2**
   
-  - [~] 32.3 Write property test for text readability size
+  - [x] 32.3 Write property test for text readability size
     - **Property 31: Text Readability Size**
     - **Validates: Requirements 13.4**
 
 - [~] 33. Tests for Mission Stream components
-  - [~] 33.1 Write property test for mission display completeness
+  - [x] 33.1 Write property test for mission display completeness
     - **Property 4: Mission Stream Display Completeness**
     - **Validates: Requirements 3.1, 3.2, 3.3**
   
-  - [~] 33.2 Write property test for smart action button adaptation
+  - [x] 33.2 Write property test for smart action button adaptation
     - **Property 5: Smart Action Button Context Adaptation**
     - **Validates: Requirements 4.1, 4.2, 4.3**
   
