@@ -97,15 +97,19 @@ describe('ProtectedRoute', () => {
 
   describe('Authenticated Access Without Role Requirement', () => {
     it('should render children when user is authenticated (patient)', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Test Patient',
+        role: UserRole.PATIENT,
+        streakCount: 0,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Test Patient',
-          role: UserRole.PATIENT,
-          streakCount: 0,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/');
 
@@ -128,14 +132,18 @@ describe('ProtectedRoute', () => {
     });
 
     it('should render children when user is authenticated (doctor)', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Test Doctor',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Test Doctor',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/');
 
@@ -160,15 +168,19 @@ describe('ProtectedRoute', () => {
 
   describe('Role-Based Access Control', () => {
     it('should render children when patient accesses patient route', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Test Patient',
+        role: UserRole.PATIENT,
+        streakCount: 0,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Test Patient',
-          role: UserRole.PATIENT,
-          streakCount: 0,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/');
 
