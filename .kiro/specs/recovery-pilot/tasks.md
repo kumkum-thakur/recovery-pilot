@@ -111,7 +111,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Implement actions: startTriageWorkflow, startRefillWorkflow, clearWorkflow
     - _Requirements: 7.1, 7.2, 7.3_
   
-  - [~] 5.4 Create ActionItemStore
+  - [x] 5.4 Create ActionItemStore
     - Implement state: actionItems, isLoading
     - Implement actions: fetchActionItems, approveItem, rejectItem
     - Integrate with PersistenceService
