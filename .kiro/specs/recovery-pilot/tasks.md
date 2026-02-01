@@ -326,7 +326,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 1 TASKS - Error Handling
 
-- [ ] 21. Implement error handling and edge cases
+- [~] 21. Implement error handling and edge cases
   - [x] 21.1 Add error boundaries for React components
     - Catch and display component errors gracefully
     - Log errors for debugging
@@ -408,117 +408,117 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 1 TASKS - Backend & Service Testing
 
-- [ ] 25. Unit tests for project configuration
-  - [ ] 25.1 Write unit tests for project configuration
+- [~] 25. Unit tests for project configuration
+  - [~] 25.1 Write unit tests for project configuration
     - Test that Tailwind theme colors are correctly configured
     - Test that all required dependencies are installed
     - _Requirements: Technical Constraints 1_
 
-- [ ] 26. Property tests for Persistence Service
-  - [ ] 26.1 Write property test for JSON serialization validity
+- [~] 26. Property tests for Persistence Service
+  - [~] 26.1 Write property test for JSON serialization validity
     - **Property 28: JSON Serialization Validity**
     - **Validates: Requirements 12.4**
   
-  - [ ] 26.2 Write property test for data persistence round-trip
+  - [~] 26.2 Write property test for data persistence round-trip
     - **Property 27: Data Persistence Round-Trip**
     - **Validates: Requirements 12.2, 12.3**
 
-- [ ] 27. Tests for Authentication Service
-  - [ ] 27.1 Write property test for authentication success and failure
+- [~] 27. Tests for Authentication Service
+  - [~] 27.1 Write property test for authentication success and failure
     - **Property 1: Authentication Success and Failure**
     - **Validates: Requirements 1.1, 1.2, 2.1, 2.2**
   
-  - [ ] 27.2 Write unit tests for authentication edge cases
+  - [~] 27.2 Write unit tests for authentication edge cases
     - Test empty credentials
     - Test SQL injection attempts
     - Test session expiration
     - _Requirements: 1.2, 2.2_
 
-- [ ] 28. Property tests for Zustand stores
-  - [ ] 28.1 Write property test for profile persistence round-trip
+- [~] 28. Property tests for Zustand stores
+  - [~] 28.1 Write property test for profile persistence round-trip
     - **Property 2: Profile Data Persistence Round-Trip**
     - **Validates: Requirements 1.3, 2.3, 12.1**
   
-  - [ ] 28.2 Write property test for streak persistence round-trip
+  - [~] 28.2 Write property test for streak persistence round-trip
     - **Property 3: Streak Persistence Round-Trip**
     - **Validates: Requirements 1.4, 10.4**
 
-- [ ] 29. Tests for Mock Agent Service
-  - [ ] 29.1 Write property test for triage workflow execution
+- [~] 29. Tests for Mock Agent Service
+  - [~] 29.1 Write property test for triage workflow execution
     - **Property 14: Red Triage Workflow Execution**
     - **Validates: Requirements 7.1**
   
-  - [ ] 29.2 Write property test for triage result categorization
+  - [~] 29.2 Write property test for triage result categorization
     - **Property 10: Triage Result Categorization**
     - **Validates: Requirements 6.2**
   
-  - [ ] 29.3 Write property test for refill workflow execution
+  - [~] 29.3 Write property test for refill workflow execution
     - **Property 15: Refill Workflow Execution**
     - **Validates: Requirements 7.2**
   
-  - [ ] 29.4 Write property test for scenario determinism
+  - [~] 29.4 Write property test for scenario determinism
     - **Property 34: Scenario Determinism**
     - **Validates: Requirements 15.2**
 
 ### AGENT 2 TASKS - Frontend Component Testing
 
-- [ ] 30. Tests for routing and navigation
-  - [ ] 30.1 Write unit tests for routing logic
+- [~] 30. Tests for routing and navigation
+  - [~] 30.1 Write unit tests for routing logic
     - Test unauthenticated users redirect to /login
     - Test patients cannot access /doctor
     - Test doctors cannot access /patient
     - _Requirements: 1.1, 2.1_
 
-- [ ] 31. Tests for Login page
-  - [ ] 31.1 Write unit tests for login form
+- [~] 31. Tests for Login page
+  - [~] 31.1 Write unit tests for login form
     - Test form validation
     - Test error message display
     - Test successful login redirects
     - _Requirements: 1.2, 2.2_
 
-- [ ] 32. Tests for Patient Dashboard
-  - [ ] 32.1 Write property test for responsive viewport rendering
+- [~] 32. Tests for Patient Dashboard
+  - [~] 32.1 Write property test for responsive viewport rendering
     - **Property 29: Responsive Viewport Rendering**
     - **Validates: Requirements 13.1, 13.3, 14.1**
   
-  - [ ] 32.2 Write property test for touch target minimum size
+  - [~] 32.2 Write property test for touch target minimum size
     - **Property 30: Touch Target Minimum Size**
     - **Validates: Requirements 13.2**
   
-  - [ ] 32.3 Write property test for text readability size
+  - [~] 32.3 Write property test for text readability size
     - **Property 31: Text Readability Size**
     - **Validates: Requirements 13.4**
 
-- [ ] 33. Tests for Mission Stream components
-  - [ ] 33.1 Write property test for mission display completeness
+- [~] 33. Tests for Mission Stream components
+  - [~] 33.1 Write property test for mission display completeness
     - **Property 4: Mission Stream Display Completeness**
     - **Validates: Requirements 3.1, 3.2, 3.3**
   
-  - [ ] 33.2 Write property test for smart action button adaptation
+  - [~] 33.2 Write property test for smart action button adaptation
     - **Property 5: Smart Action Button Context Adaptation**
     - **Validates: Requirements 4.1, 4.2, 4.3**
   
-  - [ ] 33.3 Write property test for action button execution
+  - [~] 33.3 Write property test for action button execution
     - **Property 6: Action Button Execution**
     - **Validates: Requirements 4.4**
 
-- [ ] 34. Tests for Photo Capture functionality
-  - [ ] 34.1 Write property test for photo preview display
+- [~] 34. Tests for Photo Capture functionality
+  - [~] 34.1 Write property test for photo preview display
     - **Property 7: Photo Preview Display**
     - **Validates: Requirements 5.2**
   
-  - [ ] 34.2 Write unit tests for photo upload edge cases
+  - [~] 34.2 Write unit tests for photo upload edge cases
     - Test unsupported file formats
     - Test file size limits
     - Test camera access denied
     - _Requirements: 5.4_
   
-  - [ ] 34.3 Write property test for photo submission triggers analysis
+  - [~] 34.3 Write property test for photo submission triggers analysis
     - **Property 8: Photo Submission Triggers Analysis**
     - **Validates: Requirements 5.3**
 
-- [ ] 35. Tests for Agent Status Toast
-  - [ ] 35.1 Write property test for agent workflow visibility
+- [~] 35. Tests for Agent Status Toast
+  - [~] 35.1 Write property test for agent workflow visibility
     - **Property 16: Agent Workflow Visibility**
     - **Validates: Requirements 7.3**
 
