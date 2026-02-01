@@ -6,12 +6,23 @@
  * Requirements: 1.1, 2.1
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { useUserStore } from '../stores/userStore';
 import { UserRole } from '../types';
+import { authService } from '../services/authService';
+
+// Mock authService
+vi.mock('../services/authService', () => ({
+  authService: {
+    getCurrentUser: vi.fn(),
+    login: vi.fn(),
+    logout: vi.fn(),
+    validateCredentials: vi.fn(),
+  },
+}));
 
 // Test component to render inside protected route
 function TestComponent({ text }: { text: string }) {
