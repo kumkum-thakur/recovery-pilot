@@ -41,4 +41,21 @@ describe('ActionItemStore Debug', () => {
     expect(items[0].id).toBe('action-item-triage-1');
     expect(items[0].status).toBe(ActionItemStatus.PENDING_DOCTOR);
   });
+
+  it('should test fetchActionItems from store', async () => {
+    const { useActionItemStore } = await import('./actionItemStore');
+    
+    // Save action item
+    persistenceService.saveActionItem(mockTriageActionItem);
+    
+    console.log('Before fetch - localStorage:', localStorage.getItem(STORAGE_KEYS.ACTION_ITEMS));
+    
+    const store = useActionItemStore.getState();
+    await store.fetchActionItems('doctor-1');
+    
+    const { actionItems } = useActionItemStore.getState();
+    console.log('After fetch - actionItems:', actionItems);
+    
+    expect(actionItems).toHaveLength(1);
+  });
 });
