@@ -498,12 +498,12 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 5: Smart Action Button Context Adaptation**
     - **Validates: Requirements 4.1, 4.2, 4.3**
   
-  - [~] 33.3 Write property test for action button execution
+  - [x] 33.3 Write property test for action button execution
     - **Property 6: Action Button Execution**
     - **Validates: Requirements 4.4**
 
 - [~] 34. Tests for Photo Capture functionality
-  - [~] 34.1 Write property test for photo preview display
+  - [x] 34.1 Write property test for photo preview display
     - **Property 7: Photo Preview Display**
     - **Validates: Requirements 5.2**
   
