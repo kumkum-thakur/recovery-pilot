@@ -416,10 +416,29 @@ describe('Task 6: Core Infrastructure Verification', () => {
     });
 
     it('should require rejection reason', async () => {
+      // Re-initialize to ensure fresh data
+      persistenceService.saveActionItem({
+        id: 'action-1',
+        patientId: 'patient-1',
+        patientName: 'Divya Patel',
+        type: ActionItemType.TRIAGE,
+        status: ActionItemStatus.PENDING_DOCTOR,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        doctorId: 'doctor-1',
+        imageUrl: 'data:image/jpeg;base64,test',
+        triageAnalysis: 'red',
+        triageText: 'Redness detected',
+        aiConfidenceScore: 0.87,
+      });
+      
       const store = useActionItemStore.getState();
       
       await store.fetchActionItems('doctor-1');
-      const itemId = store.actionItems[0].id;
+      
+      const state = useActionItemStore.getState();
+      expect(state.actionItems.length).toBeGreaterThan(0);
+      const itemId = state.actionItems[0].id;
       
       await expect(store.rejectItem(itemId, ''))
         .rejects.toThrow('Rejection reason is required');
