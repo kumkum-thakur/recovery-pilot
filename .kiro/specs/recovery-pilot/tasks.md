@@ -502,7 +502,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 6: Action Button Execution**
     - **Validates: Requirements 4.4**
 
-- [~] 34. Tests for Photo Capture functionality
+- [x] 34. Tests for Photo Capture functionality
   - [x] 34.1 Write property test for photo preview display
     - **Property 7: Photo Preview Display**
     - **Validates: Requirements 5.2**
@@ -517,12 +517,12 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 8: Photo Submission Triggers Analysis**
     - **Validates: Requirements 5.3**
 
-- [~] 35. Tests for Agent Status Toast
+- [x] 35. Tests for Agent Status Toast
   - [x] 35.1 Write property test for agent workflow visibility
     - **Property 16: Agent Workflow Visibility**
     - **Validates: Requirements 7.3**
 
-- [~] 36. Tests for Triage Result Display
+- [x] 36. Tests for Triage Result Display
   - [x] 36.1 Write property test for green result feedback
     - **Property 11: Green Result Feedback**
     - **Validates: Requirements 6.3**
@@ -535,7 +535,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 13: Confidence Score Storage**
     - **Validates: Requirements 6.5**
 
-- [~] 37. Tests for Gamification features
+- [x] 37. Tests for Gamification features
   - [x] 37.1 Write property test for streak display visibility
     - **Property 25: Streak Display Visibility**
     - **Validates: Requirements 10.3**
@@ -552,7 +552,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 26: Milestone Confetti Trigger**
     - **Validates: Requirements 11.3**
 
-- [~] 38. Tests for Doctor Dashboard
+- [x] 38. Tests for Doctor Dashboard
   - [x] 38.1 Write property test for multi-column layout activation
     - **Property 32: Multi-Column Layout Activation**
     - **Validates: Requirements 14.2**
@@ -561,7 +561,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 33: Keyboard Navigation Support**
     - **Validates: Requirements 14.3**
 
-- [~] 39. Tests for Triage Inbox components
+- [x] 39. Tests for Triage Inbox components
   - [x] 39.1 Write property test for action item display completeness
     - **Property 18: Action Item Display Completeness**
     - **Validates: Requirements 8.2, 8.3, 8.4**
@@ -574,7 +574,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 17: Doctor Inbox Display**
     - **Validates: Requirements 8.1**
 
-- [~] 40. Tests for Action Item Review functionality
+- [x] 40. Tests for Action Item Review functionality
   - [x] 40.1 Write property test for approval state transition
     - **Property 20: Approval State Transition**
     - **Validates: Requirements 9.2**
@@ -592,7 +592,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Test rejection modal cancel preserves pending state
     - _Requirements: 9.3_
 
-- [ ] 41. Tests for error handling
+- [x] 41. Tests for error handling
   - [x] 41.1 Write unit tests for all error scenarios
     - Test each error handler displays correct message
     - Test error recovery flows
@@ -600,17 +600,17 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 ### BOTH AGENTS - Final Testing & Deployment
 
 - [ ] 42. Run full test suite
-  - [ ] 42.1 Run full property test suite
+  - [x] 42.1 Run full property test suite
     - Execute all property tests with 100 iterations
     - Verify all 34 properties pass
     - Fix any failures
   
-  - [ ] 42.2 Run full unit test suite
+  - [x] 42.2 Run full unit test suite
     - Execute all unit tests
     - Verify coverage meets goals (80% line, 75% branch)
     - Fix any failures
 
-- [ ] 43. Final checkpoint - Testing complete
+- [x] 43. Final checkpoint - Testing complete
   - All tests passing
   - Coverage goals met
   - Application fully tested and ready for deployment
