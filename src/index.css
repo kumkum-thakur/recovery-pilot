@@ -1,9 +1,25 @@
+/* Import Tailwind CSS */
+@import "tailwindcss";
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 Theme Configuration */
+@theme {
+  /* Medical Core (Trust) Colors */
+  --color-medical-bg: #f8fafc;
+  --color-medical-text: #0f172a;
+  --color-medical-primary: #2563eb;
+  
+  /* Gamified Layer (Engagement) Colors */
+  --color-gamification-accent: #8b5cf6;
+  --color-gamification-success: #34d399;
+  --color-gamification-agent: #fbbf24;
+  
+  /* Font Families */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
 
 /* Base styles */
 body {
