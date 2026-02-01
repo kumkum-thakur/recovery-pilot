@@ -6,11 +6,22 @@
  * Requirements: 1.1, 2.1
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 import { useUserStore } from './stores/userStore';
 import { UserRole } from './types';
+import { authService } from './services/authService';
+
+// Mock authService
+vi.mock('./services/authService', () => ({
+  authService: {
+    getCurrentUser: vi.fn(),
+    login: vi.fn(),
+    logout: vi.fn(),
+    validateCredentials: vi.fn(),
+  },
+}));
 
 describe('App Routing', () => {
   beforeEach(() => {
@@ -19,6 +30,9 @@ describe('App Routing', () => {
       currentUser: null,
       isAuthenticated: false,
     });
+    
+    // Reset authService mock
+    vi.mocked(authService.getCurrentUser).mockReturnValue(null);
     
     // Clear localStorage to reset config
     localStorage.clear();
@@ -34,15 +48,19 @@ describe('App Routing', () => {
     });
 
     it('should redirect authenticated patient to /patient', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Test Patient',
+        role: UserRole.PATIENT,
+        streakCount: 5,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Test Patient',
-          role: UserRole.PATIENT,
-          streakCount: 5,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       render(<App />);
       
