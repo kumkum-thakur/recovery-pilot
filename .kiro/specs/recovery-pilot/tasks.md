@@ -86,7 +86,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Define initial missions for testing
     - _Requirements: 1.1, 2.1, 3.1_
 
-- [~] 4. Implement Authentication Service
+- [-] 4. Implement Authentication Service
   - [x] 4.1 Create AuthService with login/logout functionality
     - Implement simple password hashing for MVP
     - Implement credential validation
