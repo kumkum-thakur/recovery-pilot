@@ -93,7 +93,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Implement session management
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
-- [~] 5. Implement Zustand stores
+- [-] 5. Implement Zustand stores
   - [x] 5.1 Create UserStore
     - Implement state: currentUser, isAuthenticated
     - Implement actions: login, logout, updateStreak
