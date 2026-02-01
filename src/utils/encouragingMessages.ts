@@ -86,7 +86,7 @@ export function getStreakMilestoneMessage(streakCount: number): string {
   const milestoneMessages: Record<number, string[]> = {
     7: [
       "One week strong! You're building amazing habits! 🔥",
-      "7 days in a row! Your dedication is inspiring! ⭐",
+      "7 days - a full week! Your dedication is inspiring! ⭐",
       "Week one complete! You're a recovery rockstar! 🎸",
     ],
     30: [
@@ -96,7 +96,7 @@ export function getStreakMilestoneMessage(streakCount: number): string {
     ],
     100: [
       "100 DAYS! You're a recovery LEGEND! 👑",
-      "Century club! Your commitment is absolutely phenomenal! 🌟",
+      "100-day streak - century club! Your commitment is absolutely phenomenal! 🌟",
       "100-day streak! You've mastered the art of recovery! 🎯",
     ],
   };
