@@ -96,7 +96,7 @@ describe('AgentStatusToast', () => {
     );
     
     expect(screen.getByText('Workflow Failed')).toBeInTheDocument();
-    expect(screen.getByText('Something went wrong. Please try again.')).toBeInTheDocument();
+    expect(screen.getByText('Workflow partially completed. Some steps failed.')).toBeInTheDocument();
   });
 
   it('should call onComplete after delay when all steps are completed', async () => {
