@@ -177,9 +177,12 @@ describe('CelebrationOverlay', () => {
         />
       );
       
-      // Should show milestone message
+      // Should show milestone header
       expect(screen.getByText('7 Day Milestone!')).toBeInTheDocument();
-      expect(screen.getByText("You're crushing it! Keep going! 💪")).toBeInTheDocument();
+      
+      // Should show one of the 7-day milestone messages (contains "week" or "7 days")
+      const milestoneText = screen.getByText(/week|7 days/i);
+      expect(milestoneText).toBeInTheDocument();
     });
 
     it('should show milestone message for 30-day streak', () => {
