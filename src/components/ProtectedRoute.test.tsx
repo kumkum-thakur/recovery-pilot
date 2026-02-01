@@ -275,14 +275,18 @@ describe('ProtectedRoute', () => {
     });
 
     it('should redirect doctor to /doctor when accessing patient route', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Test Doctor',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Test Doctor',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       window.history.pushState({}, '', '/patient');
 
@@ -310,14 +314,19 @@ describe('ProtectedRoute', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing requiredRole parameter', () => {
+      const testUser = {
+        id: 'patient-1',
+        name: 'Test Patient',
+        role: UserRole.PATIENT,
+        streakCount: 0,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'patient-1',
-          name: 'Test Patient',
-          role: UserRole.PATIENT,
-          streakCount: 0,
-        },
+        currentUser: testUser,
+      });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
       });
 
       window.history.pushState({}, '', '/');
