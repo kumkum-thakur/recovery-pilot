@@ -326,6 +326,7 @@ describe('Task 6: Core Infrastructure Verification', () => {
         status: ActionItemStatus.PENDING_DOCTOR,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        doctorId: 'doctor-1',
         imageUrl: 'data:image/jpeg;base64,test',
         triageAnalysis: 'red',
         triageText: 'Redness detected',
@@ -344,15 +345,34 @@ describe('Task 6: Core Infrastructure Verification', () => {
     });
 
     it('should approve action item', async () => {
+      // Re-initialize to ensure fresh data
+      persistenceService.saveActionItem({
+        id: 'action-1',
+        patientId: 'patient-1',
+        patientName: 'Divya Patel',
+        type: ActionItemType.TRIAGE,
+        status: ActionItemStatus.PENDING_DOCTOR,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        doctorId: 'doctor-1',
+        imageUrl: 'data:image/jpeg;base64,test',
+        triageAnalysis: 'red',
+        triageText: 'Redness detected',
+        aiConfidenceScore: 0.87,
+      });
+      
       const store = useActionItemStore.getState();
       
       await store.fetchActionItems('doctor-1');
-      const itemId = store.actionItems[0].id;
+      
+      const state = useActionItemStore.getState();
+      expect(state.actionItems.length).toBeGreaterThan(0);
+      const itemId = state.actionItems[0].id;
       
       await store.approveItem(itemId);
       
-      const state = useActionItemStore.getState();
-      expect(state.actionItems).toHaveLength(0); // Removed from pending list
+      const updatedState = useActionItemStore.getState();
+      expect(updatedState.actionItems).toHaveLength(0); // Removed from pending list
       
       // Verify persistence
       const itemModel = persistenceService.getActionItem(itemId);
@@ -360,15 +380,34 @@ describe('Task 6: Core Infrastructure Verification', () => {
     });
 
     it('should reject action item with reason', async () => {
+      // Re-initialize to ensure fresh data
+      persistenceService.saveActionItem({
+        id: 'action-1',
+        patientId: 'patient-1',
+        patientName: 'Divya Patel',
+        type: ActionItemType.TRIAGE,
+        status: ActionItemStatus.PENDING_DOCTOR,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        doctorId: 'doctor-1',
+        imageUrl: 'data:image/jpeg;base64,test',
+        triageAnalysis: 'red',
+        triageText: 'Redness detected',
+        aiConfidenceScore: 0.87,
+      });
+      
       const store = useActionItemStore.getState();
       
       await store.fetchActionItems('doctor-1');
-      const itemId = store.actionItems[0].id;
+      
+      const state = useActionItemStore.getState();
+      expect(state.actionItems.length).toBeGreaterThan(0);
+      const itemId = state.actionItems[0].id;
       
       await store.rejectItem(itemId, 'Image quality too low');
       
-      const state = useActionItemStore.getState();
-      expect(state.actionItems).toHaveLength(0); // Removed from pending list
+      const updatedState = useActionItemStore.getState();
+      expect(updatedState.actionItems).toHaveLength(0); // Removed from pending list
       
       // Verify persistence
       const itemModel = persistenceService.getActionItem(itemId);
