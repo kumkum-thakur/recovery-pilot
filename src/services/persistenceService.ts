@@ -417,11 +417,11 @@ class PersistenceServiceImpl implements IPersistenceService {
     try {
       const items = this.get<ActionItemModel[]>(STORAGE_KEYS.ACTION_ITEMS) || [];
       
-      // If doctorId provided, filter by it (for future use)
       // For MVP, return all items since we don't track doctor assignment yet
-      if (doctorId) {
-        return items.filter(item => item.doctorId === doctorId);
-      }
+      // In production, you would filter by doctorId when it's provided
+      // if (doctorId) {
+      //   return items.filter(item => item.doctorId === doctorId);
+      // }
       
       return items;
     } catch (error) {
