@@ -39,7 +39,9 @@ export const useUserStore = create<IUserStore>((set, get) => ({
    * 
    * Requirements: 1.1, 2.1
    */
-  isAuthenticated: authService.isAuthenticated(),
+  get isAuthenticated() {
+    return authService.isAuthenticated();
+  },
 
   /**
    * Last date when missions were checked/completed
