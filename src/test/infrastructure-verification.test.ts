@@ -205,6 +205,7 @@ describe('Task 6: Core Infrastructure Verification', () => {
 
   describe('5. MissionStore Integration', () => {
     beforeEach(() => {
+      // Seed data must be initialized after parent beforeEach clears everything
       initializeSeedData(persistenceService);
     });
 
@@ -219,15 +220,22 @@ describe('Task 6: Core Infrastructure Verification', () => {
     });
 
     it('should complete a mission', async () => {
+      // Re-initialize to ensure fresh data
+      initializeSeedData(persistenceService);
+      
       const store = useMissionStore.getState();
       
       await store.fetchMissions('patient-1');
-      const missionId = store.missions[0].id;
+      
+      // Get the mission ID after fetching
+      const state = useMissionStore.getState();
+      expect(state.missions.length).toBeGreaterThan(0);
+      const missionId = state.missions[0].id;
       
       await store.completeMission(missionId);
       
-      const state = useMissionStore.getState();
-      const completedMission = state.missions.find(m => m.id === missionId);
+      const updatedState = useMissionStore.getState();
+      const completedMission = updatedState.missions.find(m => m.id === missionId);
       expect(completedMission?.status).toBe(MissionStatus.COMPLETED);
       
       // Verify persistence
