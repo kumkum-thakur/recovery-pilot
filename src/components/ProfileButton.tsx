@@ -1,7 +1,7 @@
 /**
  * ProfileButton - User profile button with dropdown menu
  * 
- * Requirements: 3.4, 13.2
+ * Requirements: 3.4, 13.2, 14.1
  */
 
 import { User, LogOut } from 'lucide-react';
@@ -9,11 +9,14 @@ import { useState } from 'react';
 
 interface ProfileButtonProps {
   userName: string;
+  userRole?: 'patient' | 'doctor';
   onLogout: () => void;
 }
 
-export function ProfileButton({ userName, onLogout }: ProfileButtonProps) {
+export function ProfileButton({ userName, userRole = 'patient', onLogout }: ProfileButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const roleLabel = userRole === 'doctor' ? 'Doctor' : 'Patient';
 
   return (
     <div className="relative">
@@ -41,7 +44,7 @@ export function ProfileButton({ userName, onLogout }: ProfileButtonProps) {
           <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
             <div className="p-3 border-b border-gray-100">
               <p className="text-sm font-medium text-medical-text">{userName}</p>
-              <p className="text-xs text-gray-500">Patient</p>
+              <p className="text-xs text-gray-500">{roleLabel}</p>
             </div>
             <button
               onClick={() => {
