@@ -260,7 +260,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - _Requirements: 11.2_
 
 - [-] 17. Build Doctor Dashboard core layout
-  - [~] 17.1 Create DoctorDashboard page component
+  - [-] 17.1 Create DoctorDashboard page component
     - Implement desktop-optimized layout (1024px+)
     - Add Header with NotificationBadge and ProfileButton
     - Add main content area for TriageInbox
