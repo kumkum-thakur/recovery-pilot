@@ -414,7 +414,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Test that all required dependencies are installed
     - _Requirements: Technical Constraints 1_
 
-- [~] 26. Property tests for Persistence Service
+- [x] 26. Property tests for Persistence Service
   - [x] 26.1 Write property test for JSON serialization validity
     - **Property 28: JSON Serialization Validity**
     - **Validates: Requirements 12.4**
@@ -423,7 +423,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 27: Data Persistence Round-Trip**
     - **Validates: Requirements 12.2, 12.3**
 
-- [~] 27. Tests for Authentication Service
+- [x] 27. Tests for Authentication Service
   - [x] 27.1 Write property test for authentication success and failure
     - **Property 1: Authentication Success and Failure**
     - **Validates: Requirements 1.1, 1.2, 2.1, 2.2**
@@ -434,7 +434,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Test session expiration
     - _Requirements: 1.2, 2.2_
 
-- [~] 28. Property tests for Zustand stores
+- [x] 28. Property tests for Zustand stores
   - [x] 28.1 Write property test for profile persistence round-trip
     - **Property 2: Profile Data Persistence Round-Trip**
     - **Validates: Requirements 1.3, 2.3, 12.1**
@@ -443,7 +443,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 3: Streak Persistence Round-Trip**
     - **Validates: Requirements 1.4, 10.4**
 
-- [~] 29. Tests for Mock Agent Service
+- [x] 29. Tests for Mock Agent Service
   - [x] 29.1 Write property test for triage workflow execution
     - **Property 14: Red Triage Workflow Execution**
     - **Validates: Requirements 7.1**
@@ -462,21 +462,21 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 2 TASKS - Frontend Component Testing
 
-- [~] 30. Tests for routing and navigation
+- [x] 30. Tests for routing and navigation
   - [x] 30.1 Write unit tests for routing logic
     - Test unauthenticated users redirect to /login
     - Test patients cannot access /doctor
     - Test doctors cannot access /patient
     - _Requirements: 1.1, 2.1_
 
-- [~] 31. Tests for Login page
+- [x] 31. Tests for Login page
   - [x] 31.1 Write unit tests for login form
     - Test form validation
     - Test error message display
     - Test successful login redirects
     - _Requirements: 1.2, 2.2_
 
-- [~] 32. Tests for Patient Dashboard
+- [x] 32. Tests for Patient Dashboard
   - [x] 32.1 Write property test for responsive viewport rendering
     - **Property 29: Responsive Viewport Rendering**
     - **Validates: Requirements 13.1, 13.3, 14.1**
@@ -489,7 +489,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 31: Text Readability Size**
     - **Validates: Requirements 13.4**
 
-- [~] 33. Tests for Mission Stream components
+- [x] 33. Tests for Mission Stream components
   - [x] 33.1 Write property test for mission display completeness
     - **Property 4: Mission Stream Display Completeness**
     - **Validates: Requirements 3.1, 3.2, 3.3**
@@ -507,93 +507,93 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 7: Photo Preview Display**
     - **Validates: Requirements 5.2**
   
-  - [~] 34.2 Write unit tests for photo upload edge cases
+  - [x] 34.2 Write unit tests for photo upload edge cases
     - Test unsupported file formats
     - Test file size limits
     - Test camera access denied
     - _Requirements: 5.4_
   
-  - [~] 34.3 Write property test for photo submission triggers analysis
+  - [x] 34.3 Write property test for photo submission triggers analysis
     - **Property 8: Photo Submission Triggers Analysis**
     - **Validates: Requirements 5.3**
 
 - [~] 35. Tests for Agent Status Toast
-  - [~] 35.1 Write property test for agent workflow visibility
+  - [x] 35.1 Write property test for agent workflow visibility
     - **Property 16: Agent Workflow Visibility**
     - **Validates: Requirements 7.3**
 
 - [~] 36. Tests for Triage Result Display
-  - [~] 36.1 Write property test for green result feedback
+  - [x] 36.1 Write property test for green result feedback
     - **Property 11: Green Result Feedback**
     - **Validates: Requirements 6.3**
   
-  - [~] 36.2 Write property test for red result action item creation
+  - [x] 36.2 Write property test for red result action item creation
     - **Property 12: Red Result Action Item Creation**
     - **Validates: Requirements 6.4**
   
-  - [~] 36.3 Write property test for confidence score storage
+  - [x] 36.3 Write property test for confidence score storage
     - **Property 13: Confidence Score Storage**
     - **Validates: Requirements 6.5**
 
 - [~] 37. Tests for Gamification features
-  - [~] 37.1 Write property test for streak display visibility
+  - [x] 37.1 Write property test for streak display visibility
     - **Property 25: Streak Display Visibility**
     - **Validates: Requirements 10.3**
   
-  - [~] 37.2 Write property test for streak increment
+  - [x] 37.2 Write property test for streak increment
     - **Property 23: Streak Increment on Completion**
     - **Validates: Requirements 10.1**
   
-  - [~] 37.3 Write property test for streak reset
+  - [x] 37.3 Write property test for streak reset
     - **Property 24: Streak Reset on Miss**
     - **Validates: Requirements 10.2**
   
-  - [~] 37.4 Write property test for milestone confetti trigger
+  - [x] 37.4 Write property test for milestone confetti trigger
     - **Property 26: Milestone Confetti Trigger**
     - **Validates: Requirements 11.3**
 
 - [~] 38. Tests for Doctor Dashboard
-  - [~] 38.1 Write property test for multi-column layout activation
+  - [x] 38.1 Write property test for multi-column layout activation
     - **Property 32: Multi-Column Layout Activation**
     - **Validates: Requirements 14.2**
   
-  - [~] 38.2 Write property test for keyboard navigation support
+  - [x] 38.2 Write property test for keyboard navigation support
     - **Property 33: Keyboard Navigation Support**
     - **Validates: Requirements 14.3**
 
 - [~] 39. Tests for Triage Inbox components
-  - [~] 39.1 Write property test for action item display completeness
+  - [x] 39.1 Write property test for action item display completeness
     - **Property 18: Action Item Display Completeness**
     - **Validates: Requirements 8.2, 8.3, 8.4**
   
-  - [~] 39.2 Write property test for action item review buttons
+  - [x] 39.2 Write property test for action item review buttons
     - **Property 19: Action Item Review Buttons**
     - **Validates: Requirements 9.1**
   
-  - [~] 39.3 Write property test for doctor inbox display
+  - [x] 39.3 Write property test for doctor inbox display
     - **Property 17: Doctor Inbox Display**
     - **Validates: Requirements 8.1**
 
 - [~] 40. Tests for Action Item Review functionality
-  - [~] 40.1 Write property test for approval state transition
+  - [x] 40.1 Write property test for approval state transition
     - **Property 20: Approval State Transition**
     - **Validates: Requirements 9.2**
   
-  - [~] 40.2 Write property test for rejection state transition
+  - [x] 40.2 Write property test for rejection state transition
     - **Property 21: Rejection State Transition**
     - **Validates: Requirements 9.3**
   
-  - [~] 40.3 Write property test for decision recording
+  - [x] 40.3 Write property test for decision recording
     - **Property 22: Decision Recording**
     - **Validates: Requirements 9.4**
   
-  - [ ] 40.4 Write unit tests for rejection edge cases
+  - [x] 40.4 Write unit tests for rejection edge cases
     - Test empty rejection reason is blocked
     - Test rejection modal cancel preserves pending state
     - _Requirements: 9.3_
 
 - [ ] 41. Tests for error handling
-  - [ ] 41.1 Write unit tests for all error scenarios
+  - [x] 41.1 Write unit tests for all error scenarios
     - Test each error handler displays correct message
     - Test error recovery flows
 
