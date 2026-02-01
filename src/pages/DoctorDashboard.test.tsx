@@ -185,7 +185,9 @@ describe('DoctorDashboard', () => {
     );
 
     expect(screen.getByText(/Keyboard shortcuts:/)).toBeInTheDocument();
-    expect(screen.getByText('R')).toBeInTheDocument();
+    // Use getAllByText since "R" appears in both logo and keyboard shortcut
+    const rElements = screen.getAllByText('R');
+    expect(rElements.length).toBeGreaterThan(0);
     expect(screen.getByText(/to refresh/)).toBeInTheDocument();
   });
 
