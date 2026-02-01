@@ -74,7 +74,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Create enums for mission types, action item types, statuses
   - _Requirements: 1.3, 2.3, 3.1, 7.1, 8.1_
 
-- [ ] 3. Implement Persistence Service with LocalStorage
+- [~] 3. Implement Persistence Service with LocalStorage
   - [x] 3.1 Create PersistenceService with generic CRUD operations
     - Implement get, set, update, delete methods
     - Implement domain-specific methods: getUser, saveUser, getMissions, etc.
@@ -86,14 +86,14 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Define initial missions for testing
     - _Requirements: 1.1, 2.1, 3.1_
 
-- [ ] 4. Implement Authentication Service
+- [~] 4. Implement Authentication Service
   - [x] 4.1 Create AuthService with login/logout functionality
     - Implement simple password hashing for MVP
     - Implement credential validation
     - Implement session management
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
-- [ ] 5. Implement Zustand stores
+- [~] 5. Implement Zustand stores
   - [x] 5.1 Create UserStore
     - Implement state: currentUser, isAuthenticated
     - Implement actions: login, logout, updateStreak
@@ -111,7 +111,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Implement actions: startTriageWorkflow, startRefillWorkflow, clearWorkflow
     - _Requirements: 7.1, 7.2, 7.3_
   
-  - [-] 5.4 Create ActionItemStore
+  - [~] 5.4 Create ActionItemStore
     - Implement state: actionItems, isLoading
     - Implement actions: fetchActionItems, approveItem, rejectItem
     - Integrate with PersistenceService
@@ -123,7 +123,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Test that seed data loads correctly
   - Ask user if questions arise
 
-- [ ] 7. Implement Mock Agent Service
+- [~] 7. Implement Mock Agent Service
   - [x] 7.1 Create workflow step simulator
     - Implement simulateWorkflowSteps generator function
     - Add configurable delays for each step
@@ -157,7 +157,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
 
 ### AGENT 2 TASKS - Frontend UI Components
 
-- [ ] 9. Build Login page
+- [~] 9. Build Login page
   - [x] 9.1 Create LoginPage component
     - Build form with username and password fields
     - Add role selection (patient/doctor) or auto-detect from credentials
@@ -166,7 +166,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Display authentication errors
     - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
-- [ ] 10. Build Patient Dashboard core layout
+- [~] 10. Build Patient Dashboard core layout
   - [x] 10.1 Create PatientDashboard page component
     - Implement mobile-first responsive layout
     - Add Header with StreakDisplay and ProfileButton
@@ -175,7 +175,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Ensure minimum 16px body text
     - _Requirements: 3.4, 10.3, 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 11. Build Mission Stream components
+- [~] 11. Build Mission Stream components
   - [x] 11.1 Create MissionCard component
     - Display mission title, description, status
     - Implement SmartActionButton with context-aware text
@@ -190,7 +190,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Handle loading states
     - _Requirements: 3.1_
 
-- [ ] 12. Build Photo Capture functionality
+- [~] 12. Build Photo Capture functionality
   - [x] 12.1 Create PhotoCaptureModal component
     - Implement camera access using browser File API
     - Add file upload fallback
@@ -254,7 +254,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - Auto-dismiss after 2 seconds
     - _Requirements: 11.3_
   
-  - [ ] 16.4 Add encouraging notification text
+  - [~] 16.4 Add encouraging notification text
     - Implement friendly, humorous messages for mission completion
     - Examples: "You crushed that pill schedule! 💊", "Incision looking sharp! (Not literally) ✨"
     - _Requirements: 11.2_
