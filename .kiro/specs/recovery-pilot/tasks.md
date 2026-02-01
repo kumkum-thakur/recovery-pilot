@@ -123,7 +123,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Test that seed data loads correctly
   - Ask user if questions arise
 
-- [-] 7. Implement Mock Agent Service
+- [x] 7. Implement Mock Agent Service
   - [x] 7.1 Create workflow step simulator
     - Implement simulateWorkflowSteps generator function
     - Add configurable delays for each step
