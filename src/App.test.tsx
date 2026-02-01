@@ -69,14 +69,18 @@ describe('App Routing', () => {
     });
 
     it('should redirect authenticated doctor to /doctor', () => {
+      const testUser = {
+        id: 'doctor-1',
+        name: 'Test Doctor',
+        role: UserRole.DOCTOR,
+      };
+      
       useUserStore.setState({
         isAuthenticated: true,
-        currentUser: {
-          id: 'doctor-1',
-          name: 'Test Doctor',
-          role: UserRole.DOCTOR,
-        },
+        currentUser: testUser,
       });
+      
+      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
 
       render(<App />);
       
