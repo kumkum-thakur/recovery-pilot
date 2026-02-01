@@ -74,7 +74,7 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
   - Create enums for mission types, action item types, statuses
   - _Requirements: 1.3, 2.3, 3.1, 7.1, 8.1_
 
-- [~] 3. Implement Persistence Service with LocalStorage
+- [-] 3. Implement Persistence Service with LocalStorage
   - [x] 3.1 Create PersistenceService with generic CRUD operations
     - Implement get, set, update, delete methods
     - Implement domain-specific methods: getUser, saveUser, getMissions, etc.
@@ -522,68 +522,68 @@ This implementation plan breaks down the RecoveryPilot autonomous care orchestra
     - **Property 16: Agent Workflow Visibility**
     - **Validates: Requirements 7.3**
 
-- [ ] 36. Tests for Triage Result Display
-  - [ ] 36.1 Write property test for green result feedback
+- [~] 36. Tests for Triage Result Display
+  - [~] 36.1 Write property test for green result feedback
     - **Property 11: Green Result Feedback**
     - **Validates: Requirements 6.3**
   
-  - [ ] 36.2 Write property test for red result action item creation
+  - [~] 36.2 Write property test for red result action item creation
     - **Property 12: Red Result Action Item Creation**
     - **Validates: Requirements 6.4**
   
-  - [ ] 36.3 Write property test for confidence score storage
+  - [~] 36.3 Write property test for confidence score storage
     - **Property 13: Confidence Score Storage**
     - **Validates: Requirements 6.5**
 
-- [ ] 37. Tests for Gamification features
-  - [ ] 37.1 Write property test for streak display visibility
+- [~] 37. Tests for Gamification features
+  - [~] 37.1 Write property test for streak display visibility
     - **Property 25: Streak Display Visibility**
     - **Validates: Requirements 10.3**
   
-  - [ ] 37.2 Write property test for streak increment
+  - [~] 37.2 Write property test for streak increment
     - **Property 23: Streak Increment on Completion**
     - **Validates: Requirements 10.1**
   
-  - [ ] 37.3 Write property test for streak reset
+  - [~] 37.3 Write property test for streak reset
     - **Property 24: Streak Reset on Miss**
     - **Validates: Requirements 10.2**
   
-  - [ ] 37.4 Write property test for milestone confetti trigger
+  - [~] 37.4 Write property test for milestone confetti trigger
     - **Property 26: Milestone Confetti Trigger**
     - **Validates: Requirements 11.3**
 
-- [ ] 38. Tests for Doctor Dashboard
-  - [ ] 38.1 Write property test for multi-column layout activation
+- [~] 38. Tests for Doctor Dashboard
+  - [~] 38.1 Write property test for multi-column layout activation
     - **Property 32: Multi-Column Layout Activation**
     - **Validates: Requirements 14.2**
   
-  - [ ] 38.2 Write property test for keyboard navigation support
+  - [~] 38.2 Write property test for keyboard navigation support
     - **Property 33: Keyboard Navigation Support**
     - **Validates: Requirements 14.3**
 
-- [ ] 39. Tests for Triage Inbox components
-  - [ ] 39.1 Write property test for action item display completeness
+- [~] 39. Tests for Triage Inbox components
+  - [~] 39.1 Write property test for action item display completeness
     - **Property 18: Action Item Display Completeness**
     - **Validates: Requirements 8.2, 8.3, 8.4**
   
-  - [ ] 39.2 Write property test for action item review buttons
+  - [~] 39.2 Write property test for action item review buttons
     - **Property 19: Action Item Review Buttons**
     - **Validates: Requirements 9.1**
   
-  - [ ] 39.3 Write property test for doctor inbox display
+  - [~] 39.3 Write property test for doctor inbox display
     - **Property 17: Doctor Inbox Display**
     - **Validates: Requirements 8.1**
 
-- [ ] 40. Tests for Action Item Review functionality
-  - [ ] 40.1 Write property test for approval state transition
+- [~] 40. Tests for Action Item Review functionality
+  - [~] 40.1 Write property test for approval state transition
     - **Property 20: Approval State Transition**
     - **Validates: Requirements 9.2**
   
-  - [ ] 40.2 Write property test for rejection state transition
+  - [~] 40.2 Write property test for rejection state transition
     - **Property 21: Rejection State Transition**
     - **Validates: Requirements 9.3**
   
-  - [ ] 40.3 Write property test for decision recording
+  - [~] 40.3 Write property test for decision recording
     - **Property 22: Decision Recording**
     - **Validates: Requirements 9.4**
   
