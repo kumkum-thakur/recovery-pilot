@@ -50,6 +50,13 @@ describe('ActionItemStore Debug', () => {
     
     console.log('Before fetch - localStorage:', localStorage.getItem(STORAGE_KEYS.ACTION_ITEMS));
     
+    // Check what getActionItems returns
+    const itemsFromPersistence = persistenceService.getActionItems('doctor-1');
+    console.log('Items from persistence:', itemsFromPersistence);
+    console.log('First item status:', itemsFromPersistence[0]?.status);
+    console.log('ActionItemStatus.PENDING_DOCTOR:', ActionItemStatus.PENDING_DOCTOR);
+    console.log('Status match:', itemsFromPersistence[0]?.status === ActionItemStatus.PENDING_DOCTOR);
+    
     const store = useActionItemStore.getState();
     await store.fetchActionItems('doctor-1');
     
