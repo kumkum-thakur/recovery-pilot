@@ -36,6 +36,9 @@ describe('ProtectedRoute', () => {
       currentUser: null,
       isAuthenticated: false,
     });
+    
+    // Reset authService mock
+    vi.mocked(authService.getCurrentUser).mockReturnValue(null);
   });
 
   describe('Unauthenticated Access', () => {
