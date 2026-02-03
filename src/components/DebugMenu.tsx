@@ -11,8 +11,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Settings, Check } from 'lucide-react';
-import { useConfigStore } from '../stores';
+import { Settings, Check, RotateCcw } from 'lucide-react';
+import { useConfigStore, useMissionStore, useUserStore } from '../stores';
 import { DemoScenario } from '../types';
 
 /**
@@ -26,9 +26,14 @@ import { DemoScenario } from '../types';
 export function DebugMenu() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
   
   const { config, setDemoScenario, getCurrentScenario } = useConfigStore();
+  const { missions, fetchMissions } = useMissionStore();
+  const { currentUser } = useUserStore();
   const currentScenario = getCurrentScenario();
+
+  console.log('🐛 [DebugMenu] Current scenario:', currentScenario);
 
   /**
    * Keyboard shortcut handler
@@ -53,7 +58,34 @@ export function DebugMenu() {
    */
   const handleScenarioChange = (scenario: DemoScenario) => {
     setDemoScenario(scenario);
-    console.log(`[DebugMenu] Scenario changed to: ${scenario}`);
+    console.log(`🐛 [DebugMenu] Scenario changed to: ${scenario}`);
+  };
+
+  /**
+   * Handles mission reset
+   */
+  const handleResetMissions = async () => {
+    console.log('🔄 [DebugMenu] Resetting missions...');
+    setResetMessage(null);
+    
+    try {
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      // Refetch missions to reset their state
+      await fetchMissions(currentUser.id);
+      
+      setResetMessage('✅ Missions reset successfully!');
+      console.log('✅ [DebugMenu] Missions reset');
+      
+      // Clear message after 3 seconds
+      setTimeout(() => setResetMessage(null), 3000);
+    } catch (error) {
+      console.error('❌ [DebugMenu] Error resetting missions:', error);
+      setResetMessage('❌ Failed to reset missions');
+      setTimeout(() => setResetMessage(null), 3000);
+    }
   };
 
   // Don't render if not visible
