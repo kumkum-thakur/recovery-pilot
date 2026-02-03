@@ -224,6 +224,9 @@ export function LoginPage() {
             </p>
             <div className="text-xs text-gray-600 space-y-1">
               <p className="text-center">
+                <span className="font-medium">Admin:</span> admin / admin
+              </p>
+              <p className="text-center">
                 <span className="font-medium">Patient:</span> divya / divya
               </p>
               <p className="text-center">

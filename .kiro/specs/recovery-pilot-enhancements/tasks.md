@@ -64,12 +64,12 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - _Requirements: 1.6_
 
 - [-] 3. Build Admin Dashboard UI
-  - [ ] 3.1 Create AdminDashboard component with routing
+  - [x] 3.1 Create AdminDashboard component with routing
     - Set up admin route with role-based access guard
     - Create main dashboard layout
     - _Requirements: 1.7_
   
-  - [ ] 3.2 Implement user creation forms
+  - [x] 3.2 Implement user creation forms
     - Create form for adding new doctors (username, email, specialization)
     - Create form for adding new patients (username, email, date of birth)
     - Add form validation and error display
