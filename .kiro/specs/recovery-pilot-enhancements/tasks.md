@@ -75,13 +75,13 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Add form validation and error display
     - _Requirements: 1.1, 1.2, 1.6_
   
-  - [ ] 3.3 Implement user list display
+  - [x] 3.3 Implement user list display
     - Create table/list component showing all users
     - Display user role, name, email, created date
     - Add filtering by role (Admin/Doctor/Patient)
     - _Requirements: 1.3_
   
-  - [ ] 3.4 Implement patient-doctor assignment interface
+  - [x] 3.4 Implement patient-doctor assignment interface
     - Create dropdown to select patient and doctor
     - Add "Assign" button to create relationship
     - Display current assignments in a table
