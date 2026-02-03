@@ -137,4 +137,283 @@ export function AdminDashboard() {
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Failed to assign patien
+        setError('Failed to assign patient');
+      }
+    }
+  };
+
+  const handleRemoveRelationship = (relationshipId: string) => {
+    console.log('🗑️ [AdminDashboard] Removing relationship:', relationshipId);
+    
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const relationship = relationships.find(r => r.id === relationshipId);
+      if (!relationship) {
+        throw new Error('Relationship not found');
+      }
+
+      userManagementService.removePatientFromDoctor(
+        relationship.patientId,
+        relationship.doctorId
+      );
+
+      setSuccess('Relationship removed successfully!');
+      loadData();
+      
+      console.log('✅ [AdminDashboard] Relationship removed');
+    } catch (err) {
+      console.error('❌ [AdminDashboard] Error removing relationship:', err);
+      if (err instanceof UserManagementError) {
+        setError(err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to remove relationship');
+      }
+    }
+  };
+
+  const patients = users.filter(u => u.role === UserRoleEnum.PATIENT);
+  const doctors = users.filter(u => u.role === UserRoleEnum.DOCTOR);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-medical-bg">
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <p className="text-medical-text">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-medical-bg">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-medical-text mb-2">Admin Dashboard</h1>
+          <p className="text-medical-text/70">Manage users and patient-doctor assignments</p>
+        </div>
+
+        {/* Success/Error Messages */}
+        {success && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+            {error}
+          </div>
+        )}
+
+        {/* Create User Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-medical-text flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Create New User
+            </h2>
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700"
+            >
+              {showCreateForm ? 'Cancel' : 'New User'}
+            </button>
+          </div>
+
+          {showCreateForm && (
+            <form onSubmit={handleCreateUser} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Username *
+                  </label>
+                  <input
+                    type="text"
+                    value={newUser.username || ''}
+                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Password *
+                  </label>
+                  <input
+                    type="password"
+                    value={newUser.password || ''}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={newUser.name || ''}
+                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Role *
+                  </label>
+                  <select
+                    value={newUser.role || UserRoleEnum.PATIENT}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value as UserRole })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  >
+                    <option value={UserRoleEnum.PATIENT}>Patient</option>
+                    <option value={UserRoleEnum.DOCTOR}>Doctor</option>
+                    <option value={UserRoleEnum.ADMIN}>Admin</option>
+                  </select>
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-medical-primary text-white py-3 rounded-lg hover:bg-blue-700"
+              >
+                Create User
+              </button>
+            </form>
+          )}
+        </div>
+
+        {/* Users List */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-xl font-semibold text-medical-text flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5" />
+            All Users ({users.length})
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Username</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Name</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Role</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map(user => (
+                  <tr key={user.id} className="border-b border-gray-100">
+                    <td className="py-3 px-4 text-sm text-medical-text">{user.username}</td>
+                    <td className="py-3 px-4 text-sm text-medical-text">{user.name}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        user.role === UserRoleEnum.ADMIN ? 'bg-purple-100 text-purple-800' :
+                        user.role === UserRoleEnum.DOCTOR ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-medical-text">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Patient-Doctor Assignments */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-medical-text flex items-center gap-2 mb-4">
+            <LinkIcon className="w-5 h-5" />
+            Patient-Doctor Assignments
+          </h2>
+
+          {/* Assignment Form */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="text-sm font-medium text-medical-text mb-3">Assign Patient to Doctor</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <select
+                value={selectedPatient}
+                onChange={(e) => setSelectedPatient(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Select Patient</option>
+                {patients.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              <select
+                value={selectedDoctor}
+                onChange={(e) => setSelectedDoctor(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Select Doctor</option>
+                {doctors.map(d => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+              <button
+                onClick={handleAssignPatient}
+                disabled={!selectedPatient || !selectedDoctor}
+                className="bg-medical-primary text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Assign
+              </button>
+            </div>
+          </div>
+
+          {/* Relationships Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Patient</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Doctor</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Assigned</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {relationships.map(rel => {
+                  const patient = users.find(u => u.id === rel.patientId);
+                  const doctor = users.find(u => u.id === rel.doctorId);
+                  return (
+                    <tr key={rel.id} className="border-b border-gray-100">
+                      <td className="py-3 px-4 text-sm text-medical-text">{patient?.name || 'Unknown'}</td>
+                      <td className="py-3 px-4 text-sm text-medical-text">{doctor?.name || 'Unknown'}</td>
+                      <td className="py-3 px-4 text-sm text-medical-text">
+                        {new Date(rel.assignedAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => handleRemoveRelationship(rel.id)}
+                          className="text-red-600 hover:text-red-800 flex items-center gap-1"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {relationships.length === 0 && (
+              <p className="text-center py-8 text-medical-text/70">No assignments yet</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
