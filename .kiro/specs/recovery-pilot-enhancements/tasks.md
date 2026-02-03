@@ -227,13 +227,13 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
   - Ensure all tests pass, ask the user if questions arise.
 
 - [-] 11. Implement medication inventory tracking
-  - [ ] 11.1 Create MedicationInventory data model
+  - [x] 11.1 Create MedicationInventory data model
     - Define MedicationInventory interface with tablet count and threshold
     - Create database schema or storage structure
     - Set default refill threshold to 3 days supply
     - _Requirements: 4.1, 5.1_
   
-  - [ ] 11.2 Implement MedicationTracker service
+  - [x] 11.2 Implement MedicationTracker service
     - Create recordMedicationTaken() method to decrement tablet count
     - Create getTabletCount() method
     - Create checkRefillNeeded() method

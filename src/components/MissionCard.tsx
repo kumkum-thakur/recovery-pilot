@@ -122,6 +122,21 @@ export function MissionCard({ mission, onAction }: MissionCardProps) {
         {mission.description}
       </p>
       
+      {/* Medication tablet count */}
+      {mission.type === MissionType.MEDICATION_CHECK && tabletCount !== null && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+          <Pill className="w-5 h-5 text-blue-600" />
+          <span className="text-sm font-medium text-blue-900">
+            {tabletCount} tablets remaining
+          </span>
+          {tabletCount <= 3 && (
+            <span className="ml-auto text-xs text-amber-600 font-medium">
+              ⚠️ Low supply - Refill requested
+            </span>
+          )}
+        </div>
+      )}
+      
       {/* Smart Action Button - context-aware text based on mission type */}
       {isActionable && (
         <button
