@@ -10,9 +10,11 @@
  * - 4.4: Execute corresponding mission action on button click
  */
 
-import { Camera, CheckCircle, Activity, Clock, CheckCircle2 } from 'lucide-react';
+import { Camera, CheckCircle, Activity, Clock, CheckCircle2, Pill } from 'lucide-react';
 import type { Mission } from '../types';
 import { MissionType, MissionStatus } from '../types';
+import { medicationTracker } from '../services/medicationTracker';
+import { useState, useEffect } from 'react';
 
 interface MissionCardProps {
   mission: Mission;
@@ -71,8 +73,24 @@ export function MissionCard({ mission, onAction }: MissionCardProps) {
   const statusBadge = getStatusBadge(mission.status);
   const StatusIcon = statusBadge.icon;
   
+  // State for medication count
+  const [tabletCount, setTabletCount] = useState<number | null>(null);
+  
   // Determine if the mission is actionable (not completed)
   const isActionable = mission.status !== MissionStatus.COMPLETED;
+  
+  // Load tablet count for medication missions
+  useEffect(() => {
+    if (mission.type === MissionType.MEDICATION_CHECK) {
+      try {
+        const count = medicationTracker.getTabletCount('patient-1', 'med-1');
+        setTabletCount(count);
+        console.log('💊 [MissionCard] Tablet count loaded:', count);
+      } catch (error) {
+        console.error('❌ [MissionCard] Error loading tablet count:', error);
+      }
+    }
+  }, [mission.type, mission.status]);
   
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
