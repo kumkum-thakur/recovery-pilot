@@ -478,3 +478,94 @@ export function isPatient(user: User): user is User & { streakCount: number } {
 export function isDoctor(user: User): boolean {
   return user.role === UserRole.DOCTOR;
 }
+
+
+// ============================================================================
+// Admin & Enhancement Types
+// ============================================================================
+
+/**
+ * Patient-Doctor relationship model
+ * Requirements: Enhancement - Admin dashboard, doctor patient management
+ */
+export interface PatientDoctorRelationship {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  assignedAt: string; // ISO date string
+  assignedBy: string; // Admin user ID
+  active: boolean;
+}
+
+/**
+ * Medication inventory model
+ * Requirements: Enhancement - Medication tracking
+ */
+export interface MedicationInventory {
+  id: string;
+  patientId: string;
+  medicationName: string;
+  dosage: string;
+  tabletsRemaining: number;
+  refillThreshold: number;
+  lastTaken?: string; // ISO date string
+  lastUpdated: string; // ISO date string
+}
+
+/**
+ * Refill request model
+ * Requirements: Enhancement - Auto-refill ordering
+ */
+export interface RefillRequest {
+  id: string;
+  patientId: string;
+  medicationId: string;
+  medicationName: string;
+  requestedAt: string; // ISO date string
+  completedAt?: string; // ISO date string
+  status: RefillStatus;
+  outcome?: RefillOutcome;
+  agentWorkflowId?: string;
+}
+
+/**
+ * Refill status enum
+ */
+export const RefillStatus = {
+  PENDING: 'pending',
+  INSURANCE_CHECK: 'insurance_check',
+  PHARMACY_CHECK: 'pharmacy_check',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+export type RefillStatus = typeof RefillStatus[keyof typeof RefillStatus];
+
+/**
+ * Refill outcome
+ */
+export interface RefillOutcome {
+  success: boolean;
+  message: string;
+  estimatedDelivery?: string; // ISO date string
+}
+
+/**
+ * Test scenario enum for debug menu
+ * Requirements: Enhancement - Testing scenarios
+ */
+export const TestScenario = {
+  PRODUCTION: 'production',
+  SCENARIO_HAPPY_PATH: 'happy_path',
+  SCENARIO_RISK_DETECTED: 'risk_detected',
+} as const;
+export type TestScenario = typeof TestScenario[keyof typeof TestScenario];
+
+/**
+ * Storage keys for new features
+ */
+export const ENHANCEMENT_STORAGE_KEYS = {
+  RELATIONSHIPS: 'recovery_pilot_relationships',
+  MEDICATION_INVENTORY: 'recovery_pilot_medication_inventory',
+  REFILL_REQUESTS: 'recovery_pilot_refill_requests',
+  TEST_SCENARIO: 'recovery_pilot_test_scenario',
+} as const;
