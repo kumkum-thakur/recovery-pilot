@@ -286,20 +286,20 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Create completeRefill() method
     - _Requirements: 5.2, 5.6_
   
-  - [ ] 13.2 Implement refill trigger logic
+  - [x] 13.2 Implement refill trigger logic
     - After recordMedicationTaken(), check if tablet count <= threshold
     - If threshold reached, call RefillEngine.requestRefill()
     - Check for duplicate requests within 24 hours before triggering
     - _Requirements: 5.2, 5.6_
   
-  - [ ] 13.3 Integrate with Agent Workflow
+  - [x] 13.3 Integrate with Agent Workflow
     - Invoke existing agent workflow when refill is requested
     - Pass medication and patient information to workflow
     - Ensure workflow performs insurance verification
     - Ensure workflow performs pharmacy inventory check
     - _Requirements: 5.3, 5.4, 5.5_
   
-  - [ ] 13.4 Implement refill completion and notification
+  - [x] 13.4 Implement refill completion and notification
     - Handle workflow completion callback
     - Update refill request status
     - Send notification to patient with outcome
