@@ -12,7 +12,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Create AuthToken interface with userId, role, and expiration
     - _Requirements: 6.2_
   
-  - [ ] 1.2 Implement AuthService for authentication and authorization
+  - [x] 1.2 Implement AuthService for authentication and authorization
     - Create authenticate() method for credential verification
     - Create verifyToken() method for token validation
     - Create hasPermission() method for role-based access control
@@ -31,13 +31,13 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - **Validates: Requirements 6.3, 6.4, 6.5, 6.6**
 
 - [ ] 2. Implement user management service and data models
-  - [-] 2.1 Create User and PatientDoctorRelationship data models
+  - [x] 2.1 Create User and PatientDoctorRelationship data models
     - Define User interface with id, username, role, email, etc.
     - Define PatientDoctorRelationship interface with patient/doctor IDs
     - Create database schema or storage structure
     - _Requirements: 1.4, 2.1_
   
-  - [ ] 2.2 Implement UserManagementService
+  - [x] 2.2 Implement UserManagementService
     - Create createUser() method with validation
     - Create getAllUsers() method for admin access
     - Create assignPatientToDoctor() method
