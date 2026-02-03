@@ -226,7 +226,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
 - [ ] 10. Checkpoint - Ensure testing features work
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Implement medication inventory tracking
+- [-] 11. Implement medication inventory tracking
   - [ ] 11.1 Create MedicationInventory data model
     - Define MedicationInventory interface with tablet count and threshold
     - Create database schema or storage structure
