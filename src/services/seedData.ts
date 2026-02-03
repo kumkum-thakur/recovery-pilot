@@ -9,8 +9,8 @@
  * Requirements: 1.1, 2.1, 3.1
  */
 
-import type { UserModel, MissionModel } from '../types';
-import { UserRole, MissionType, MissionStatus } from '../types';
+import type { UserModel, MissionModel, PatientDoctorRelationship } from '../types';
+import { UserRole, MissionType, MissionStatus, ENHANCEMENT_STORAGE_KEYS } from '../types';
 
 /**
  * Default users for testing
@@ -51,6 +51,20 @@ export const SEED_USERS: UserModel[] = [
     streakCount: 0, // Doctors don't use streaks, but field is required
     lastLoginDate: new Date().toISOString(),
     createdAt: new Date().toISOString(),
+  },
+];
+
+/**
+ * Default patient-doctor relationship
+ */
+export const SEED_RELATIONSHIPS: PatientDoctorRelationship[] = [
+  {
+    id: 'rel-1',
+    patientId: 'patient-1',
+    doctorId: 'doctor-1',
+    assignedAt: new Date().toISOString(),
+    assignedBy: 'admin-1',
+    active: true,
   },
 ];
 
