@@ -60,9 +60,10 @@ export type AgentStepStatus = typeof AgentStepStatus[keyof typeof AgentStepStatu
 
 /**
  * User roles in the system
- * Requirements: 1.3, 2.3
+ * Requirements: 1.3, 2.3, Enhancement: Admin role
  */
 export const UserRole = {
+  ADMIN: 'admin',
   PATIENT: 'patient',
   DOCTOR: 'doctor',
 } as const;
