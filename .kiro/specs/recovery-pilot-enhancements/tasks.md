@@ -6,7 +6,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
 
 ## Tasks
 
-- [-] 1. Set up authentication and authorization infrastructure
+- [x] 1. Set up authentication and authorization infrastructure
   - [x] 1.1 Create UserRole enum and role-based types
     - Define TypeScript enums and interfaces for Admin, Doctor, Patient roles
     - Create AuthToken interface with userId, role, and expiration
@@ -30,7 +30,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - **Property 7: Role-based feature access**
     - **Validates: Requirements 6.3, 6.4, 6.5, 6.6**
 
-- [ ] 2. Implement user management service and data models
+- [x] 2. Implement user management service and data models
   - [x] 2.1 Create User and PatientDoctorRelationship data models
     - Define User interface with id, username, role, email, etc.
     - Define PatientDoctorRelationship interface with patient/doctor IDs
