@@ -267,8 +267,8 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Test setting negative tablet count is rejected
     - _Requirements: 4.4_
 
-- [-] 12. Update medication UI to display tablet count
-  - [ ] 12.1 Modify MedicationMissionCard component
+- [x] 12. Update medication UI to display tablet count
+  - [x] 12.1 Modify MedicationMissionCard component
     - Add display of current tablet count
     - Show "X tablets remaining" text
     - Update display after medication is taken
@@ -278,8 +278,8 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - **Property 18: Tablet count display**
     - **Validates: Requirements 4.3**
 
-- [ ] 13. Implement automatic refill ordering system
-  - [ ] 13.1 Create RefillRequest data model and RefillEngine service
+- [-] 13. Implement automatic refill ordering system
+  - [x] 13.1 Create RefillRequest data model and RefillEngine service
     - Define RefillRequest and RefillOutcome interfaces
     - Create RefillEngine with requestRefill() method
     - Create hasActiveRefill() method to check for duplicates
