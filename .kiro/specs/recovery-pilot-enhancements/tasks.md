@@ -202,7 +202,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Add keyboard listener for Ctrl+Shift+D to toggle menu
     - _Requirements: 3.1, 3.3, 3.7_
   
-  - [ ] 9.2 Add scenario selection controls
+  - [x] 9.2 Add scenario selection controls
     - Create radio buttons or dropdown for scenario selection
     - Display current active scenario
     - Wire to WoundAnalysisSystem.setTestScenario()
