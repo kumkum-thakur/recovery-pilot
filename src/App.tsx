@@ -110,7 +110,9 @@ function App() {
               <RouteErrorBoundary routeName="Login">
                 {isAuthenticated ? (
                   // Redirect to appropriate dashboard if already logged in
-                  currentUser?.role === UserRole.PATIENT ? (
+                  currentUser?.role === UserRole.ADMIN ? (
+                    <Navigate to="/admin" replace />
+                  ) : currentUser?.role === UserRole.PATIENT ? (
                     <Navigate to="/patient" replace />
                   ) : (
                     <Navigate to="/doctor" replace />
@@ -120,6 +122,18 @@ function App() {
                 )}
               </RouteErrorBoundary>
             } 
+          />
+
+          {/* Admin Dashboard Route */}
+          <Route
+            path="/admin"
+            element={
+              <RouteErrorBoundary routeName="Admin Dashboard">
+                <ProtectedRoute requiredRole={UserRole.ADMIN}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              </RouteErrorBoundary>
+            }
           />
 
           {/* Patient Dashboard Route */}
@@ -151,7 +165,9 @@ function App() {
             path="/"
             element={
               isAuthenticated ? (
-                currentUser?.role === UserRole.PATIENT ? (
+                currentUser?.role === UserRole.ADMIN ? (
+                  <Navigate to="/admin" replace />
+                ) : currentUser?.role === UserRole.PATIENT ? (
                   <Navigate to="/patient" replace />
                 ) : (
                   <Navigate to="/doctor" replace />
