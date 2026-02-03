@@ -111,6 +111,8 @@ export function initializeSeedData(persistenceService: {
   saveUser: (user: UserModel) => void;
   getAllMissions: () => MissionModel[];
   saveMission: (mission: MissionModel) => void;
+  get: <T>(key: string) => T | null;
+  set: <T>(key: string, value: T) => void;
 }): void {
   // Initialize users if none exist
   const existingUsers = persistenceService.getAllUsers();
@@ -128,6 +130,15 @@ export function initializeSeedData(persistenceService: {
       persistenceService.saveMission(mission);
     });
     console.log('✅ Initialized seed missions:', SEED_MISSIONS.map(m => m.title).join(', '));
+  }
+
+  // Initialize relationships if none exist
+  const existingRelationships = persistenceService.get<PatientDoctorRelationship[]>(
+    ENHANCEMENT_STORAGE_KEYS.RELATIONSHIPS
+  );
+  if (!existingRelationships || existingRelationships.length === 0) {
+    persistenceService.set(ENHANCEMENT_STORAGE_KEYS.RELATIONSHIPS, SEED_RELATIONSHIPS);
+    console.log('✅ Initialized seed relationships');
   }
 }
 
