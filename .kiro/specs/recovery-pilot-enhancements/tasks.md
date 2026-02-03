@@ -226,7 +226,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
 - [ ] 10. Checkpoint - Ensure testing features work
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 11. Implement medication inventory tracking
+- [x] 11. Implement medication inventory tracking
   - [x] 11.1 Create MedicationInventory data model
     - Define MedicationInventory interface with tablet count and threshold
     - Create database schema or storage structure
@@ -241,7 +241,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Add validation to prevent negative tablet counts
     - _Requirements: 4.1, 4.2, 4.4, 5.1_
   
-  - [ ] 11.3 Update medication mission to track inventory
+  - [x] 11.3 Update medication mission to track inventory
     - Modify medication mission to call recordMedicationTaken() when marked complete
     - Persist tablet count updates immediately
     - _Requirements: 4.2, 4.5_
@@ -267,7 +267,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Test setting negative tablet count is rejected
     - _Requirements: 4.4_
 
-- [ ] 12. Update medication UI to display tablet count
+- [-] 12. Update medication UI to display tablet count
   - [ ] 12.1 Modify MedicationMissionCard component
     - Add display of current tablet count
     - Show "X tablets remaining" text
