@@ -196,7 +196,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Test SCENARIO_RISK_DETECTED returns exactly 85% confidence and RED
     - _Requirements: 3.2, 3.4_
 
-- [-] 9. Build Debug Menu UI
+- [x] 9. Build Debug Menu UI
   - [x] 9.1 Create DebugMenu component with keyboard shortcut
     - Create modal/overlay component for debug menu
     - Add keyboard listener for Ctrl+Shift+D to toggle menu
@@ -208,7 +208,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Wire to WoundAnalysisSystem.setTestScenario()
     - _Requirements: 3.1, 3.3_
   
-  - [ ] 9.3 Implement mission reset functionality
+  - [x] 9.3 Implement mission reset functionality
     - Add "Reset Mission" button with mission selector
     - Implement resetMission() method to restore mission to initial state
     - Update mission status to RESET and clear completion data
