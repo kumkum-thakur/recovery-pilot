@@ -11,7 +11,8 @@
  */
 
 import { Camera, CheckCircle, Activity, Clock, CheckCircle2 } from 'lucide-react';
-import { Mission, MissionType, MissionStatus } from '../types';
+import type { Mission } from '../types';
+import { MissionType, MissionStatus } from '../types';
 
 interface MissionCardProps {
   mission: Mission;

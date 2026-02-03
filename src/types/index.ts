@@ -153,6 +153,9 @@ export interface Mission {
   actionButtonText: string;
 }
 
+// Explicit re-export for module resolution
+export type { Mission as MissionInterface };
+
 /**
  * Mission model for database persistence
  * Requirements: 3.1, 12.2

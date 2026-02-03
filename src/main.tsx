@@ -4,10 +4,16 @@ import './index.css'
 import App from './App.tsx'
 import { initializeApp, InitializationError } from './services/initializeApp'
 
+console.log('🚀 Starting Recovery Pilot application...');
+console.log('📍 Location:', window.location.href);
+
 // Initialize app with error handling
 try {
+  console.log('🔧 Initializing app...');
   initializeApp();
+  console.log('✅ App initialized successfully');
 } catch (error) {
+  console.error('❌ Initialization error:', error);
   if (error instanceof InitializationError) {
     // Display user-friendly error message
     console.error('Application failed to start:', error.message);
@@ -74,11 +80,23 @@ try {
   }
   
   // Unknown error, rethrow
+  console.error('❌ Unknown initialization error:', error);
   throw error;
 }
 
-createRoot(document.getElementById('root')!).render(
+console.log('🎨 Rendering React app...');
+const rootElement = document.getElementById('root');
+console.log('📦 Root element:', rootElement);
+
+if (!rootElement) {
+  console.error('❌ Root element not found!');
+  throw new Error('Root element not found');
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
+
+console.log('✅ React app rendered');
