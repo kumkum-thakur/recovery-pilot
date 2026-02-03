@@ -23,6 +23,16 @@ import { UserRole, MissionType, MissionStatus } from '../types';
  */
 export const SEED_USERS: UserModel[] = [
   {
+    id: 'admin-1',
+    username: 'admin',
+    passwordHash: 'simple_hash_admin', // Simple hash for MVP: "simple_hash_" + password
+    name: 'System Administrator',
+    role: UserRole.ADMIN,
+    streakCount: 0,
+    lastLoginDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+  },
+  {
     id: 'patient-1',
     username: 'divya',
     passwordHash: 'simple_hash_divya', // Simple hash for MVP: "simple_hash_" + password
