@@ -63,7 +63,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Test user not found returns 404 Not Found
     - _Requirements: 1.6_
 
-- [-] 3. Build Admin Dashboard UI
+- [x] 3. Build Admin Dashboard UI
   - [x] 3.1 Create AdminDashboard component with routing
     - Set up admin route with role-based access guard
     - Create main dashboard layout
@@ -196,7 +196,7 @@ This implementation plan breaks down the RecoveryPilot enhancements into discret
     - Test SCENARIO_RISK_DETECTED returns exactly 85% confidence and RED
     - _Requirements: 3.2, 3.4_
 
-- [ ] 9. Build Debug Menu UI
+- [-] 9. Build Debug Menu UI
   - [ ] 9.1 Create DebugMenu component with keyboard shortcut
     - Create modal/overlay component for debug menu
     - Add keyboard listener for Ctrl+Shift+D to toggle menu
