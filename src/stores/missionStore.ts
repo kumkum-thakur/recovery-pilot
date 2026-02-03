@@ -12,8 +12,10 @@
 
 import { create } from 'zustand';
 import type { Mission, MissionModel, MissionStore as IMissionStore } from '../types';
-import { MissionStatus } from '../types';
+import { MissionStatus, MissionType } from '../types';
 import { persistenceService } from '../services/persistenceService';
+import { medicationTracker } from '../services/medicationTracker';
+import { refillEngine } from '../services/refillEngine';
 
 /**
  * Converts MissionModel (database format) to Mission (application format)
@@ -167,6 +169,36 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
       const missionModel = persistenceService.getMission(missionId);
       if (!missionModel) {
         throw new Error(`Mission model with ID "${missionId}" not found in persistence`);
+      }
+      
+      // Handle medication tracking if this is a medication mission
+      if (mission.type === MissionType.MEDICATION_CHECK) {
+        console.log('💊 [MissionStore] Processing medication mission');
+        
+        try {
+          // Record medication taken
+          const remaining = medicationTracker.recordMedicationTaken(
+            missionModel.patientId,
+            'med-1' // Default medication ID
+          );
+          
+          console.log('💊 [MissionStore] Tablets remaining:', remaining);
+          
+          // Check if refill needed
+          if (medicationTracker.checkRefillNeeded(missionModel.patientId, 'med-1')) {
+            console.log('🔄 [MissionStore] Triggering refill request');
+            
+            // Trigger refill request
+            await refillEngine.requestRefill(
+              missionModel.patientId,
+              'med-1',
+              'Amoxicillin 500mg'
+            );
+          }
+        } catch (medError) {
+          console.error('❌ [MissionStore] Medication tracking error:', medError);
+          // Don't fail the mission completion if medication tracking fails
+        }
       }
       
       // Update mission status in persistence
