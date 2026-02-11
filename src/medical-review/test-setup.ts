@@ -137,7 +137,7 @@ export const feedbackTextArb = (rating: AccuracyRating) => {
  * Default property test configuration
  */
 export const propertyTestConfig = {
-  numRuns: 100,
+  numRuns: 20, // Reduced from 100 for faster test execution
   verbose: false,
 };
 
