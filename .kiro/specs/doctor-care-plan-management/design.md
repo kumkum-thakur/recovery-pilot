@@ -598,3 +598,383 @@ Property 4: Recurring mission instance generation
 *For any* recurring mission with N occurrences, the system should generate exactly N mission instances with due dates matching the recurrence pattern
 **Validates: Requirements 4.4**
 
+Property 5: Medication mission generation
+*For any* medication prescription with frequency F times per day and duration D days, the system should generate exactly F × D MEDICATION_CHECK missions
+**Validates: Requirements 3.4, 11.5**
+
+Property 6: Medication mission spacing
+*For any* medication prescription with frequency F times per day, the generated missions should be spaced evenly throughout the day (24 hours / F)
+**Validates: Requirements 11.4**
+
+Property 7: Required field validation
+*For any* care plan, mission, or medication with missing required fields, the system should reject it with a validation error
+**Validates: Requirements 1.5, 2.2, 2.5, 3.1, 3.6**
+
+Property 8: Date constraint validation
+*For any* mission schedule, if the start date is in the past or the end date is before the start date, the system should reject it with a validation error
+**Validates: Requirements 4.5, 4.6**
+
+Property 9: Scheduling limit validation
+*For any* recurring mission that would generate more than 100 instances, the system should reject it with a validation error
+**Validates: Requirements 13.4**
+
+Property 10: Mission completion history preservation
+*For any* care plan with completed missions, editing the care plan should not modify or delete the completion records of those missions
+**Validates: Requirements 6.4, 14.4**
+
+Property 11: Mission cancellation without deletion
+*For any* mission that is cancelled, the mission should still exist in storage with status 'cancelled' rather than being deleted
+**Validates: Requirements 7.2, 6.5**
+
+Property 12: Mission status synchronization
+*For any* mission completed by a patient, the mission status in the care plan should be updated to 'completed'
+**Validates: Requirements 9.2**
+
+Property 13: Photo mission triage integration
+*For any* PHOTO_UPLOAD mission that is completed, the system should trigger the triage workflow
+**Validates: Requirements 9.3**
+
+Property 14: Medication mission tracker integration
+*For any* MEDICATION_CHECK mission that is completed, the system should update the medication tracker and check refill thresholds
+**Validates: Requirements 9.4**
+
+Property 15: Medication tracker registration
+*For any* medication prescription created, the system should register it with the medication tracker service with the correct refill threshold
+**Validates: Requirements 3.5, 15.1, 15.2**
+
+Property 16: Template date adjustment
+*For any* template applied with missions at day offsets, the generated care plan should have mission due dates set relative to the current date (today + offset)
+**Validates: Requirements 5.4**
+
+Property 17: Template data population
+*For any* template selected, the care plan form should be pre-populated with all missions and medications from the template
+**Validates: Requirements 5.2**
+
+Property 18: Template persistence round-trip
+*For any* valid care plan template, serializing it to JSON then deserializing should produce an equivalent template
+**Validates: Requirements 5.5**
+
+Property 19: Care plan unique identifiers
+*For any* two care plans created, they should have different unique identifiers
+**Validates: Requirements 10.3**
+
+Property 20: Archived care plan filtering
+*For any* care plan marked as archived, it should not appear in queries for active care plans but should appear in queries for archived care plans
+**Validates: Requirements 14.2, 14.3**
+
+Property 21: Patient search functionality
+*For any* search query, the returned patients should have names that contain the search query (case-insensitive)
+**Validates: Requirements 8.4**
+
+Property 22: Care plan completion percentage calculation
+*For any* care plan, the completion percentage should equal (number of completed missions / total missions) × 100
+**Validates: Requirements 12.2**
+
+Property 23: Pending action item count accuracy
+*For any* patient, the displayed pending action item count should equal the actual number of action items with status 'pending_doctor' for that patient
+**Validates: Requirements 12.4**
+
+Property 24: Mission schedule warning threshold
+*For any* day with more than 5 missions scheduled, the system should display a warning to the doctor
+**Validates: Requirements 13.1**
+
+Property 25: Mission future date limit
+*For any* mission with a due date more than 365 days in the future, the system should display a warning to the doctor
+**Validates: Requirements 13.2**
+
+Property 26: Completed mission modification restriction
+*For any* mission with status 'completed', attempting to modify its core details (title, description, type) should be rejected
+**Validates: Requirements 7.5**
+
+Property 27: Mission list update synchronization
+*For any* care plan mission that is modified, the patient's mission list should reflect the changes immediately
+**Validates: Requirements 7.4**
+
+Property 28: Refill status synchronization
+*For any* medication refill that is approved, the medication inventory in the care plan should be updated to reflect the new tablet count
+**Validates: Requirements 15.4**
+
+Property 29: Mission data structure compatibility
+*For any* mission generated from a care plan, it should be compatible with the existing MissionModel structure and processable by the mission store
+**Validates: Requirements 9.5**
+
+Property 30: Referential integrity
+*For any* care plan, all mission patient IDs should match the care plan's patient ID, and all medication care plan IDs should match the care plan's ID
+**Validates: Requirements 10.4**
+
+## Error Handling
+
+### Validation Errors
+
+The system will validate user input at multiple levels:
+
+1. **Form-level validation:**
+   - Required fields must be present
+   - Field formats must be correct (dates, numbers, etc.)
+   - Field values must be within acceptable ranges
+
+2. **Business logic validation:**
+   - Start dates cannot be in the past (with warning override option)
+   - End dates must be after start dates
+   - Recurring missions cannot generate more than 100 instances
+   - More than 5 missions per day triggers a warning
+   - Due dates more than 365 days in the future trigger a warning
+
+3. **Data integrity validation:**
+   - Patient must exist before creating care plan
+   - Care plan must exist before adding missions/medications
+   - Completed missions cannot have core details modified
+
+### Error Messages
+
+All validation errors will display user-friendly messages:
+
+```typescript
+const ERROR_MESSAGES = {
+  REQUIRED_FIELD: (field: string) => `${field} is required`,
+  INVALID_DATE: 'Please enter a valid date',
+  START_DATE_PAST: 'Start date cannot be in the past',
+  END_BEFORE_START: 'End date must be after start date',
+  TOO_MANY_INSTANCES: 'This schedule would create more than 100 missions. Please adjust the end date or recurrence.',
+  TOO_MANY_MISSIONS_PER_DAY: 'Warning: More than 5 missions scheduled for this day. Consider spreading them out.',
+  FUTURE_DATE_WARNING: 'Warning: Mission is scheduled more than 1 year in the future.',
+  PATIENT_NOT_FOUND: 'Patient not found. Please select a valid patient.',
+  CARE_PLAN_NOT_FOUND: 'Care plan not found.',
+  CANNOT_MODIFY_COMPLETED: 'Cannot modify core details of completed missions. You can add notes instead.',
+  STORAGE_ERROR: 'Failed to save data. Please try again.',
+  STORAGE_QUOTA_EXCEEDED: 'Storage limit reached. Please archive old care plans or contact support.',
+};
+```
+
+### Storage Error Handling
+
+The system will handle storage errors gracefully:
+
+1. **Quota exceeded:**
+   - Display error message suggesting archiving old care plans
+   - Prevent data loss by not clearing the form
+   - Log error for debugging
+
+2. **Serialization errors:**
+   - Display error message indicating data format issue
+   - Log detailed error for debugging
+   - Prevent partial saves
+
+3. **Network/browser errors:**
+   - Display generic error message
+   - Suggest refreshing the page
+   - Log error for debugging
+
+### Integration Error Handling
+
+When integrating with existing services:
+
+1. **Mission store errors:**
+   - If mission creation fails, roll back care plan changes
+   - Display error message to doctor
+   - Log error for debugging
+
+2. **Medication tracker errors:**
+   - If registration fails, display warning but allow care plan save
+   - Log error for debugging
+   - Allow manual retry
+
+3. **Refill engine errors:**
+   - If refill trigger fails, log error but don't block mission completion
+   - Display notification to doctor
+   - Allow manual refill request
+
+## Testing Strategy
+
+### Dual Testing Approach
+
+The testing strategy combines unit tests for specific examples and edge cases with property-based tests for universal properties:
+
+**Unit Tests:**
+- Specific examples of care plan creation
+- Edge cases (empty lists, boundary values)
+- Error conditions (missing fields, invalid dates)
+- Integration points (mission store, medication tracker)
+- UI component rendering and interactions
+
+**Property-Based Tests:**
+- Universal properties across all inputs (see Correctness Properties section)
+- Comprehensive input coverage through randomization
+- Each property test runs minimum 100 iterations
+- Tests validate correctness across wide range of scenarios
+
+### Property-Based Testing Configuration
+
+**Library:** fast-check (for TypeScript/JavaScript)
+
+**Configuration:**
+- Minimum 100 iterations per property test
+- Each test tagged with feature name and property number
+- Tag format: `Feature: doctor-care-plan-management, Property N: [property text]`
+
+**Example Property Test:**
+
+```typescript
+import fc from 'fast-check';
+
+// Feature: doctor-care-plan-management, Property 1: Care plan persistence round-trip
+test('Property 1: Care plan serialization round-trip', () => {
+  fc.assert(
+    fc.property(
+      carePlanArbitrary(), // Generator for random care plans
+      (carePlan) => {
+        const serialized = carePlanToCarePlanModel(carePlan);
+        const deserialized = carePlanModelToCarePlan(serialized);
+        expect(deserialized).toEqual(carePlan);
+      }
+    ),
+    { numRuns: 100 }
+  );
+});
+```
+
+### Unit Test Coverage
+
+Unit tests will cover:
+
+1. **CarePlanService:**
+   - Create care plan with valid input
+   - Create care plan with missing required fields (should fail)
+   - Update care plan
+   - Archive care plan
+   - Add mission to care plan
+   - Add medication to care plan
+   - Generate mission instances from schedule
+   - Generate medication missions from prescription
+   - Apply template to care plan
+   - Validate care plan (various invalid cases)
+
+2. **CarePlanStore:**
+   - Fetch care plans for doctor
+   - Fetch care plans for patient
+   - Select care plan
+   - Create care plan (success and error cases)
+   - Update care plan
+   - Archive care plan
+   - Add/update/cancel missions
+   - Add/update/cancel medications
+   - Apply template
+   - Error handling
+
+3. **UI Components:**
+   - CarePlanPanel renders correctly
+   - CarePlanForm handles input
+   - MissionScheduleEditor updates schedule
+   - MedicationForm validates input
+   - TemplateSelector displays templates
+   - CarePlanOverviewDashboard shows patient data
+
+4. **Integration:**
+   - Care plan missions appear in patient mission list
+   - Completed missions update care plan status
+   - Photo missions trigger triage workflow
+   - Medication missions update tracker
+   - Medication prescriptions register with tracker
+   - Refill approvals update care plan
+
+### Test Data Generators
+
+For property-based testing, we'll create generators for:
+
+```typescript
+// Generate random care plans
+function carePlanArbitrary(): fc.Arbitrary<CarePlan> {
+  return fc.record({
+    id: fc.uuid(),
+    patientId: fc.uuid(),
+    doctorId: fc.uuid(),
+    name: fc.string({ minLength: 1, maxLength: 100 }),
+    description: fc.string({ maxLength: 500 }),
+    createdAt: fc.date(),
+    updatedAt: fc.date(),
+    status: fc.constantFrom('active', 'archived', 'completed'),
+    missions: fc.array(carePlanMissionArbitrary(), { maxLength: 20 }),
+    medications: fc.array(medicationPrescriptionArbitrary(), { maxLength: 10 }),
+  });
+}
+
+// Generate random mission schedules
+function missionScheduleArbitrary(): fc.Arbitrary<MissionSchedule> {
+  return fc.record({
+    startDate: fc.date({ min: new Date() }), // Future dates only
+    recurrence: recurrencePatternArbitrary(),
+    endDate: fc.option(fc.date({ min: new Date() })),
+    occurrences: fc.option(fc.integer({ min: 1, max: 100 })),
+    timeOfDay: fc.option(fc.string({ pattern: /^([01]\d|2[0-3]):[0-5]\d$/ })),
+  });
+}
+
+// Generate random recurrence patterns
+function recurrencePatternArbitrary(): fc.Arbitrary<RecurrencePattern> {
+  return fc.oneof(
+    fc.record({ type: fc.constant('one-time') }),
+    fc.record({ type: fc.constant('daily') }),
+    fc.record({
+      type: fc.constant('weekly'),
+      daysOfWeek: fc.array(fc.integer({ min: 0, max: 6 }), { minLength: 1, maxLength: 7 }),
+    }),
+    fc.record({
+      type: fc.constant('custom'),
+      interval: fc.integer({ min: 1, max: 30 }),
+    })
+  );
+}
+
+// Generate random medication prescriptions
+function medicationPrescriptionArbitrary(): fc.Arbitrary<MedicationPrescription> {
+  return fc.record({
+    id: fc.uuid(),
+    carePlanId: fc.uuid(),
+    medicationName: fc.string({ minLength: 1, maxLength: 100 }),
+    dosage: fc.string({ minLength: 1, maxLength: 50 }),
+    frequency: fc.record({
+      timesPerDay: fc.integer({ min: 1, max: 4 }),
+      times: fc.option(fc.array(fc.string({ pattern: /^([01]\d|2[0-3]):[0-5]\d$/ }))),
+    }),
+    duration: fc.option(fc.integer({ min: 1, max: 365 })),
+    refillThreshold: fc.integer({ min: 1, max: 10 }),
+    instructions: fc.option(fc.string({ maxLength: 200 })),
+    startDate: fc.date({ min: new Date() }),
+    endDate: fc.option(fc.date({ min: new Date() })),
+    status: fc.constantFrom('active', 'completed', 'cancelled'),
+    createdAt: fc.date(),
+  });
+}
+```
+
+### Integration Testing
+
+Integration tests will verify:
+
+1. **End-to-end care plan creation:**
+   - Doctor creates care plan → Missions appear in patient dashboard → Patient completes mission → Status updates in care plan
+
+2. **Medication workflow:**
+   - Doctor prescribes medication → Medication missions generated → Patient completes mission → Tracker updated → Refill triggered when threshold reached
+
+3. **Photo mission workflow:**
+   - Doctor assigns photo mission → Patient uploads photo → Triage workflow triggered → Action item created for doctor
+
+4. **Template application:**
+   - Doctor selects template → Care plan pre-populated → Doctor modifies and saves → Missions generated correctly
+
+### Performance Testing
+
+While not part of automated testing, the following performance considerations should be manually verified:
+
+1. **Large care plans:**
+   - Care plans with 50+ missions should load within 2 seconds
+   - Mission generation for recurring missions should complete within 1 second
+
+2. **Dashboard performance:**
+   - Dashboard with 20+ patients should load within 3 seconds
+   - Completion percentage calculations should not block UI
+
+3. **Storage limits:**
+   - System should handle 100+ care plans without performance degradation
+   - Storage quota warnings should appear before hitting limits
