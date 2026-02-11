@@ -239,9 +239,11 @@ export const useUserStore = create<IUserStore>((set, get) => ({
   /**
    * Checks if a day was missed and resets streak if necessary
    * 
+   * DEV MODE: Uses 2-minute intervals instead of days for testing
+   * 
    * This method:
-   * 1. Compares the last mission check date with today
-   * 2. If more than 1 day has passed, resets the streak
+   * 1. Compares the last mission check date with current time
+   * 2. If more than 2 minutes have passed, resets the streak
    * 3. Should be called when the patient logs in or when missions are loaded
    * 
    * Requirements: 10.2
@@ -259,21 +261,20 @@ export const useUserStore = create<IUserStore>((set, get) => ({
       return;
     }
     
-    // Get today's date (start of day)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // DEV MODE: Use 2-minute intervals instead of days
+    const DEV_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
     
-    // Get last check date (start of day)
-    const lastCheck = new Date(lastMissionCheckDate);
-    lastCheck.setHours(0, 0, 0, 0);
+    const now = Date.now();
+    const lastCheck = new Date(lastMissionCheckDate).getTime();
     
-    // Calculate days difference
-    const daysDifference = Math.floor((today.getTime() - lastCheck.getTime()) / (1000 * 60 * 60 * 24));
+    // Calculate time difference in milliseconds
+    const timeDifference = now - lastCheck;
     
-    // If more than 1 day has passed, reset streak
-    if (daysDifference > 1) {
+    // If more than 2 minutes have passed, reset streak
+    if (timeDifference > DEV_INTERVAL_MS) {
       resetStreak();
-      console.log(`⚠️ Missed ${daysDifference - 1} day(s). Streak reset.`);
+      const minutesPassed = Math.floor(timeDifference / (60 * 1000));
+      console.log(`⚠️ Missed interval (${minutesPassed} minutes passed). Streak reset.`);
     }
   },
 

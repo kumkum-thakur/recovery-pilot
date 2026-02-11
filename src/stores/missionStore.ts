@@ -229,8 +229,9 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
    * This method:
    * 1. Filters missions to only include today's missions
    * 2. Checks if all of them are completed
+   * 3. Checks if they were completed TODAY (not on a previous day)
    * 
-   * @returns true if all daily missions are completed, false otherwise
+   * @returns true if all daily missions are completed TODAY, false otherwise
    * 
    * Requirements: 10.1
    */
@@ -253,8 +254,24 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
       return false;
     }
     
-    // Check if all today's missions are completed
-    return todaysMissions.every(mission => mission.status === MissionStatus.COMPLETED);
+    // Check if all today's missions are completed AND were completed today
+    return todaysMissions.every(mission => {
+      if (mission.status !== MissionStatus.COMPLETED) {
+        return false;
+      }
+      
+      // Get the mission model to check completion date
+      const missionModel = persistenceService.getMission(mission.id);
+      if (!missionModel || !missionModel.completedAt) {
+        return false;
+      }
+      
+      // Check if completed today
+      const completedDate = new Date(missionModel.completedAt);
+      completedDate.setHours(0, 0, 0, 0);
+      
+      return completedDate.getTime() === today.getTime();
+    });
   },
 
   /**
