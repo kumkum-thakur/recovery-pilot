@@ -46,51 +46,31 @@ export function initializeApp(): void {
       );
     }
 
-    // Step 2: Try to initialize seed data
+    // DEMO MODE: Always force-reinitialize to a fresh state on every startup.
+    // This ensures every launch of autostart.bat gives a clean-slate experience.
     try {
-      initializeSeedData(persistenceService);
-      console.log('✅ Application initialized successfully');
+      console.log('🔄 Demo mode: force-reinitializing to fresh state...');
+      reinitializeWithSeedData(persistenceService);
+      console.log('✅ Application initialized with fresh seed data');
     } catch (error) {
-      // Step 3: Handle data corruption
       if (error instanceof PersistenceError) {
-        console.error('❌ Data corruption detected:', error.message);
-        
-        // Attempt to recover by reinitializing with seed data
-        try {
-          reinitializeWithSeedData(persistenceService);
-          console.log('✅ Recovered from data corruption');
-        } catch (recoveryError) {
-          // If recovery fails, throw a fatal error
-          throw new InitializationError(
-            'Failed to recover from data corruption. Please clear your browser data and try again.',
-            recoveryError
-          );
-        }
-      } else {
-        // Unknown error, rethrow
-        throw error;
+        console.error('❌ Reinitialization failed:', error.message);
+        throw new InitializationError(
+          'Failed to initialize application data. Please clear your browser data and try again.',
+          error
+        );
       }
-    }
-
-    // Step 4: Verify storage size (warn if getting full)
-    const storageSize = persistenceService.getStorageSize();
-    const STORAGE_WARNING_THRESHOLD = 4 * 1024 * 1024; // 4MB (LocalStorage is typically 5-10MB)
-    
-    if (storageSize > STORAGE_WARNING_THRESHOLD) {
-      console.warn(
-        `⚠️ Storage is getting full (${Math.round(storageSize / 1024 / 1024)}MB used). ` +
-        'Consider clearing old data.'
-      );
+      throw error;
     }
   } catch (error) {
     // Log the error for debugging
     console.error('❌ Application initialization failed:', error);
-    
+
     // Rethrow as InitializationError if not already
     if (error instanceof InitializationError) {
       throw error;
     }
-    
+
     throw new InitializationError(
       'Application initialization failed. Please refresh the page and try again.',
       error

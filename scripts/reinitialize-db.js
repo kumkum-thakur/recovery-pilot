@@ -91,10 +91,6 @@
   console.log('');
   console.log('📋 Default Credentials:');
   console.log('');
-  console.log('👤 Admin:');
-  console.log('   Username: admin');
-  console.log('   Password: admin');
-  console.log('');
   console.log('👤 Patient:');
   console.log('   Username: divya');
   console.log('   Password: divya');
@@ -102,6 +98,10 @@
   console.log('👤 Doctor:');
   console.log('   Username: dr.smith');
   console.log('   Password: smith');
+  console.log('');
+  console.log('👤 Admin:');
+  console.log('   Username: admin');
+  console.log('   Password: admin');
   console.log('');
   console.log('🔄 Please refresh the page to apply changes');
   
