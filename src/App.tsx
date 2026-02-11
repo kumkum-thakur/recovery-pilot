@@ -96,7 +96,7 @@ function App() {
         <div>🐛 DEBUG INFO</div>
         <div>Mounted: {debugInfo.mounted ? '✅' : '❌'}</div>
         <div>Auth: {debugInfo.isAuthenticated ? '✅' : '❌'}</div>
-        <div>User: {debugInfo.currentUser?.username || 'none'}</div>
+        <div>User: {debugInfo.currentUser?.name || 'none'}</div>
         <div>Role: {debugInfo.currentUser?.role || 'none'}</div>
         <div>Path: {debugInfo.location}</div>
       </div>

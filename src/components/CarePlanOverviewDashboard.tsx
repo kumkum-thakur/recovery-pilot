@@ -104,7 +104,7 @@ export function CarePlanOverviewDashboard({
     return userManagementService.getPatientsForDoctor(doctorId);
   }, [doctorId]);
 
-  // Build per-patient summaries from care plans
+  // Build per-patient summaries from care plans (show ALL assigned patients)
   const patientSummaries = useMemo<PatientCarePlanSummary[]>(() => {
     const summaries: PatientCarePlanSummary[] = [];
 
@@ -112,8 +112,6 @@ export function CarePlanOverviewDashboard({
       const patientCarePlans = carePlans.filter(
         (cp) => cp.patientId === patient.id
       );
-
-      if (patientCarePlans.length === 0) continue;
 
       const activeCarePlanCount = patientCarePlans.filter(
         (cp) => cp.status === CarePlanStatus.ACTIVE

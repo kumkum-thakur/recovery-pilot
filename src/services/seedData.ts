@@ -9,8 +9,8 @@
  * Requirements: 1.1, 2.1, 3.1
  */
 
-import type { UserModel, MissionModel, PatientDoctorRelationship } from '../types';
-import { UserRole, MissionType, MissionStatus, ENHANCEMENT_STORAGE_KEYS } from '../types';
+import type { UserModel, MissionModel, PatientDoctorRelationship, CarePlanModel } from '../types';
+import { UserRole, MissionType, MissionStatus, ENHANCEMENT_STORAGE_KEYS, CARE_PLAN_STORAGE_KEYS } from '../types';
 
 /**
  * Default users for testing
@@ -65,6 +65,65 @@ export const SEED_RELATIONSHIPS: PatientDoctorRelationship[] = [
     assignedAt: new Date().toISOString(),
     assignedBy: 'admin-1',
     active: true,
+  },
+];
+
+/**
+ * Default care plan for demo
+ */
+export const SEED_CARE_PLANS: CarePlanModel[] = [
+  {
+    id: 'careplan-1',
+    patientId: 'patient-1',
+    doctorId: 'doctor-1',
+    name: 'Post-Surgery Recovery Plan',
+    description: 'Standard post-operative recovery plan for surgical wound monitoring and medication compliance',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'active',
+    missions: [
+      {
+        id: 'cp-mission-1',
+        carePlanId: 'careplan-1',
+        type: MissionType.PHOTO_UPLOAD,
+        title: 'Daily Wound Check',
+        description: 'Take a photo of your surgical incision for healing assessment',
+        schedule: {
+          startDate: new Date().toISOString(),
+          recurrence: { type: 'daily' },
+        },
+        status: 'active',
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: 'cp-mission-2',
+        carePlanId: 'careplan-1',
+        type: MissionType.MEDICATION_CHECK,
+        title: 'Morning Antibiotics',
+        description: 'Confirm you took your morning antibiotics',
+        schedule: {
+          startDate: new Date().toISOString(),
+          recurrence: { type: 'daily' },
+        },
+        status: 'active',
+        createdAt: new Date().toISOString(),
+      },
+    ],
+    medications: [
+      {
+        id: 'med-1',
+        carePlanId: 'careplan-1',
+        medicationName: 'Amoxicillin',
+        dosage: '500mg',
+        frequency: { timesPerDay: 3, times: ['08:00', '14:00', '20:00'] },
+        duration: 14,
+        refillThreshold: 5,
+        instructions: 'Take with food',
+        startDate: new Date().toISOString(),
+        status: 'active',
+        createdAt: new Date().toISOString(),
+      },
+    ],
   },
 ];
 
@@ -140,6 +199,15 @@ export function initializeSeedData(persistenceService: {
     persistenceService.set(ENHANCEMENT_STORAGE_KEYS.RELATIONSHIPS, SEED_RELATIONSHIPS);
     console.log('✅ Initialized seed relationships');
   }
+
+  // Initialize care plans if none exist
+  const existingCarePlans = persistenceService.get<CarePlanModel[]>(
+    CARE_PLAN_STORAGE_KEYS.CARE_PLANS
+  );
+  if (!existingCarePlans || existingCarePlans.length === 0) {
+    persistenceService.set(CARE_PLAN_STORAGE_KEYS.CARE_PLANS, SEED_CARE_PLANS);
+    console.log('✅ Initialized seed care plans');
+  }
 }
 
 /**
@@ -183,6 +251,9 @@ export function reinitializeWithSeedData(persistenceService: {
 
   // Reinitialize relationships
   persistenceService.set(ENHANCEMENT_STORAGE_KEYS.RELATIONSHIPS, SEED_RELATIONSHIPS);
+
+  // Reinitialize care plans
+  persistenceService.set(CARE_PLAN_STORAGE_KEYS.CARE_PLANS, SEED_CARE_PLANS);
 
   // Reinitialize empty action items
   persistenceService.set('recovery_pilot_action_items', []);

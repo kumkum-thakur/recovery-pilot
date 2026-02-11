@@ -44,7 +44,6 @@ import type {
   MedicationFrequency,
 } from '../types';
 import {
-  UserRole,
   CarePlanStatus,
   CarePlanMissionStatus,
   MedicationStatus,

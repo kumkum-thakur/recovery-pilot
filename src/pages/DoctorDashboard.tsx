@@ -40,8 +40,8 @@ import {
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react';
-import type { ActionItem, UserModel, ActionItemModel } from '../types';
-import { ActionItemStatus, ActionItemType, UserRole } from '../types';
+import type { ActionItem, ActionItemModel } from '../types';
+import { ActionItemStatus, ActionItemType } from '../types';
 
 // ============================================================================
 // Types
