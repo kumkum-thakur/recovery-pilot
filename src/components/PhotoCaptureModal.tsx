@@ -14,7 +14,8 @@
  * Requirements: 5.1, 5.2, 5.3, 5.4
  */
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import { Camera, Upload, X, Check } from 'lucide-react';
 
 interface PhotoCaptureModalProps {

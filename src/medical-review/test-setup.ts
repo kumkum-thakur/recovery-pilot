@@ -6,7 +6,7 @@
  */
 
 import fc from 'fast-check';
-import {
+import type {
   RiskLevel,
   AccuracyRating,
   PreliminaryReport,

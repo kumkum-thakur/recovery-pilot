@@ -5,7 +5,7 @@
  * Requirements: 1.1, 1.2, 1.4, 2.1, 2.2, 10.1, 10.2
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useUserStore } from './userStore';
 import { persistenceService } from '../services/persistenceService';
 import { authService } from '../services/authService';

@@ -124,7 +124,7 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
 
         {/* Steps list */}
         <div className="space-y-2">
-          {steps.map((step, index) => {
+          {steps.map((step, _index) => {
             const { Icon, className, animate } = getStepIcon(step.status);
             
             return (

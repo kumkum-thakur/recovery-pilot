@@ -1,6 +1,6 @@
 /**
  * Unit Tests for AIPreliminaryAnalyzer
- * 
+ *
  * Tests the AI preliminary analysis functionality including:
  * - Mock AI analysis generation
  * - Report storage and retrieval
@@ -8,9 +8,11 @@
  * - Edge cases and error handling
  */
 
+/// <reference types="node" />
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { AIPreliminaryAnalyzer, AIAnalysisError } from './AIPreliminaryAnalyzer';
-import type { PreliminaryReport, RiskLevel } from '../types';
+import type { RiskLevel } from '../types';
 
 describe('AIPreliminaryAnalyzer', () => {
   let analyzer: AIPreliminaryAnalyzer;
@@ -90,7 +92,7 @@ describe('AIPreliminaryAnalyzer', () => {
       const report = await analyzer.analyzeImage(imageId, imageData);
       
       // Each finding should be a non-empty string
-      report.findings.forEach(finding => {
+      report.findings.forEach((finding: string) => {
         expect(typeof finding).toBe('string');
         expect(finding.length).toBeGreaterThan(0);
       });
@@ -255,7 +257,7 @@ describe('AIPreliminaryAnalyzer', () => {
       for (let i = 0; i < 10; i++) {
         analyzer.clearAll();
         const report = await analyzer.analyzeImage(`test-image-${i}`, imageData);
-        report.findings.forEach(f => allFindings.add(f));
+        report.findings.forEach((f: string) => allFindings.add(f));
       }
       
       // Should have variety in findings (more than just 4 unique findings)

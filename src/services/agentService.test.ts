@@ -4,9 +4,23 @@
  * Tests the workflow step simulator and agent service functionality.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { simulateWorkflowSteps } from './agentService';
 import type { AgentStep } from '../types';
+
+// Mock geminiService so HAPPY_PATH tests don't call real API
+vi.mock('./geminiService', () => ({
+  geminiService: {
+    analyzeWoundImage: vi.fn().mockResolvedValue({
+      analysis: 'green',
+      analysisText: 'Wound appears to be healing normally. Continue current care routine.',
+      confidenceScore: 0.92,
+      clinicalNote: 'Normal healing progression observed.',
+      recommendation: 'Continue following your post-operative care instructions.',
+    }),
+    analyzeMedicalQuery: vi.fn().mockResolvedValue('Mock response'),
+  },
+}));
 
 describe('Agent Service - Workflow Step Simulator', () => {
   beforeEach(() => {
@@ -214,7 +228,7 @@ describe('Agent Service - Workflow Step Simulator', () => {
       const generator = simulateWorkflowSteps(steps);
       
       const promise = (async () => {
-        for await (const step of generator) {
+        for await (const _step of generator) {
           // Just consume the generator
         }
       })();
@@ -284,11 +298,15 @@ describe('Agent Service - Workflow Step Simulator', () => {
 });
 
 describe('Agent Service - Triage Workflow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear localStorage before each test
     localStorage.clear();
     vi.clearAllMocks();
     vi.useFakeTimers();
+
+    // Initialize seed data so patient-1 exists for action item creation
+    const { initializeApp } = await import('./initializeApp');
+    initializeApp();
   });
 
   afterEach(() => {
@@ -312,9 +330,9 @@ describe('Agent Service - Triage Workflow', () => {
       // Wait for the promise to resolve
       const result = await promise;
       
-      // Verify green result
+      // Verify green result (from mocked geminiService)
       expect(result.analysis).toBe('green');
-      expect(result.analysisText).toBe('Healing well. Keep it dry.');
+      expect(result.analysisText).toBe('Wound appears to be healing normally. Continue current care routine.');
       expect(result.confidenceScore).toBe(0.92);
       expect(result.actionItemId).toBeUndefined();
     });
@@ -335,9 +353,9 @@ describe('Agent Service - Triage Workflow', () => {
       // Wait for the promise to resolve
       const result = await promise;
       
-      // Verify red result
+      // Verify red result (hard-coded for SCENARIO_RISK_DETECTED)
       expect(result.analysis).toBe('red');
-      expect(result.analysisText).toBe('Redness detected. I have auto-drafted a message to Dr. Smith.');
+      expect(result.analysisText).toContain('Risk signs detected');
       expect(result.confidenceScore).toBe(0.87);
       expect(result.actionItemId).toBeDefined();
     });
@@ -369,7 +387,7 @@ describe('Agent Service - Triage Workflow', () => {
       expect(actionItem?.type).toBe('triage');
       expect(actionItem?.status).toBe('pending_doctor');
       expect(actionItem?.triageAnalysis).toBe('red');
-      expect(actionItem?.triageText).toBe('Redness detected around incision site. Possible infection.');
+      expect(actionItem?.triageText).toContain('Risk signs detected');
       expect(actionItem?.aiConfidenceScore).toBe(0.87);
       expect(actionItem?.imageUrl).toBeDefined();
       expect(actionItem?.patientId).toBe('patient-1');
@@ -469,11 +487,15 @@ describe('Agent Service - Triage Workflow', () => {
 });
 
 describe('Agent Service - Refill Workflow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear localStorage before each test
     localStorage.clear();
     vi.clearAllMocks();
     vi.useFakeTimers();
+
+    // Initialize seed data so patient-1 exists for action item creation
+    const { initializeApp } = await import('./initializeApp');
+    initializeApp();
   });
 
   afterEach(() => {

@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+// @ts-expect-error no types for tailwind config
 import tailwindConfig from '../../tailwind.config.js';
 import packageJson from '../../package.json';
 

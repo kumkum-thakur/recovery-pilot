@@ -24,7 +24,6 @@ import {
   CarePlanStatus,
   CarePlanMissionStatus,
   MedicationStatus,
-  RecurrenceType,
 } from '../types';
 import { persistenceService } from './persistenceService';
 import { missionGenerationService } from './missionGenerationService';

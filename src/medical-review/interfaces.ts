@@ -4,7 +4,7 @@
  * This file contains all service interfaces from the design document.
  */
 
-import {
+import type {
   StoredImage,
   ImageMetadata,
   PreliminaryReport,

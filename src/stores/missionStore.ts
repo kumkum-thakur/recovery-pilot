@@ -255,11 +255,6 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
   areAllDailyMissionsCompleted: (): boolean => {
     const { missions } = get();
     
-    // DEV MODE: Use 2-minute intervals instead of days
-    const DEV_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
-    
-    const now = Date.now();
-    
     // Get today's date (start of day) for filtering missions
     const today = new Date();
     today.setHours(0, 0, 0, 0);

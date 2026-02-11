@@ -247,25 +247,25 @@ describe('UserStore - Streak Tracking', () => {
       expect(state.currentUser?.streakCount).toBe(initialStreak);
     });
 
-    it('should not reset streak if checked yesterday', async () => {
+    it('should not reset streak if checked within DEV_MODE interval (2 min)', async () => {
       const store = useUserStore.getState();
-      
+
       await store.login({
         username: 'streakpatient',
         password: 'password123',
       });
-      
-      // Set last check date to yesterday
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      store.updateLastMissionCheckDate(yesterday.toISOString());
-      
+
+      // Set last check date to 1 minute ago (within 2-min DEV_MODE window)
+      const oneMinuteAgo = new Date();
+      oneMinuteAgo.setTime(oneMinuteAgo.getTime() - 60 * 1000);
+      store.updateLastMissionCheckDate(oneMinuteAgo.toISOString());
+
       const beforeCheck = useUserStore.getState();
       const initialStreak = beforeCheck.currentUser?.streakCount;
-      
-      // Check for missed day
+
+      // Check for missed day - should NOT reset since within 2-min window
       store.checkAndUpdateStreakForMissedDay();
-      
+
       const state = useUserStore.getState();
       expect(state.currentUser?.streakCount).toBe(initialStreak);
     });

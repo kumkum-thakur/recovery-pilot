@@ -10,7 +10,7 @@
  */
 
 import { persistenceService, PersistenceError } from './persistenceService';
-import { initializeSeedData, reinitializeWithSeedData } from './seedData';
+import { reinitializeWithSeedData } from './seedData';
 
 /**
  * Error class for initialization failures

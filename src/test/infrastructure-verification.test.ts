@@ -12,7 +12,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { persistenceService } from '../services/persistenceService';
 import { authService } from '../services/authService';
-import { initializeSeedData, SEED_USERS, SEED_MISSIONS } from '../services/seedData';
+import { initializeSeedData } from '../services/seedData';
 import { useUserStore } from '../stores/userStore';
 import { useMissionStore } from '../stores/missionStore';
 import { useAgentStore } from '../stores/agentStore';

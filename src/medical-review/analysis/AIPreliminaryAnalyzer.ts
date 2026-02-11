@@ -14,9 +14,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import type {
   AIPreliminaryAnalyzer as IAIPreliminaryAnalyzer,
+} from '../interfaces';
+import type {
   PreliminaryReport,
   RiskLevel,
-} from '../interfaces';
+} from '../types';
 
 /**
  * Storage key for preliminary reports in LocalStorage

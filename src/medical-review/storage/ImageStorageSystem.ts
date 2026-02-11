@@ -12,9 +12,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import type {
   ImageStorageSystem as IImageStorageSystem,
+} from '../interfaces';
+import type {
   StoredImage,
   ImageMetadata,
-} from '../interfaces';
+} from '../types';
 
 /**
  * Storage key for images in LocalStorage

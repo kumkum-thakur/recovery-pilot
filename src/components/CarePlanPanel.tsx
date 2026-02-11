@@ -26,7 +26,6 @@ import {
   AlertCircle,
   X,
   Camera,
-  CheckCircle,
   Loader2,
 } from 'lucide-react';
 import { CarePlanOverviewDashboard } from './CarePlanOverviewDashboard';
@@ -235,7 +234,7 @@ interface InlineCarePlanFormProps {
  */
 function InlineCarePlanForm({
   patientId,
-  doctorId,
+  doctorId: _doctorId,
   initialData,
   onSave,
   onCancel,

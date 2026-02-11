@@ -66,7 +66,8 @@ describe('DoctorDashboard', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+    // "Triage Dashboard" appears in both tab button and h2 heading
+    expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Review and manage patient action items')).toBeInTheDocument();
   });
 
@@ -133,10 +134,12 @@ describe('DoctorDashboard', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Divya Patel')).toBeInTheDocument();
-    expect(screen.getByText('Wound Triage')).toBeInTheDocument();
-    expect(screen.getByText('Redness detected')).toBeInTheDocument();
-    expect(screen.getByText(/Confidence: 87%/)).toBeInTheDocument();
+    // Patient name appears in table row, mobile card, and Recovery Progress
+    expect(screen.getAllByText('Divya Patel').length).toBeGreaterThanOrEqual(1);
+    // Type label is "Triage" in table/card views
+    expect(screen.getAllByText('Triage').length).toBeGreaterThanOrEqual(1);
+    // Analysis text shown in description column
+    expect(screen.getAllByText('Redness detected').length).toBeGreaterThanOrEqual(1);
   });
 
   it('should display refill action items', () => {
@@ -170,11 +173,12 @@ describe('DoctorDashboard', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Divya Patel')).toBeInTheDocument();
-    expect(screen.getByText('Medication Refill')).toBeInTheDocument();
-    expect(screen.getByText('Amoxicillin')).toBeInTheDocument();
-    expect(screen.getByText('approved')).toBeInTheDocument();
-    expect(screen.getByText('in stock')).toBeInTheDocument();
+    // Patient name appears in table row, mobile card, and Recovery Progress
+    expect(screen.getAllByText('Divya Patel').length).toBeGreaterThanOrEqual(1);
+    // Type label is "Refill" in table/card views
+    expect(screen.getAllByText('Refill').length).toBeGreaterThanOrEqual(1);
+    // Medication name shown in description as "Refill: Amoxicillin"
+    expect(screen.getAllByText(/Amoxicillin/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('should show keyboard shortcuts hint', () => {

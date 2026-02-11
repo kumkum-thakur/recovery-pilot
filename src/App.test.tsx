@@ -87,7 +87,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should show doctor dashboard content
-      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+      expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -145,7 +145,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+      expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
     });
   });
@@ -199,7 +199,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+      expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
     });
   });
@@ -222,7 +222,7 @@ describe('App Routing', () => {
       window.history.pushState({}, '', '/doctor');
       render(<App />);
       
-      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+      expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
 
     it('should redirect unauthenticated user to /login', () => {
@@ -307,7 +307,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
+      expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
   });
 
