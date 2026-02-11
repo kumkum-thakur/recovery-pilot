@@ -17,6 +17,8 @@ import { authService } from './services/authService';
 vi.mock('./services/authService', () => ({
   authService: {
     getCurrentUser: vi.fn(),
+    isAuthenticated: vi.fn(),
+    getSessionTimeRemaining: vi.fn(() => 30 * 60 * 1000), // 30 minutes
     login: vi.fn(),
     logout: vi.fn(),
     validateCredentials: vi.fn(),
@@ -85,8 +87,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should show doctor dashboard content
-      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
-      expect(screen.getByText(/Welcome, Test Doctor/i)).toBeInTheDocument();
+      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
     });
   });
 
@@ -144,7 +145,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
       expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
     });
   });
@@ -198,7 +199,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
       expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
     });
   });
@@ -221,8 +222,7 @@ describe('App Routing', () => {
       window.history.pushState({}, '', '/doctor');
       render(<App />);
       
-      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
-      expect(screen.getByText(/Welcome, Dr. Sarah Smith/i)).toBeInTheDocument();
+      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
     });
 
     it('should redirect unauthenticated user to /login', () => {
@@ -307,7 +307,7 @@ describe('App Routing', () => {
       render(<App />);
       
       // Should redirect to doctor dashboard
-      expect(screen.getByText('Doctor Dashboard')).toBeInTheDocument();
+      expect(screen.getByText('Triage Dashboard')).toBeInTheDocument();
     });
   });
 

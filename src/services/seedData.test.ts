@@ -11,12 +11,14 @@ import { UserRole, MissionType, MissionStatus } from '../types';
 
 describe('Seed Data', () => {
   describe('SEED_USERS', () => {
-    it('should contain exactly 2 users (1 patient, 1 doctor)', () => {
-      expect(SEED_USERS).toHaveLength(2);
+    it('should contain exactly 3 users (1 admin, 1 patient, 1 doctor)', () => {
+      expect(SEED_USERS).toHaveLength(3);
       
+      const admins = SEED_USERS.filter(u => u.role === UserRole.ADMIN);
       const patients = SEED_USERS.filter(u => u.role === UserRole.PATIENT);
       const doctors = SEED_USERS.filter(u => u.role === UserRole.DOCTOR);
       
+      expect(admins).toHaveLength(1);
       expect(patients).toHaveLength(1);
       expect(doctors).toHaveLength(1);
     });
@@ -141,6 +143,8 @@ describe('Seed Data', () => {
       saveUser: ReturnType<typeof vi.fn>;
       getAllMissions: ReturnType<typeof vi.fn>;
       saveMission: ReturnType<typeof vi.fn>;
+      get: ReturnType<typeof vi.fn>;
+      set: ReturnType<typeof vi.fn>;
     };
 
     beforeEach(() => {
@@ -149,23 +153,30 @@ describe('Seed Data', () => {
         saveUser: vi.fn(),
         getAllMissions: vi.fn(),
         saveMission: vi.fn(),
+        get: vi.fn(),
+        set: vi.fn(),
       };
     });
 
     it('should initialize users when none exist', () => {
       mockPersistenceService.getAllUsers.mockReturnValue([]);
       mockPersistenceService.getAllMissions.mockReturnValue([]);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
-      expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(2);
+      expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(3);
       expect(mockPersistenceService.saveUser).toHaveBeenCalledWith(SEED_USERS[0]);
       expect(mockPersistenceService.saveUser).toHaveBeenCalledWith(SEED_USERS[1]);
+      expect(mockPersistenceService.saveUser).toHaveBeenCalledWith(SEED_USERS[2]);
     });
 
     it('should not initialize users when they already exist', () => {
       mockPersistenceService.getAllUsers.mockReturnValue(SEED_USERS);
       mockPersistenceService.getAllMissions.mockReturnValue([]);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
@@ -175,6 +186,8 @@ describe('Seed Data', () => {
     it('should initialize missions when none exist', () => {
       mockPersistenceService.getAllUsers.mockReturnValue([]);
       mockPersistenceService.getAllMissions.mockReturnValue([]);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
@@ -186,6 +199,8 @@ describe('Seed Data', () => {
     it('should not initialize missions when they already exist', () => {
       mockPersistenceService.getAllUsers.mockReturnValue([]);
       mockPersistenceService.getAllMissions.mockReturnValue(SEED_MISSIONS);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
@@ -195,6 +210,8 @@ describe('Seed Data', () => {
     it('should handle partial initialization (users exist, missions do not)', () => {
       mockPersistenceService.getAllUsers.mockReturnValue(SEED_USERS);
       mockPersistenceService.getAllMissions.mockReturnValue([]);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
@@ -205,10 +222,12 @@ describe('Seed Data', () => {
     it('should handle partial initialization (missions exist, users do not)', () => {
       mockPersistenceService.getAllUsers.mockReturnValue([]);
       mockPersistenceService.getAllMissions.mockReturnValue(SEED_MISSIONS);
+      mockPersistenceService.get = vi.fn().mockReturnValue(null);
+      mockPersistenceService.set = vi.fn();
 
       initializeSeedData(mockPersistenceService);
 
-      expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(2);
+      expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(3);
       expect(mockPersistenceService.saveMission).not.toHaveBeenCalled();
     });
   });

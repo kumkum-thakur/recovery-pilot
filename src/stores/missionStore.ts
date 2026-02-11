@@ -261,23 +261,9 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
       return false;
     }
     
-    // Check if all today's missions are completed AND were completed within the interval
+    // Check if all today's missions are completed
     return todaysMissions.every(mission => {
-      if (mission.status !== MissionStatus.COMPLETED) {
-        return false;
-      }
-      
-      // Get the mission model to check completion date
-      const missionModel = persistenceService.getMission(mission.id);
-      if (!missionModel || !missionModel.completedAt) {
-        return false;
-      }
-      
-      // Check if completed within the last 2 minutes (dev interval)
-      const completedTime = new Date(missionModel.completedAt).getTime();
-      const timeSinceCompletion = now - completedTime;
-      
-      return timeSinceCompletion <= DEV_INTERVAL_MS;
+      return mission.status === MissionStatus.COMPLETED;
     });
   },
 

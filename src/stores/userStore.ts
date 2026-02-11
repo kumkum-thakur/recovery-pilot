@@ -239,12 +239,12 @@ export const useUserStore = create<IUserStore>((set, get) => ({
   /**
    * Checks if a day was missed and resets streak if necessary
    * 
-   * DEV MODE: Uses 2-minute intervals instead of days for testing
-   * 
    * This method:
-   * 1. Compares the last mission check date with current time
-   * 2. If more than 2 minutes have passed, resets the streak
+   * 1. Compares the last mission check date with current date
+   * 2. If more than 1 calendar day has passed (not including today or yesterday), resets the streak
    * 3. Should be called when the patient logs in or when missions are loaded
+   * 
+   * DEV MODE: For active development, streak resets every 2 minutes instead of 1 day
    * 
    * Requirements: 10.2
    */
@@ -261,20 +261,37 @@ export const useUserStore = create<IUserStore>((set, get) => ({
       return;
     }
     
-    // DEV MODE: Use 2-minute intervals instead of days
-    const DEV_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
+    // DEV MODE: Use 2 minutes instead of 1 day for testing
+    const DEV_MODE = true; // Set to false for production
+    const RESET_INTERVAL_MS = DEV_MODE ? 2 * 60 * 1000 : 24 * 60 * 60 * 1000; // 2 minutes vs 1 day
     
-    const now = Date.now();
-    const lastCheck = new Date(lastMissionCheckDate).getTime();
+    const now = new Date();
+    const lastCheck = new Date(lastMissionCheckDate);
     
-    // Calculate time difference in milliseconds
-    const timeDifference = now - lastCheck;
-    
-    // If more than 2 minutes have passed, reset streak
-    if (timeDifference > DEV_INTERVAL_MS) {
-      resetStreak();
-      const minutesPassed = Math.floor(timeDifference / (60 * 1000));
-      console.log(`⚠️ Missed interval (${minutesPassed} minutes passed). Streak reset.`);
+    if (DEV_MODE) {
+      // In dev mode, check time difference in minutes
+      const timeDifference = now.getTime() - lastCheck.getTime();
+      
+      // If more than 2 minutes have passed, reset streak
+      if (timeDifference > RESET_INTERVAL_MS) {
+        const minutesPassed = Math.floor(timeDifference / (60 * 1000));
+        resetStreak();
+        console.log(`⚠️ DEV MODE: ${minutesPassed} minutes passed. Streak reset.`);
+      }
+    } else {
+      // Production mode: use calendar days
+      now.setHours(0, 0, 0, 0); // Normalize to start of day
+      lastCheck.setHours(0, 0, 0, 0); // Normalize to start of day
+      
+      // Calculate difference in days
+      const daysDifference = Math.floor((now.getTime() - lastCheck.getTime()) / (24 * 60 * 60 * 1000));
+      
+      // If more than 1 day has passed (> 1 means at least 2 days), reset streak
+      // This allows "yesterday" (1 day ago) to be valid
+      if (daysDifference > 1) {
+        resetStreak();
+        console.log(`⚠️ Missed ${daysDifference} days. Streak reset.`);
+      }
     }
   },
 

@@ -81,11 +81,18 @@ describe('Task 6: Core Infrastructure Verification', () => {
       
       const users = persistenceService.getAllUsers();
       
-      expect(users).toHaveLength(2);
-      expect(users[0].username).toBe('divya');
-      expect(users[0].role).toBe(UserRole.PATIENT);
-      expect(users[1].username).toBe('dr.smith');
-      expect(users[1].role).toBe(UserRole.DOCTOR);
+      expect(users).toHaveLength(3);
+      expect(users.find(u => u.username === 'admin')).toBeDefined();
+      expect(users.find(u => u.username === 'divya')).toBeDefined();
+      expect(users.find(u => u.username === 'dr.smith')).toBeDefined();
+      
+      const patient = users.find(u => u.role === UserRole.PATIENT);
+      const doctor = users.find(u => u.role === UserRole.DOCTOR);
+      const admin = users.find(u => u.role === UserRole.ADMIN);
+      
+      expect(patient?.username).toBe('divya');
+      expect(doctor?.username).toBe('dr.smith');
+      expect(admin?.username).toBe('admin');
     });
 
     it('should initialize seed missions correctly', () => {
@@ -106,7 +113,7 @@ describe('Task 6: Core Infrastructure Verification', () => {
       const users = persistenceService.getAllUsers();
       const missions = persistenceService.getAllMissions();
       
-      expect(users).toHaveLength(2);
+      expect(users).toHaveLength(3);
       expect(missions).toHaveLength(2);
     });
   });

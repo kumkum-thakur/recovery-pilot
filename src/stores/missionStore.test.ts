@@ -20,6 +20,8 @@ vi.mock('../services/persistenceService', () => ({
     getMissions: vi.fn(),
     getMission: vi.fn(),
     saveMission: vi.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
   },
 }));
 
