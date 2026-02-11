@@ -324,12 +324,13 @@ export interface UserStore {
 export interface MissionStore {
   missions: Mission[];
   isLoading: boolean;
-  
+
   // Actions
   fetchMissions: (userId: string) => Promise<void>;
   completeMission: (missionId: string) => Promise<void>;
   uploadPhoto: (missionId: string, imageFile: File) => Promise<void>;
   areAllDailyMissionsCompleted: () => boolean;
+  resetMissions: () => void;
 }
 
 /**

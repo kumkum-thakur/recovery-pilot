@@ -21,7 +21,7 @@ import { Header } from '../components/Header';
 import { MissionStream } from '../components/MissionStream';
 import { AgentStatusToast } from '../components/AgentStatusToast';
 import { medicationTracker } from '../services/medicationTracker';
-import { Activity, Pill, TrendingUp, Heart, Calendar, Award, Camera, Dumbbell, Flame, CheckCircle2, Loader2 } from 'lucide-react';
+import { Activity, Pill, TrendingUp, Heart, Calendar, Award, Camera, Dumbbell, Flame, CheckCircle2, Loader2, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MissionType, MissionStatus } from '../types';
 import type { MedicationInventory, Mission } from '../types';
@@ -89,7 +89,7 @@ function formatRelativeTime(dateStr: string): string {
 export function PatientDashboard() {
   const { currentUser, logout } = useUserStore();
   const { currentWorkflow, clearWorkflow } = useAgentStore();
-  const { missions, isLoading } = useMissionStore();
+  const { missions, isLoading, resetMissions } = useMissionStore();
   const navigate = useNavigate();
 
   // Medication state
@@ -385,11 +385,22 @@ export function PatientDashboard() {
         {/* 5. Mission Stream (All Missions) */}
         {/* ============================================================ */}
         <section className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Calendar className="w-5 h-5 text-gamification-accent" />
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-              All Missions
-            </h3>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-gamification-accent" />
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                All Missions
+              </h3>
+            </div>
+            <button
+              onClick={resetMissions}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-full hover:bg-orange-100 transition-colors min-h-[32px]"
+              aria-label="Reset all missions to pending"
+              title="Reset all missions (Demo Mode)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset</span>
+            </button>
           </div>
           <MissionStream />
         </section>
