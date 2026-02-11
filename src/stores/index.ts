@@ -14,3 +14,4 @@ export { useMissionStore } from './missionStore';
 export { useAgentStore } from './agentStore';
 export { useActionItemStore } from './actionItemStore';
 export { useConfigStore } from './configStore';
+export { useCarePlanStore } from './carePlanStore';
