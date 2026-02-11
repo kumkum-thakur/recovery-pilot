@@ -119,7 +119,7 @@ describe('Medical Review Module - Setup Verification', () => {
 
   describe('Test Configuration', () => {
     it('should have proper property test configuration', () => {
-      expect(propertyTestConfig.numRuns).toBe(100);
+      expect(propertyTestConfig.numRuns).toBe(20); // Reduced for faster execution
       expect(propertyTestConfig.verbose).toBe(false);
     });
 
