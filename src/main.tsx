@@ -4,6 +4,9 @@ import './index.css'
 import App from './App.tsx'
 import { initializeApp, InitializationError } from './services/initializeApp'
 
+// Import dev utilities (makes them available in browser console)
+import './utils/resetAdminPassword'
+
 console.log('🚀 Starting Recovery Pilot application...');
 console.log('📍 Location:', window.location.href);
 
