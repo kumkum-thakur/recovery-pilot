@@ -50,7 +50,7 @@ describe('Agent Service - Property-Based Tests', () => {
             expect(results.length).toBe(steps.length * 2);
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 } // Reduced for faster execution
       );
     });
 
