@@ -16,8 +16,16 @@ import type {
   ActionItemModel,
   ConfigModel,
   PersistenceService as IPersistenceService,
+  CarePlan,
+  CarePlanModel,
+  CarePlanMission,
+  CarePlanMissionModel,
+  MedicationPrescription,
+  MedicationPrescriptionModel,
+  MissionSchedule,
+  MissionScheduleModel,
 } from '../types';
-import { STORAGE_KEYS } from '../types';
+import { STORAGE_KEYS, CARE_PLAN_STORAGE_KEYS } from '../types';
 
 /**
  * Error class for persistence-related errors

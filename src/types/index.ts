@@ -569,3 +569,300 @@ export const ENHANCEMENT_STORAGE_KEYS = {
   REFILL_REQUESTS: 'recovery_pilot_refill_requests',
   TEST_SCENARIO: 'recovery_pilot_test_scenario',
 } as const;
+
+// ============================================================================
+// Care Plan Management Types
+// ============================================================================
+
+/**
+ * Care plan status values
+ * Requirements: 1.3, 14.1, 14.2
+ */
+export const CarePlanStatus = {
+  ACTIVE: 'active',
+  ARCHIVED: 'archived',
+  COMPLETED: 'completed',
+} as const;
+export type CarePlanStatus = typeof CarePlanStatus[keyof typeof CarePlanStatus];
+
+/**
+ * Care plan mission status values
+ * Requirements: 7.2, 6.5
+ */
+export const CarePlanMissionStatus = {
+  ACTIVE: 'active',
+  CANCELLED: 'cancelled',
+} as const;
+export type CarePlanMissionStatus = typeof CarePlanMissionStatus[keyof typeof CarePlanMissionStatus];
+
+/**
+ * Medication prescription status values
+ * Requirements: 3.1, 7.2
+ */
+export const MedicationStatus = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+} as const;
+export type MedicationStatus = typeof MedicationStatus[keyof typeof MedicationStatus];
+
+/**
+ * Recurrence type for mission scheduling
+ * Requirements: 2.4, 4.2
+ */
+export const RecurrenceType = {
+  ONE_TIME: 'one-time',
+  DAILY: 'daily',
+  WEEKLY: 'weekly',
+  CUSTOM: 'custom',
+} as const;
+export type RecurrenceType = typeof RecurrenceType[keyof typeof RecurrenceType];
+
+/**
+ * Recurrence pattern for mission scheduling
+ * Requirements: 2.4, 4.2, 4.3
+ */
+export interface RecurrencePattern {
+  type: RecurrenceType;
+  interval?: number; // For custom: repeat every N days
+  daysOfWeek?: number[]; // For weekly: [0-6] where 0=Sunday
+}
+
+/**
+ * Mission schedule configuration
+ * Requirements: 4.1, 4.2, 4.3
+ */
+export interface MissionSchedule {
+  startDate: Date;
+  recurrence: RecurrencePattern;
+  endDate?: Date;
+  occurrences?: number; // Number of times to repeat (alternative to endDate)
+  timeOfDay?: string; // Specific time (HH:MM format, optional)
+}
+
+/**
+ * Mission schedule model for database persistence
+ * Requirements: 4.1, 12.2
+ */
+export interface MissionScheduleModel {
+  startDate: string; // ISO date string
+  recurrence: RecurrencePattern;
+  endDate?: string; // ISO date string
+  occurrences?: number;
+  timeOfDay?: string;
+}
+
+/**
+ * Medication frequency configuration
+ * Requirements: 3.2, 11.1, 11.2, 11.3
+ */
+export interface MedicationFrequency {
+  timesPerDay: number; // 1, 2, 3, etc.
+  times?: string[]; // Specific times (e.g., ["08:00", "20:00"])
+}
+
+/**
+ * Medication prescription
+ * Requirements: 3.1, 3.2, 3.3, 3.4
+ */
+export interface MedicationPrescription {
+  id: string;
+  carePlanId: string;
+  medicationName: string;
+  dosage: string; // e.g., "500mg"
+  frequency: MedicationFrequency;
+  duration?: number; // Duration in days (optional, ongoing if not specified)
+  refillThreshold: number; // Tablets remaining to trigger refill
+  instructions?: string;
+  startDate: Date;
+  endDate?: Date; // Calculated from duration
+  status: MedicationStatus;
+  createdAt: Date;
+}
+
+/**
+ * Medication prescription model for database persistence
+ * Requirements: 3.1, 12.2
+ */
+export interface MedicationPrescriptionModel {
+  id: string;
+  carePlanId: string;
+  medicationName: string;
+  dosage: string;
+  frequency: MedicationFrequency;
+  duration?: number;
+  refillThreshold: number;
+  instructions?: string;
+  startDate: string; // ISO date string
+  endDate?: string; // ISO date string
+  status: MedicationStatus;
+  createdAt: string; // ISO date string
+}
+
+/**
+ * Care plan mission template
+ * Requirements: 2.1, 2.2, 2.3, 2.4
+ */
+export interface CarePlanMission {
+  id: string;
+  carePlanId: string;
+  type: MissionType;
+  title: string;
+  description: string;
+  schedule: MissionSchedule;
+  status: CarePlanMissionStatus;
+  createdAt: Date;
+  metadata?: Record<string, any>; // Additional mission-specific data
+}
+
+/**
+ * Care plan mission model for database persistence
+ * Requirements: 2.1, 12.2
+ */
+export interface CarePlanMissionModel {
+  id: string;
+  carePlanId: string;
+  type: MissionType;
+  title: string;
+  description: string;
+  schedule: MissionScheduleModel;
+  status: CarePlanMissionStatus;
+  createdAt: string; // ISO date string
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Care plan
+ * Requirements: 1.2, 1.3, 1.4
+ */
+export interface CarePlan {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: CarePlanStatus;
+  missions: CarePlanMission[];
+  medications: MedicationPrescription[];
+}
+
+/**
+ * Care plan model for database persistence
+ * Requirements: 1.3, 10.1, 10.2, 10.3
+ */
+export interface CarePlanModel {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  name: string;
+  description: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  status: CarePlanStatus;
+  missions: CarePlanMissionModel[];
+  medications: MedicationPrescriptionModel[];
+}
+
+/**
+ * Template mission schedule configuration
+ * Requirements: 5.1, 5.4
+ */
+export interface TemplateMissionSchedule {
+  startDayOffset: number; // Days after plan start (0 = same day)
+  recurrence: RecurrencePattern;
+  durationDays?: number; // How many days this mission runs
+}
+
+/**
+ * Template mission
+ * Requirements: 5.1, 5.2
+ */
+export interface TemplateMission {
+  type: MissionType;
+  title: string;
+  description: string;
+  schedule: TemplateMissionSchedule;
+}
+
+/**
+ * Template medication
+ * Requirements: 5.1, 5.2
+ */
+export interface TemplateMedication {
+  medicationName: string;
+  dosage: string;
+  frequency: MedicationFrequency;
+  durationDays?: number;
+  refillThreshold: number;
+  instructions?: string;
+}
+
+/**
+ * Care plan template
+ * Requirements: 5.1, 5.2, 5.5
+ */
+export interface CarePlanTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string; // e.g., "Post-Surgery"
+  missions: TemplateMission[];
+  medications: TemplateMedication[];
+}
+
+/**
+ * Input for creating a new care plan
+ * Requirements: 1.1, 1.2
+ */
+export interface CreateCarePlanInput {
+  patientId: string;
+  doctorId: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * Input for creating a new mission
+ * Requirements: 2.1, 2.2, 2.3, 2.4
+ */
+export interface CreateMissionInput {
+  type: MissionType;
+  title: string;
+  description: string;
+  schedule: MissionSchedule;
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Input for creating a new medication prescription
+ * Requirements: 3.1, 3.2, 3.3
+ */
+export interface CreateMedicationInput {
+  medicationName: string;
+  dosage: string;
+  frequency: MedicationFrequency;
+  duration?: number;
+  refillThreshold: number;
+  instructions?: string;
+  startDate: Date;
+}
+
+/**
+ * Validation result
+ * Requirements: 1.5, 2.5, 3.6, 4.5, 4.6
+ */
+export interface ValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+/**
+ * Storage keys for care plan management
+ * Requirements: 10.1, 10.3
+ */
+export const CARE_PLAN_STORAGE_KEYS = {
+  CARE_PLANS: 'recovery_pilot_care_plans',
+  CARE_PLAN_TEMPLATES: 'recovery_pilot_care_plan_templates',
+} as const;
