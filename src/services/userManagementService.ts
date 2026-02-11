@@ -91,6 +91,47 @@ class UserManagementService {
   }
 
   /**
+   * Update an existing user
+   */
+  updateUser(userId: string, updates: Partial<UserCreationData>): UserModel {
+    console.log('✏️ [UserManagementService] Updating user:', userId, updates);
+
+    const user = this.getUserById(userId);
+    
+    if (!user) {
+      console.error('❌ [UserManagementService] User not found:', userId);
+      throw new UserManagementError('User not found', 'NOT_FOUND');
+    }
+
+    // Check for duplicate username if username is being changed
+    if (updates.username && updates.username !== user.username) {
+      const existingUsers = persistenceService.getAllUsers();
+      const duplicate = existingUsers.find(u => u.username === updates.username && u.id !== userId);
+      
+      if (duplicate) {
+        console.error('❌ [UserManagementService] Duplicate username:', updates.username);
+        throw new UserManagementError('Username already exists', 'DUPLICATE_USERNAME');
+      }
+    }
+
+    // Update user fields
+    const updatedUser: UserModel = {
+      ...user,
+      ...(updates.username && { username: updates.username }),
+      ...(updates.password && { passwordHash: updates.password }), // In production, this should be hashed
+      ...(updates.name && { name: updates.name }),
+      ...(updates.role && { role: updates.role }),
+    };
+
+    // Save updated user
+    persistenceService.saveUser(updatedUser);
+    
+    console.log('✅ [UserManagementService] User updated successfully:', updatedUser.id);
+
+    return updatedUser;
+  }
+
+  /**
    * Get all users (admin only)
    */
   getAllUsers(): UserModel[] {

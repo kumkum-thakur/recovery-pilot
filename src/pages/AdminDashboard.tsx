@@ -5,9 +5,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Users, UserPlus, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { Users, UserPlus, Link as LinkIcon, Trash2, Edit2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../stores/userStore';
-import { userManagementService, UserCreationData, UserManagementError } from '../services/userManagementService';
+import { userManagementService, UserManagementError } from '../services/userManagementService';
+import type { UserCreationData } from '../services/userManagementService';
 import type { UserModel, PatientDoctorRelationship, UserRole } from '../types';
 import { UserRole as UserRoleEnum } from '../types';
 import { Header } from '../components/Header';
@@ -15,7 +17,9 @@ import { Header } from '../components/Header';
 console.log('🎨 [AdminDashboard] Component loaded');
 
 export function AdminDashboard() {
+  const navigate = useNavigate();
   const currentUser = useUserStore(state => state.currentUser);
+  const logout = useUserStore(state => state.logout);
   
   const [users, setUsers] = useState<UserModel[]>([]);
   const [relationships, setRelationships] = useState<PatientDoctorRelationship[]>([]);
@@ -29,16 +33,26 @@ export function AdminDashboard() {
     role: UserRoleEnum.PATIENT,
   });
 
+  // User edit form state
+  const [editingUser, setEditingUser] = useState<UserModel | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<UserCreationData>>({});
+
   // Assignment form state
   const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState('');
 
-  console.log('🎨 [AdminDashboard] Rendering with user:', currentUser?.username);
+  console.log('🎨 [AdminDashboard] Rendering with user:', currentUser?.name);
 
   // Load data
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleLogout = () => {
+    console.log('🚪 [AdminDashboard] Logging out');
+    logout();
+    navigate('/login');
+  };
 
   const loadData = () => {
     console.log('📊 [AdminDashboard] Loading data...');
@@ -102,6 +116,74 @@ export function AdminDashboard() {
         setError('Failed to create user');
       }
     }
+  };
+
+  const handleEditUser = (user: UserModel) => {
+    console.log('✏️ [AdminDashboard] Editing user:', user.id);
+    setEditingUser(user);
+    setEditFormData({
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      password: '', // Don't pre-fill password
+    });
+    setShowCreateForm(false); // Close create form if open
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('💾 [AdminDashboard] Updating user:', editingUser?.id, editFormData);
+    
+    setError(null);
+    setSuccess(null);
+
+    try {
+      if (!editingUser) {
+        throw new Error('No user selected for editing');
+      }
+
+      if (!editFormData.name || !editFormData.role) {
+        throw new Error('Please fill in all required fields');
+      }
+
+      const updates: Partial<UserCreationData> = {
+        name: editFormData.name,
+        role: editFormData.role,
+      };
+
+      // Only update username if it changed
+      if (editFormData.username && editFormData.username !== editingUser.username) {
+        updates.username = editFormData.username;
+      }
+
+      // Only update password if provided
+      if (editFormData.password && editFormData.password.trim() !== '') {
+        updates.password = editFormData.password;
+      }
+
+      userManagementService.updateUser(editingUser.id, updates);
+      
+      setSuccess(`User ${editFormData.name} updated successfully!`);
+      setEditingUser(null);
+      setEditFormData({});
+      loadData();
+      
+      console.log('✅ [AdminDashboard] User updated successfully');
+    } catch (err) {
+      console.error('❌ [AdminDashboard] Error updating user:', err);
+      if (err instanceof UserManagementError) {
+        setError(err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to update user');
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUser(null);
+    setEditFormData({});
   };
 
   const handleAssignPatient = () => {
@@ -178,10 +260,23 @@ export function AdminDashboard() {
   const patients = users.filter(u => u.role === UserRoleEnum.PATIENT);
   const doctors = users.filter(u => u.role === UserRoleEnum.DOCTOR);
 
+  // Group relationships by patient
+  const groupedRelationships = relationships.reduce((acc, rel) => {
+    if (!acc[rel.patientId]) {
+      acc[rel.patientId] = [];
+    }
+    acc[rel.patientId].push(rel);
+    return acc;
+  }, {} as Record<string, PatientDoctorRelationship[]>);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-medical-bg">
-        <Header />
+        <Header 
+          userName={currentUser?.name || 'Admin'} 
+          userRole="patient"
+          onLogout={handleLogout}
+        />
         <div className="flex items-center justify-center h-64">
           <p className="text-medical-text">Loading...</p>
         </div>
@@ -191,7 +286,11 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-medical-bg">
-      <Header />
+      <Header 
+        userName={currentUser?.name || 'Admin'} 
+        userRole="patient"
+        onLogout={handleLogout}
+      />
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
@@ -219,7 +318,10 @@ export function AdminDashboard() {
               Create New User
             </h2>
             <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
+              onClick={() => {
+                setShowCreateForm(!showCreateForm);
+                setEditingUser(null); // Close edit form if open
+              }}
               className="px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700"
             >
               {showCreateForm ? 'Cancel' : 'New User'}
@@ -291,6 +393,86 @@ export function AdminDashboard() {
           )}
         </div>
 
+        {/* Edit User Section */}
+        {editingUser && (
+          <div className="bg-white rounded-lg shadow-sm border border-blue-300 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-medical-text flex items-center gap-2">
+                <Edit2 className="w-5 h-5" />
+                Edit User: {editingUser.name}
+              </h2>
+              <button
+                onClick={handleCancelEdit}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Username *
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.username || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, username: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Password (leave blank to keep current)
+                  </label>
+                  <input
+                    type="password"
+                    value={editFormData.password || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="Enter new password or leave blank"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.name || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-medical-text mb-2">
+                    Role *
+                  </label>
+                  <select
+                    value={editFormData.role || UserRoleEnum.PATIENT}
+                    onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value as UserRole })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    required
+                  >
+                    <option value={UserRoleEnum.PATIENT}>Patient</option>
+                    <option value={UserRoleEnum.DOCTOR}>Doctor</option>
+                    <option value={UserRoleEnum.ADMIN}>Admin</option>
+                  </select>
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-medical-primary text-white py-3 rounded-lg hover:bg-blue-700"
+              >
+                Update User
+              </button>
+            </form>
+          </div>
+        )}
+
         {/* Users List */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <h2 className="text-xl font-semibold text-medical-text flex items-center gap-2 mb-4">
@@ -305,6 +487,7 @@ export function AdminDashboard() {
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Name</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Role</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Created</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,6 +506,15 @@ export function AdminDashboard() {
                     </td>
                     <td className="py-3 px-4 text-sm text-medical-text">
                       {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleEditUser(user)}
+                        className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -378,37 +570,53 @@ export function AdminDashboard() {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Patient</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Doctor</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Doctors</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Assigned</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-medical-text">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {relationships.map(rel => {
-                  const patient = users.find(u => u.id === rel.patientId);
-                  const doctor = users.find(u => u.id === rel.doctorId);
+                {Object.entries(groupedRelationships).map(([patientId, patientRelationships]) => {
+                  const patient = users.find(u => u.id === patientId);
+                  const doctorNames = patientRelationships
+                    .map(rel => {
+                      const doctor = users.find(u => u.id === rel.doctorId);
+                      return doctor?.name || 'Unknown';
+                    })
+                    .join(', ');
+                  
+                  const assignedDates = patientRelationships
+                    .map(rel => new Date(rel.assignedAt).toLocaleDateString())
+                    .join(', ');
+
                   return (
-                    <tr key={rel.id} className="border-b border-gray-100">
+                    <tr key={patientId} className="border-b border-gray-100">
                       <td className="py-3 px-4 text-sm text-medical-text">{patient?.name || 'Unknown'}</td>
-                      <td className="py-3 px-4 text-sm text-medical-text">{doctor?.name || 'Unknown'}</td>
-                      <td className="py-3 px-4 text-sm text-medical-text">
-                        {new Date(rel.assignedAt).toLocaleDateString()}
-                      </td>
+                      <td className="py-3 px-4 text-sm text-medical-text">{doctorNames}</td>
+                      <td className="py-3 px-4 text-sm text-medical-text">{assignedDates}</td>
                       <td className="py-3 px-4">
-                        <button
-                          onClick={() => handleRemoveRelationship(rel.id)}
-                          className="text-red-600 hover:text-red-800 flex items-center gap-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Remove
-                        </button>
+                        <div className="flex flex-col gap-1">
+                          {patientRelationships.map(rel => {
+                            const doctor = users.find(u => u.id === rel.doctorId);
+                            return (
+                              <button
+                                key={rel.id}
+                                onClick={() => handleRemoveRelationship(rel.id)}
+                                className="text-red-600 hover:text-red-800 flex items-center gap-1 text-xs"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                Remove {doctor?.name}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-            {relationships.length === 0 && (
+            {Object.keys(groupedRelationships).length === 0 && (
               <p className="text-center py-8 text-medical-text/70">No assignments yet</p>
             )}
           </div>

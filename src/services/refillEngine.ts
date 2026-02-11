@@ -8,7 +8,7 @@
 import type { RefillRequest, RefillOutcome } from '../types';
 import { RefillStatus, ENHANCEMENT_STORAGE_KEYS } from '../types';
 import { persistenceService } from './persistenceService';
-import { agentServiceWrapper } from './agentServiceWrapper';
+import { wrappedAgentService } from './agentServiceWrapper';
 
 console.log('🔄 [RefillEngine] Module loaded');
 
@@ -68,7 +68,7 @@ class RefillEngine {
       this.updateRequestStatus(requestId, RefillStatus.INSURANCE_CHECK);
 
       // Call agent service for refill processing
-      const result = await agentServiceWrapper.processRefillRequest(medicationName);
+      const result = await wrappedAgentService.processRefillRequest(medicationName);
 
       console.log('✅ [RefillEngine] Workflow completed:', result);
 
