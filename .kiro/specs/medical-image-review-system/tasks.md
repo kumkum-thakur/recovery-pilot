@@ -26,7 +26,7 @@ The implementation follows a bottom-up approach: data layer first, then applicat
     - Implement getImagesByMission method
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
   
-  - [~] 2.2 Write property test for image storage with complete metadata
+  - [-] 2.2 Write property test for image storage with complete metadata
     - **Property 1: Image storage with complete metadata**
     - **Validates: Requirements 1.1, 1.2, 1.3, 1.4**
     - Generate random patient IDs, mission IDs, and image data
