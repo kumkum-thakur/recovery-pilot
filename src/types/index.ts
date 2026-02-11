@@ -430,6 +430,13 @@ export interface PersistenceService {
   saveMission(mission: MissionModel): void;
   getActionItems(doctorId?: string): ActionItemModel[];
   saveActionItem(item: ActionItemModel): void;
+  
+  // Care plan operations
+  getCarePlan(carePlanId: string): CarePlan | null;
+  getCarePlansForPatient(patientId: string): CarePlan[];
+  getCarePlansForDoctor(doctorId: string): CarePlan[];
+  saveCarePlan(carePlan: CarePlan): void;
+  deleteCarePlan(carePlanId: string): void;
 }
 
 // ============================================================================
