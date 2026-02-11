@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { CarePlanPanel } from '../components/CarePlanPanel';
 import { persistenceService } from '../services/persistenceService';
+import { userManagementService } from '../services/userManagementService';
 import {
   Users,
   AlertTriangle,
@@ -713,11 +714,10 @@ export function DoctorDashboard() {
   // Compute stats whenever action items or data changes
   useEffect(() => {
     try {
-      // Count patients
-      const allUsers = persistenceService.getAllUsers();
-      const patients = allUsers.filter(
-        (u: UserModel) => u.role === UserRole.PATIENT
-      );
+      // Count patients assigned to this doctor
+      const patients = currentUser?.id
+        ? userManagementService.getPatientsForDoctor(currentUser.id)
+        : [];
       setPatientCount(patients.length);
 
       // Count resolved today and critical from all action items (not just pending)

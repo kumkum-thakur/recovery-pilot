@@ -15,9 +15,9 @@
 import { useEffect, useMemo } from 'react';
 import { User, Activity, Clock, CheckCircle2, FileText, AlertTriangle } from 'lucide-react';
 import { useCarePlanStore } from '../stores/carePlanStore';
-import { persistenceService } from '../services/persistenceService';
+import { userManagementService } from '../services/userManagementService';
 import type { UserModel, CarePlan } from '../types';
-import { UserRole, CarePlanStatus, CarePlanMissionStatus } from '../types';
+import { CarePlanStatus, CarePlanMissionStatus } from '../types';
 
 interface CarePlanOverviewDashboardProps {
   doctorId: string;
@@ -99,11 +99,10 @@ export function CarePlanOverviewDashboard({
     fetchCarePlansForDoctor(doctorId);
   }, [doctorId, fetchCarePlansForDoctor]);
 
-  // Get all patients from persistence service
+  // Get patients assigned to this doctor
   const patients = useMemo<UserModel[]>(() => {
-    const allUsers = persistenceService.getAllUsers();
-    return allUsers.filter((user) => user.role === UserRole.PATIENT);
-  }, []);
+    return userManagementService.getPatientsForDoctor(doctorId);
+  }, [doctorId]);
 
   // Build per-patient summaries from care plans
   const patientSummaries = useMemo<PatientCarePlanSummary[]>(() => {

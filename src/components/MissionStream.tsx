@@ -167,7 +167,7 @@ export function MissionStream() {
       // Step 3: Perform actual AI analysis
       // Get current demo scenario to determine result
       const scenario = getCurrentScenario();
-      const result = await agentService.analyzeWoundImage(imageFile, scenario);
+      const result = await agentService.analyzeWoundImage(imageFile, scenario, currentUser?.id);
 
       // Step 4: Display triage result to user
       setTriageResult(result);

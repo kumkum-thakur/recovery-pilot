@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { CarePlanOverviewDashboard } from './CarePlanOverviewDashboard';
 import { useCarePlanStore } from '../stores/carePlanStore';
-import { persistenceService } from '../services/persistenceService';
+import { userManagementService } from '../services/userManagementService';
 import type {
   UserModel,
   CarePlan,
@@ -425,11 +425,10 @@ export function CarePlanPanel({ doctorId }: CarePlanPanelProps) {
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Get all patients for name lookup
+  // Get patients assigned to this doctor for name lookup
   const patients = useMemo<UserModel[]>(() => {
-    const allUsers = persistenceService.getAllUsers();
-    return allUsers.filter((user) => user.role === UserRole.PATIENT);
-  }, []);
+    return userManagementService.getPatientsForDoctor(doctorId);
+  }, [doctorId]);
 
   /**
    * Gets a patient's display name by ID

@@ -130,24 +130,33 @@ async function createTriageActionItem(triageData: {
   analysis: TriageAnalysis;
   analysisText: string;
   confidenceScore: number;
+  patientId: string;
 }): Promise<string> {
-  // Import persistence service dynamically to avoid circular dependencies
+  // Import services dynamically to avoid circular dependencies
   const { persistenceService } = await import('./persistenceService');
+  const { userManagementService } = await import('./userManagementService');
   const { ActionItemType, ActionItemStatus } = await import('../types');
-  
-  // Get current user to determine patient info
-  // For MVP, we'll use a hardcoded patient since we don't have context here
-  // In a real app, this would be passed as a parameter
-  const patientId = 'patient-1';
-  const patientName = 'Divya Patel';
-  
+
+  // Get patient info
+  const patient = persistenceService.getUser(triageData.patientId);
+  if (!patient) {
+    throw new Error(`Patient with ID "${triageData.patientId}" not found`);
+  }
+  const patientName = patient.name;
+
+  // Find the doctor assigned to this patient
+  const relationships = persistenceService.get('recovery_pilot_relationships') || [];
+  const activeRelationship = relationships.find(
+    (r: any) => r.patientId === triageData.patientId && r.active
+  );
+
   // Create action item model
   const actionItemId = generateId();
   const now = new Date().toISOString();
-  
+
   const actionItem: ActionItemModel = {
     id: actionItemId,
-    patientId,
+    patientId: triageData.patientId,
     patientName,
     type: ActionItemType.TRIAGE,
     status: ActionItemStatus.PENDING_DOCTOR,
@@ -157,11 +166,13 @@ async function createTriageActionItem(triageData: {
     triageAnalysis: triageData.analysis,
     triageText: triageData.analysisText,
     aiConfidenceScore: triageData.confidenceScore,
+    // Assign to doctor if relationship exists
+    doctorId: activeRelationship?.doctorId,
   };
-  
+
   // Save to persistence
   persistenceService.saveActionItem(actionItem);
-  
+
   return actionItemId;
 }
 
@@ -236,11 +247,13 @@ export function createAgentService(): AgentService {
      *
      * @param imageFile - The wound image to analyze
      * @param scenario - Demo scenario (kept for interface compatibility)
+     * @param patientId - The ID of the patient uploading the image
      * @returns Triage result with real AI analysis and confidence score
      */
     async analyzeWoundImage(
       imageFile: File,
-      scenario: DemoScenario
+      scenario: DemoScenario,
+      patientId?: string
     ): Promise<TriageResult> {
       // Define the multi-step workflow for triage analysis
       // Requirements: 7.1 - Three steps with 1s delays each
@@ -289,6 +302,7 @@ export function createAgentService(): AgentService {
           analysis: 'red' as TriageAnalysis,
           analysisText: geminiResult.clinicalNote,
           confidenceScore: geminiResult.confidenceScore,
+          patientId: patientId || 'patient-1', // Fallback to default patient for backward compatibility
         });
 
         // Return Red result with action item

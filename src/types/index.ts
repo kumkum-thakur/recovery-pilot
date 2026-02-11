@@ -404,11 +404,11 @@ export interface RefillResult {
  */
 export interface AgentService {
   // Triage workflow
-  analyzeWoundImage(imageFile: File, scenario: DemoScenario): Promise<TriageResult>;
-  
+  analyzeWoundImage(imageFile: File, scenario: DemoScenario, patientId?: string): Promise<TriageResult>;
+
   // Refill workflow
   processRefillRequest(medicationName: string, scenario: DemoScenario): Promise<RefillResult>;
-  
+
   // Workflow step simulation
   simulateWorkflowSteps(steps: AgentStep[]): AsyncGenerator<AgentStep>;
 }
