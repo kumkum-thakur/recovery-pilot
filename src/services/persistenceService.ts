@@ -545,6 +545,133 @@ class PersistenceServiceImpl implements IPersistenceService {
   }
 
   // ============================================================================
+  // Domain-Specific Methods - Care Plans
+  // ============================================================================
+
+  /**
+   * Retrieves a care plan by ID
+   * 
+   * @param carePlanId - Care plan ID to retrieve
+   * @returns Care plan or null if not found
+   * 
+   * Requirements: 10.1, 10.2
+   */
+  getCarePlan(carePlanId: string): CarePlan | null {
+    try {
+      const carePlans = this.get<CarePlanModel[]>(CARE_PLAN_STORAGE_KEYS.CARE_PLANS) || [];
+      const carePlanModel = carePlans.find(cp => cp.id === carePlanId);
+      
+      if (!carePlanModel) {
+        return null;
+      }
+      
+      return carePlanModelToCarePlan(carePlanModel);
+    } catch (error) {
+      throw new PersistenceError(
+        `Failed to retrieve care plan with ID "${carePlanId}"`,
+        error
+      );
+    }
+  }
+
+  /**
+   * Retrieves all care plans for a patient
+   * 
+   * @param patientId - Patient ID
+   * @returns Array of care plans for the patient
+   * 
+   * Requirements: 6.1, 10.2
+   */
+  getCarePlansForPatient(patientId: string): CarePlan[] {
+    try {
+      const carePlans = this.get<CarePlanModel[]>(CARE_PLAN_STORAGE_KEYS.CARE_PLANS) || [];
+      const patientCarePlans = carePlans.filter(cp => cp.patientId === patientId);
+      return patientCarePlans.map(carePlanModelToCarePlan);
+    } catch (error) {
+      throw new PersistenceError(
+        `Failed to retrieve care plans for patient "${patientId}"`,
+        error
+      );
+    }
+  }
+
+  /**
+   * Retrieves all care plans for a doctor
+   * 
+   * @param doctorId - Doctor ID
+   * @returns Array of care plans created by the doctor
+   * 
+   * Requirements: 6.1, 10.2
+   */
+  getCarePlansForDoctor(doctorId: string): CarePlan[] {
+    try {
+      const carePlans = this.get<CarePlanModel[]>(CARE_PLAN_STORAGE_KEYS.CARE_PLANS) || [];
+      const doctorCarePlans = carePlans.filter(cp => cp.doctorId === doctorId);
+      return doctorCarePlans.map(carePlanModelToCarePlan);
+    } catch (error) {
+      throw new PersistenceError(
+        `Failed to retrieve care plans for doctor "${doctorId}"`,
+        error
+      );
+    }
+  }
+
+  /**
+   * Saves or updates a care plan
+   * 
+   * If care plan with same ID exists, updates it. Otherwise, adds new care plan.
+   * 
+   * @param carePlan - Care plan to save
+   * 
+   * Requirements: 10.1, 10.2
+   */
+  saveCarePlan(carePlan: CarePlan): void {
+    try {
+      const carePlans = this.get<CarePlanModel[]>(CARE_PLAN_STORAGE_KEYS.CARE_PLANS) || [];
+      const carePlanModel = carePlanToCarePlanModel(carePlan);
+      
+      // Find existing care plan index
+      const existingIndex = carePlans.findIndex(cp => cp.id === carePlan.id);
+      
+      if (existingIndex >= 0) {
+        // Update existing care plan
+        carePlans[existingIndex] = carePlanModel;
+      } else {
+        // Add new care plan
+        carePlans.push(carePlanModel);
+      }
+      
+      // Save updated care plans array
+      this.set(CARE_PLAN_STORAGE_KEYS.CARE_PLANS, carePlans);
+    } catch (error) {
+      throw new PersistenceError(
+        `Failed to save care plan with ID "${carePlan.id}"`,
+        error
+      );
+    }
+  }
+
+  /**
+   * Deletes a care plan by ID
+   * 
+   * @param carePlanId - Care plan ID to delete
+   * 
+   * Requirements: 10.1
+   */
+  deleteCarePlan(carePlanId: string): void {
+    try {
+      const carePlans = this.get<CarePlanModel[]>(CARE_PLAN_STORAGE_KEYS.CARE_PLANS) || [];
+      const filtered = carePlans.filter(cp => cp.id !== carePlanId);
+      this.set(CARE_PLAN_STORAGE_KEYS.CARE_PLANS, filtered);
+    } catch (error) {
+      throw new PersistenceError(
+        `Failed to delete care plan with ID "${carePlanId}"`,
+        error
+      );
+    }
+  }
+
+  // ============================================================================
   // Utility Methods
   // ============================================================================
 
