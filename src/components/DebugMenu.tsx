@@ -279,6 +279,45 @@ export function DebugMenu() {
             )}
           </div>
 
+          {/* Admin Password Reset */}
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Admin Password Reset
+            </label>
+            <p className="text-xs text-slate-500 mb-3">
+              Reset admin password to: admin
+            </p>
+            <button
+              onClick={handleResetAdminPassword}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors"
+            >
+              <Key className="w-4 h-4" />
+              Reset Admin Password
+            </button>
+            {passwordResetMessage && (
+              <p className="mt-2 text-xs text-center text-slate-600">
+                {passwordResetMessage}
+              </p>
+            )}
+          </div>
+
+          {/* Clear All Data */}
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Clear All Data
+            </label>
+            <p className="text-xs text-slate-500 mb-3">
+              Reset everything to defaults (requires page reload)
+            </p>
+            <button
+              onClick={handleClearAllData}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Clear All Data
+            </button>
+          </div>
+
           {/* Current status */}
           <div className="mt-4 pt-4 border-t border-slate-200">
             <div className="text-xs text-slate-500">
