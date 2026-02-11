@@ -141,8 +141,6 @@ describe('AuthService', () => {
     });
 
     it('should update last login date on successful login', async () => {
-      const beforeLogin = new Date().toISOString();
-      
       await authService.login('divya', 'divya');
       
       const userModel = persistenceService.getUserByUsername('divya');
@@ -314,8 +312,8 @@ describe('AuthService', () => {
         .catch(e => e as AuthenticationError);
       
       // Both should have the same error message (security best practice)
-      expect(error1.message).toBe(error2.message);
-      expect(error1.message).toBe('Invalid username or password');
+      expect((error1 as AuthenticationError).message).toBe((error2 as AuthenticationError).message);
+      expect((error1 as AuthenticationError).message).toBe('Invalid username or password');
     });
 
     it('should hash passwords consistently', () => {

@@ -31,12 +31,8 @@ import {
   CheckCircle,
   X,
   Eye,
-  MessageSquare,
-  Clock,
   Search,
   RefreshCw,
-  Pill,
-  FileText,
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react';

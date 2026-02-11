@@ -10,7 +10,7 @@
  * Requirements: 12.4 - Error handling for data persistence
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   initializeApp,
   InitializationError,

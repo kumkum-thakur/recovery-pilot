@@ -164,7 +164,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(3);
       expect(mockPersistenceService.saveUser).toHaveBeenCalledWith(SEED_USERS[0]);
@@ -178,7 +178,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveUser).not.toHaveBeenCalled();
     });
@@ -189,7 +189,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveMission).toHaveBeenCalledTimes(2);
       expect(mockPersistenceService.saveMission).toHaveBeenCalledWith(SEED_MISSIONS[0]);
@@ -202,7 +202,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveMission).not.toHaveBeenCalled();
     });
@@ -213,7 +213,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveUser).not.toHaveBeenCalled();
       expect(mockPersistenceService.saveMission).toHaveBeenCalledTimes(2);
@@ -225,7 +225,7 @@ describe('Seed Data', () => {
       mockPersistenceService.get = vi.fn().mockReturnValue(null);
       mockPersistenceService.set = vi.fn();
 
-      initializeSeedData(mockPersistenceService);
+      initializeSeedData(mockPersistenceService as any);
 
       expect(mockPersistenceService.saveUser).toHaveBeenCalledTimes(3);
       expect(mockPersistenceService.saveMission).not.toHaveBeenCalled();

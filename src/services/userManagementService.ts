@@ -28,12 +28,15 @@ export interface UserCreationData {
  * Error class for user management operations
  */
 export class UserManagementError extends Error {
+  code: 'DUPLICATE_USERNAME' | 'INVALID_DATA' | 'NOT_FOUND' | 'DUPLICATE_RELATIONSHIP' | 'UNAUTHORIZED';
+
   constructor(
     message: string,
-    public code: 'DUPLICATE_USERNAME' | 'INVALID_DATA' | 'NOT_FOUND' | 'DUPLICATE_RELATIONSHIP' | 'UNAUTHORIZED'
+    code: 'DUPLICATE_USERNAME' | 'INVALID_DATA' | 'NOT_FOUND' | 'DUPLICATE_RELATIONSHIP' | 'UNAUTHORIZED'
   ) {
     super(message);
     this.name = 'UserManagementError';
+    this.code = code;
   }
 }
 

@@ -10,10 +10,11 @@
  * - 4.4: Execute corresponding mission action on button click
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MissionCard } from './MissionCard';
-import { Mission, MissionType, MissionStatus } from '../types';
+import type { Mission } from '../types';
+import { MissionType, MissionStatus } from '../types';
 
 describe('MissionCard', () => {
   const mockOnAction = vi.fn();
@@ -158,7 +159,7 @@ describe('MissionCard', () => {
   describe('Visual Styling', () => {
     it('should use medical theme colors', () => {
       const mission = createMission();
-      const { container } = render(<MissionCard mission={mission} onAction={mockOnAction} />);
+      render(<MissionCard mission={mission} onAction={mockOnAction} />);
 
       // Check for medical primary color on button
       const button = screen.getByText('Scan Incision').closest('button');
@@ -167,7 +168,7 @@ describe('MissionCard', () => {
 
     it('should use gamification colors for completed state', () => {
       const mission = createMission({ status: MissionStatus.COMPLETED });
-      const { container } = render(<MissionCard mission={mission} onAction={mockOnAction} />);
+      render(<MissionCard mission={mission} onAction={mockOnAction} />);
 
       // Check for gamification success color
       const completedMessage = screen.getByText('Mission Complete! 🎉').closest('div');

@@ -121,7 +121,7 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
    * 
    * Requirements: 7.1
    */
-  startTriageWorkflow: async (imageFile: File) => {
+  startTriageWorkflow: async (_imageFile: File) => {
     const { isProcessing, executeStepWithTimeout } = get();
     
     // Prevent concurrent workflows
@@ -197,7 +197,7 @@ export const useAgentStore = create<IAgentStore>((set, get) => ({
    * 
    * Requirements: 7.2
    */
-  startRefillWorkflow: async (medicationName: string) => {
+  startRefillWorkflow: async (_medicationName: string) => {
     const { isProcessing, executeStepWithTimeout } = get();
     
     // Prevent concurrent workflows

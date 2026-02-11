@@ -11,7 +11,7 @@
  * Requirements: 7.1, 7.2, 7.3
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { useAgentStore } from './agentStore';
 import { AgentStepStatus } from '../types';
 

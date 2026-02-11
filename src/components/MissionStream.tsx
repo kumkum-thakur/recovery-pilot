@@ -13,7 +13,7 @@ import { MissionCard } from './MissionCard';
 import { PhotoCaptureModal } from './PhotoCaptureModal';
 import { TriageResultCard } from './TriageResultCard';
 import { AgentStatusToast } from './AgentStatusToast';
-import { CelebrationOverlay } from './CelebrationOverlay';
+
 import { useMissionStore } from '../stores/missionStore';
 import { useUserStore } from '../stores/userStore';
 import { useAgentStore } from '../stores/agentStore';
@@ -47,8 +47,8 @@ export function MissionStream() {
   const [showTriageResult, setShowTriageResult] = useState(false);
   
   // State for celebration overlay
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationMessage, setCelebrationMessage] = useState<string>('');
+  const [_showCelebration, setShowCelebration] = useState(false);
+  const [_celebrationMessage, setCelebrationMessage] = useState<string>('');
   
   // State for workflow error handling
   const [workflowError, setWorkflowError] = useState<Error | null>(null);

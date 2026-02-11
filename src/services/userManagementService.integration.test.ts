@@ -22,7 +22,7 @@ describe('UserManagementService - Integration Tests', () => {
         username: 'testpatient',
         password: 'patient123',
         name: 'Test Patient',
-        role: UserRole.PATIENT as const,
+        role: UserRole.PATIENT,
         email: 'patient@test.com',
         dateOfBirth: '1990-01-01',
       };
@@ -50,7 +50,7 @@ describe('UserManagementService - Integration Tests', () => {
         username: 'testdoctor',
         password: 'doctor123',
         name: 'Dr. Test',
-        role: UserRole.DOCTOR as const,
+        role: UserRole.DOCTOR,
         email: 'doctor@test.com',
         specialization: 'Cardiology',
       };
@@ -78,7 +78,7 @@ describe('UserManagementService - Integration Tests', () => {
         username: 'testadmin',
         password: 'admin123',
         name: 'Test Admin',
-        role: UserRole.ADMIN as const,
+        role: UserRole.ADMIN,
         email: 'admin@test.com',
       };
 
@@ -105,7 +105,7 @@ describe('UserManagementService - Integration Tests', () => {
         username: 'testuser',
         password: 'correct123',
         name: 'Test User',
-        role: UserRole.PATIENT as const,
+        role: UserRole.PATIENT,
       };
 
       userManagementService.createUser(userData, 'admin');
@@ -120,7 +120,7 @@ describe('UserManagementService - Integration Tests', () => {
         username: 'updatetest',
         password: 'oldpass123',
         name: 'Update Test',
-        role: UserRole.PATIENT as const,
+        role: UserRole.PATIENT,
       };
 
       const createdUser = userManagementService.createUser(userData, 'admin');
@@ -146,9 +146,9 @@ describe('UserManagementService - Integration Tests', () => {
     it('should create multiple users and allow each to login independently', async () => {
       // Create multiple users
       const users = [
-        { username: 'patient1', password: 'pass1', name: 'Patient One', role: UserRole.PATIENT as const },
-        { username: 'patient2', password: 'pass2', name: 'Patient Two', role: UserRole.PATIENT as const },
-        { username: 'doctor1', password: 'pass3', name: 'Doctor One', role: UserRole.DOCTOR as const },
+        { username: 'patient1', password: 'pass1', name: 'Patient One', role: UserRole.PATIENT },
+        { username: 'patient2', password: 'pass2', name: 'Patient Two', role: UserRole.PATIENT },
+        { username: 'doctor1', password: 'pass3', name: 'Doctor One', role: UserRole.DOCTOR },
       ];
 
       users.forEach(userData => {

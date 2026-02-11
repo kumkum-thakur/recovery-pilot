@@ -327,7 +327,6 @@ describe('ProtectedRoute', () => {
       });
       
       vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
-      });
 
       window.history.pushState({}, '', '/');
 

@@ -194,7 +194,7 @@ describe('Agent Service - Property-Based Tests', () => {
             const generator = simulateWorkflowSteps(steps);
 
             const promise = (async () => {
-              for await (const step of generator) {
+              for await (const _step of generator) {
                 // Just consume the generator
               }
             })();

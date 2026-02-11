@@ -4,7 +4,7 @@
  * Tests the workflow step simulator and agent service functionality.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { simulateWorkflowSteps } from './agentService';
 import type { AgentStep } from '../types';
 
@@ -214,7 +214,7 @@ describe('Agent Service - Workflow Step Simulator', () => {
       const generator = simulateWorkflowSteps(steps);
       
       const promise = (async () => {
-        for await (const step of generator) {
+        for await (const _step of generator) {
           // Just consume the generator
         }
       })();

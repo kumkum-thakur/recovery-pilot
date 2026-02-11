@@ -78,13 +78,6 @@ export async function* simulateWorkflowSteps(
 // ============================================================================
 
 /**
- * Delays execution for a specified number of milliseconds
- */
-function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
  * Generates a unique ID for action items
  */
 function generateId(): string {
@@ -134,7 +127,6 @@ async function createTriageActionItem(triageData: {
 }): Promise<string> {
   // Import services dynamically to avoid circular dependencies
   const { persistenceService } = await import('./persistenceService');
-  const { userManagementService } = await import('./userManagementService');
   const { ActionItemType, ActionItemStatus } = await import('../types');
 
   // Get patient info
@@ -145,7 +137,7 @@ async function createTriageActionItem(triageData: {
   const patientName = patient.name;
 
   // Find the doctor assigned to this patient
-  const relationships = persistenceService.get('recovery_pilot_relationships') || [];
+  const relationships = persistenceService.get<any[]>('recovery_pilot_relationships') || [];
   const activeRelationship = relationships.find(
     (r: any) => r.patientId === triageData.patientId && r.active
   );
@@ -359,7 +351,7 @@ export function createAgentService(): AgentService {
      */
     async processRefillRequest(
       medicationName: string,
-      scenario: DemoScenario
+      _scenario: DemoScenario
     ): Promise<RefillResult> {
       // Define the multi-step workflow for refill processing
       // Requirements: 7.2 - Three steps: Inventory check, Insurance verification, Order placement
@@ -388,7 +380,7 @@ export function createAgentService(): AgentService {
       // This simulates the AI "working" on behalf of the patient
       // Note: The actual step updates are handled by the AgentStore
       // which calls simulateWorkflowSteps and updates UI in real-time
-      for await (const step of simulateWorkflowSteps(steps)) {
+      for await (const _step of simulateWorkflowSteps(steps)) {
         // Steps are yielded as they progress
         // The AgentStore will handle displaying these to the user
       }
