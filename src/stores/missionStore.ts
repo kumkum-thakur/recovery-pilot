@@ -226,19 +226,26 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
   /**
    * Checks if all missions for the current day are completed
    * 
+   * DEV MODE: Uses 2-minute intervals instead of days for testing
+   * 
    * This method:
    * 1. Filters missions to only include today's missions
    * 2. Checks if all of them are completed
-   * 3. Checks if they were completed TODAY (not on a previous day)
+   * 3. Checks if they were completed within the last 2 minutes
    * 
-   * @returns true if all daily missions are completed TODAY, false otherwise
+   * @returns true if all daily missions are completed within the interval, false otherwise
    * 
    * Requirements: 10.1
    */
   areAllDailyMissionsCompleted: (): boolean => {
     const { missions } = get();
     
-    // Get today's date (start of day)
+    // DEV MODE: Use 2-minute intervals instead of days
+    const DEV_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
+    
+    const now = Date.now();
+    
+    // Get today's date (start of day) for filtering missions
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -254,7 +261,7 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
       return false;
     }
     
-    // Check if all today's missions are completed AND were completed today
+    // Check if all today's missions are completed AND were completed within the interval
     return todaysMissions.every(mission => {
       if (mission.status !== MissionStatus.COMPLETED) {
         return false;
@@ -266,11 +273,11 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
         return false;
       }
       
-      // Check if completed today
-      const completedDate = new Date(missionModel.completedAt);
-      completedDate.setHours(0, 0, 0, 0);
+      // Check if completed within the last 2 minutes (dev interval)
+      const completedTime = new Date(missionModel.completedAt).getTime();
+      const timeSinceCompletion = now - completedTime;
       
-      return completedDate.getTime() === today.getTime();
+      return timeSinceCompletion <= DEV_INTERVAL_MS;
     });
   },
 
