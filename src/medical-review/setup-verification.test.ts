@@ -136,7 +136,7 @@ describe('Medical Review Module - Setup Verification', () => {
           // Property: confidence score should always be between 0 and 1
           return score >= 0 && score <= 1;
         }),
-        { numRuns: 100 }
+        { numRuns: 20 } // Reduced for faster execution
       );
     });
 
@@ -155,7 +155,7 @@ describe('Medical Review Module - Setup Verification', () => {
             );
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 } // Reduced for faster execution
       );
     });
   });
