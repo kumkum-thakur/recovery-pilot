@@ -58,7 +58,7 @@ PUBLIC_IP=$(curl -s --connect-timeout 5 http://metadata.google.internal/computeM
 log "Detected public IP: ${PUBLIC_IP}"
 
 # ── Step 1: System Update ──────────────────────────────────────────────────
-step "Step 1/8 — Updating system packages"
+step "Step 1/9 — Updating system packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get upgrade -y -qq
@@ -69,7 +69,7 @@ apt-get install -y -qq \
 log "System packages updated"
 
 # ── Step 2: Swap (small GCP instances often need it) ───────────────────────
-step "Step 2/8 — Configuring swap space"
+step "Step 2/9 — Configuring swap space"
 if [ ! -f /swapfile ]; then
     fallocate -l ${SWAP_SIZE} /swapfile
     chmod 600 /swapfile
@@ -82,7 +82,7 @@ else
 fi
 
 # ── Step 3: Node.js ────────────────────────────────────────────────────────
-step "Step 3/8 — Installing Node.js ${NODE_MAJOR}.x"
+step "Step 3/9 — Installing Node.js ${NODE_MAJOR}.x"
 if command -v node &>/dev/null && node -v | grep -q "v${NODE_MAJOR}"; then
     log "Node.js $(node -v) already installed"
 else
@@ -93,7 +93,7 @@ else
 fi
 
 # ── Step 4: Clone & Build ──────────────────────────────────────────────────
-step "Step 4/8 — Cloning repository and building app"
+step "Step 4/9 — Cloning repository and building app"
 
 # Clean previous install if exists
 if [ -d "${APP_DIR}" ]; then
@@ -125,7 +125,7 @@ npm prune --omit=dev 2>/dev/null || true
 log "Dev dependencies pruned"
 
 # ── Step 5: Nginx ──────────────────────────────────────────────────────────
-step "Step 5/8 — Installing and configuring Nginx"
+step "Step 5/9 — Installing and configuring Nginx"
 apt-get install -y -qq nginx
 
 # Remove default site
@@ -188,11 +188,11 @@ systemctl restart nginx
 log "Nginx configured and running"
 
 # ── Step 6: SSL with Certbot ──────────────────────────────────────────────
-step "Step 6/8 — Setting up SSL with Let's Encrypt"
+step "Step 6/9 — Setting up SSL with Let's Encrypt"
 apt-get install -y -qq certbot python3-certbot-nginx
 
 # Check if DNS is pointing to this server before requesting cert
-RESOLVED_IP=$(dig +short "${DOMAIN}" 2>/dev/null | tail -1)
+RESOLVED_IP=$(getent hosts "${DOMAIN}" 2>/dev/null | awk '{print $1}' | head -1 || true)
 if [ "${RESOLVED_IP}" = "${PUBLIC_IP}" ]; then
     certbot --nginx \
         -d "${DOMAIN}" \
@@ -212,7 +212,7 @@ else
 fi
 
 # ── Step 7: Firewall ──────────────────────────────────────────────────────
-step "Step 7/8 — Configuring firewall"
+step "Step 7/9 — Configuring firewall"
 ufw --force reset
 ufw default deny incoming
 ufw default allow outgoing
@@ -222,7 +222,7 @@ ufw --force enable
 log "UFW firewall enabled (SSH + HTTP/HTTPS)"
 
 # ── Step 8: Auto-update deploy hook ───────────────────────────────────────
-step "Step 8/8 — Setting up auto-redeploy script and cron"
+step "Step 8/9 — Setting up auto-redeploy script and cron"
 
 cat > /usr/local/bin/recovery-pilot-update.sh <<'UPDATEEOF'
 #!/bin/bash
@@ -265,16 +265,33 @@ CRON_JOB="*/5 * * * * /usr/local/bin/recovery-pilot-update.sh"
 (crontab -l 2>/dev/null | grep -v 'recovery-pilot-update' ; echo "$CRON_JOB") | crontab -
 log "Auto-redeploy configured (checks every 5 minutes)"
 
+# ── Step 9: Verify Nginx is serving on port 80 ─────────────────────────────
+step "Step 9/9 — Verifying server is live on port 80"
+systemctl restart nginx
+sleep 1
+
+# Quick health check
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/health 2>/dev/null || echo "000")
+if [ "$HTTP_STATUS" = "200" ]; then
+    log "Nginx is serving RecoveryPilot on port 80"
+else
+    warn "Health check returned HTTP ${HTTP_STATUS} — Nginx may need attention"
+    warn "Check with: systemctl status nginx && nginx -t"
+fi
+
 # ── Done ────────────────────────────────────────────────────────────────────
 echo ""
 echo "============================================================"
-echo -e "  ${GREEN}RecoveryPilot is LIVE!${NC}"
+echo -e "  ${GREEN}RecoveryPilot is LIVE on port 80!${NC}"
 echo "============================================================"
 echo ""
-echo "  URL:          https://${DOMAIN}"
-echo "  Public IP:    ${PUBLIC_IP}"
+echo "  URL:          http://${DOMAIN}"
+echo "  HTTPS URL:    https://${DOMAIN}  (if SSL was configured)"
+echo "  Public IP:    http://${PUBLIC_IP}"
+echo ""
 echo "  App dir:      ${APP_DIR}"
 echo "  Web root:     ${APP_DIR}/dist/"
+echo "  Env file:     ${APP_DIR}/.env"
 echo "  Nginx conf:   /etc/nginx/sites-available/recovery-pilot"
 echo ""
 echo "  Login credentials:"
@@ -286,8 +303,9 @@ echo "  Maintenance commands:"
 echo "    Manual redeploy:  /usr/local/bin/recovery-pilot-update.sh"
 echo "    Nginx status:     systemctl status nginx"
 echo "    Nginx logs:       journalctl -u nginx -f"
-echo "    Renew SSL:        sudo certbot renew --dry-run"
+echo "    Renew SSL:        sudo certbot --nginx -d ${DOMAIN} --redirect"
 echo "    App build log:    less /var/log/recovery-pilot-update.log"
+echo "    Edit env vars:    nano ${APP_DIR}/.env"
 echo ""
 echo "  GCP Firewall reminder:"
 echo "    Ensure ports 80 and 443 are open in your GCP VPC"
