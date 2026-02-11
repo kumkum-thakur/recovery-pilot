@@ -64,6 +64,42 @@ export function DebugMenu() {
   };
 
   /**
+   * Handles admin password reset
+   */
+  const handleResetAdminPassword = () => {
+    console.log('🔑 [DebugMenu] Resetting admin password...');
+    setPasswordResetMessage(null);
+    
+    try {
+      const success = resetAdminPassword();
+      
+      if (success) {
+        setPasswordResetMessage('✅ Admin password reset to: admin');
+      } else {
+        setPasswordResetMessage('❌ Failed to reset password');
+      }
+      
+      // Clear message after 5 seconds
+      setTimeout(() => setPasswordResetMessage(null), 5000);
+    } catch (error) {
+      console.error('❌ [DebugMenu] Error resetting password:', error);
+      setPasswordResetMessage('❌ Error resetting password');
+      setTimeout(() => setPasswordResetMessage(null), 5000);
+    }
+  };
+
+  /**
+   * Handles full data reset
+   */
+  const handleClearAllData = () => {
+    if (confirm('This will clear ALL data and log you out. Continue?')) {
+      clearAllDataAndReinitialize();
+      // Reload page after a short delay
+      setTimeout(() => window.location.reload(), 1000);
+    }
+  };
+
+  /**
    * Handles mission reset - resets missions to pending state
    */
   const handleResetMissions = async () => {
