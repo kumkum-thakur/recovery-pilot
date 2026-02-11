@@ -1,12 +1,15 @@
 /**
- * Mock Agent Service
- * 
- * Simulates AI-driven workflows with configurable delays and scenario-based responses.
- * This service provides the "agentic" experience where the system appears to be working
- * on behalf of the patient (checking insurance, analyzing images, etc.).
- * 
+ * Agent Service
+ *
+ * AI-driven workflows using real Gemini Vision API for wound analysis
+ * and mock responses for refill requests.
+ * This service provides the "agentic" experience where the system works
+ * on behalf of the patient (analyzing images, checking insurance, etc.).
+ *
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.1, 7.2, 15.1, 15.2
  */
+
+import { geminiService } from './geminiService';
 
 import type {
   AgentService,
@@ -208,16 +211,15 @@ async function createRefillActionItem(refillData: {
 }
 
 // ============================================================================
-// Mock Agent Service Implementation
+// Agent Service Implementation
 // ============================================================================
 
 /**
- * Creates a mock agent service instance
- * 
- * This service simulates AI workflows for:
- * - Wound image triage analysis
- * - Medication refill requests
- * 
+ * Creates the agent service instance
+ *
+ * This service uses real Gemini Vision AI for wound image triage
+ * and mock workflows for medication refill requests.
+ *
  * Requirements: 6.1, 7.1, 7.2
  */
 export function createAgentService(): AgentService {
@@ -225,13 +227,16 @@ export function createAgentService(): AgentService {
     simulateWorkflowSteps,
     
     /**
-     * Analyzes a wound image and returns triage results
-     * 
+     * Analyzes a wound image using real Gemini Vision API and returns triage results.
+     *
+     * Runs the AI analysis in parallel with the visual workflow steps so the
+     * user sees the animated progress while the real API call completes.
+     *
      * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.1
-     * 
+     *
      * @param imageFile - The wound image to analyze
-     * @param scenario - Demo scenario to determine result
-     * @returns Triage result with analysis and confidence score
+     * @param scenario - Demo scenario (kept for interface compatibility)
+     * @returns Triage result with real AI analysis and confidence score
      */
     async analyzeWoundImage(
       imageFile: File,
@@ -240,68 +245,68 @@ export function createAgentService(): AgentService {
       // Define the multi-step workflow for triage analysis
       // Requirements: 7.1 - Three steps with 1s delays each
       const steps: AgentStep[] = [
-        { 
-          id: '1', 
-          label: 'Analyzing Image...', 
-          status: 'pending' as AgentStepStatus, 
-          duration: 1000 
+        {
+          id: '1',
+          label: 'Analyzing Image...',
+          status: 'pending' as AgentStepStatus,
+          duration: 1000
         },
-        { 
-          id: '2', 
-          label: 'Drafting Clinical Note...', 
-          status: 'pending' as AgentStepStatus, 
-          duration: 1000 
+        {
+          id: '2',
+          label: 'Drafting Clinical Note...',
+          status: 'pending' as AgentStepStatus,
+          duration: 1000
         },
-        { 
-          id: '3', 
-          label: 'Creating Appointment Slot...', 
-          status: 'pending' as AgentStepStatus, 
-          duration: 1000 
+        {
+          id: '3',
+          label: 'Creating Appointment Slot...',
+          status: 'pending' as AgentStepStatus,
+          duration: 1000
         }
       ];
-      
-      // Execute workflow steps with delays
-      // This simulates the AI "working" on behalf of the patient
-      // Note: The actual step updates are handled by the AgentStore
-      // which calls simulateWorkflowSteps and updates UI in real-time
-      for await (const step of simulateWorkflowSteps(steps)) {
-        // Steps are yielded as they progress
-        // The AgentStore will handle displaying these to the user
-      }
-      
-      // Determine result based on demo scenario
-      // Requirements: 15.2 - Scenario-based deterministic behavior
-      if (scenario === 'SCENARIO_RISK_DETECTED') {
+
+      // Run real Gemini AI analysis in PARALLEL with visual workflow steps
+      // The user sees the animated progress while the API call completes
+      const [geminiResult] = await Promise.all([
+        geminiService.analyzeWoundImage(imageFile),
+        (async () => {
+          for await (const step of simulateWorkflowSteps(steps)) {
+            // Steps are yielded as they progress
+            // The AgentStore will handle displaying these to the user
+            void step;
+          }
+        })()
+      ]);
+
+      // Use real AI result to determine triage outcome
+      const imageUrl = await fileToDataUrl(imageFile);
+
+      if (geminiResult.analysis === 'red') {
         // RED RESULT: Risk detected, create action item for doctor review
         // Requirements: 6.2, 6.4, 6.5
-        
-        // Create a data URL from the image file for storage
-        const imageUrl = await fileToDataUrl(imageFile);
-        
-        // Create action item for doctor review
         const actionItemId = await createTriageActionItem({
           imageUrl,
           analysis: 'red' as TriageAnalysis,
-          analysisText: 'Redness detected around incision site. Possible infection.',
-          confidenceScore: 0.87,
+          analysisText: geminiResult.clinicalNote,
+          confidenceScore: geminiResult.confidenceScore,
         });
-        
+
         // Return Red result with action item
         // Requirements: 6.3, 6.4
         return {
           analysis: 'red' as TriageAnalysis,
-          analysisText: 'Redness detected. I have auto-drafted a message to Dr. Smith.',
-          confidenceScore: 0.87,
+          analysisText: geminiResult.analysisText,
+          confidenceScore: geminiResult.confidenceScore,
           actionItemId,
         };
       }
-      
+
       // GREEN RESULT: Healing well, no action item needed
       // Requirements: 6.2, 6.3, 6.5
       return {
         analysis: 'green' as TriageAnalysis,
-        analysisText: 'Healing well. Keep it dry.',
-        confidenceScore: 0.92,
+        analysisText: geminiResult.analysisText,
+        confidenceScore: geminiResult.confidenceScore,
       };
     },
 
