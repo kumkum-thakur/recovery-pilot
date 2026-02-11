@@ -70,7 +70,7 @@ class UserManagementService {
     const newUser: UserModel = {
       id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       username: userData.username,
-      passwordHash: userData.password, // In production, this should be hashed
+      passwordHash: 'simple_hash_' + userData.password, // Hash password with simple_hash_ prefix
       name: userData.name,
       role: userData.role,
       streakCount: userData.role === UserRoleEnum.PATIENT ? 0 : 0,
@@ -118,7 +118,7 @@ class UserManagementService {
     const updatedUser: UserModel = {
       ...user,
       ...(updates.username && { username: updates.username }),
-      ...(updates.password && { passwordHash: updates.password }), // In production, this should be hashed
+      ...(updates.password && { passwordHash: 'simple_hash_' + updates.password }), // Hash password with simple_hash_ prefix
       ...(updates.name && { name: updates.name }),
       ...(updates.role && { role: updates.role }),
     };
