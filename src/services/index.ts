@@ -13,3 +13,4 @@ export { missionGenerationService } from './missionGenerationService';
 export { medicationMissionGenerator } from './medicationMissionGenerator';
 export { carePlanValidation } from './carePlanValidation';
 export { DEFAULT_TEMPLATES, getTemplateById } from './carePlanTemplates';
+export { geminiService } from './geminiService';
