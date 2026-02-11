@@ -53,9 +53,13 @@ function getActionButtonText(type: string): string {
   }
 }
 
+// Auto-reset timer ID (module-level so it persists across renders)
+let autoResetTimerId: ReturnType<typeof setTimeout> | null = null;
+const AUTO_RESET_DELAY_MS = 2 * 60 * 1000; // 2 minutes
+
 /**
  * MissionStore implementation using Zustand
- * 
+ *
  * Provides state management for patient recovery missions
  * Requirements: 3.1, 3.2, 3.3, 5.3, 10.1
  */
@@ -215,8 +219,19 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
           ? { ...m, status: MissionStatus.COMPLETED }
           : m
       );
-      
+
       set({ missions: updatedMissions });
+
+      // Schedule auto-reset after 2 minutes (demo mode)
+      if (autoResetTimerId) {
+        clearTimeout(autoResetTimerId);
+      }
+      autoResetTimerId = setTimeout(() => {
+        console.log('⏰ [MissionStore] Auto-resetting missions after 2 minutes');
+        get().resetMissions();
+        autoResetTimerId = null;
+      }, AUTO_RESET_DELAY_MS);
+      console.log('⏰ [MissionStore] Auto-reset scheduled in 2 minutes');
     } catch (error) {
       console.error('Failed to complete mission:', error);
       throw error;
@@ -265,6 +280,38 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
     return todaysMissions.every(mission => {
       return mission.status === MissionStatus.COMPLETED;
     });
+  },
+
+  /**
+   * Resets all missions back to pending status (for demo mode).
+   * Clears any running auto-reset timer.
+   */
+  resetMissions: () => {
+    // Clear any pending auto-reset timer
+    if (autoResetTimerId) {
+      clearTimeout(autoResetTimerId);
+      autoResetTimerId = null;
+    }
+
+    const { missions } = get();
+
+    // Reset every mission to pending in local state
+    const resetted = missions.map(m => ({
+      ...m,
+      status: MissionStatus.PENDING,
+    }));
+
+    // Also reset in persistence (localStorage)
+    const allModels = persistenceService.get<import('../types').MissionModel[]>('recovery_pilot_missions') || [];
+    const resetModels = allModels.map(m => ({
+      ...m,
+      status: MissionStatus.PENDING as import('../types').MissionStatus,
+      completedAt: undefined,
+    }));
+    persistenceService.set('recovery_pilot_missions', resetModels);
+
+    set({ missions: resetted });
+    console.log('🔄 [MissionStore] All missions reset to pending (demo mode)');
   },
 
   /**
@@ -353,6 +400,17 @@ export const useMissionStore = create<IMissionStore>((set, get) => ({
         missions: updatedMissions,
         isLoading: false,
       });
+
+      // Schedule auto-reset after 2 minutes (demo mode)
+      if (autoResetTimerId) {
+        clearTimeout(autoResetTimerId);
+      }
+      autoResetTimerId = setTimeout(() => {
+        console.log('⏰ [MissionStore] Auto-resetting missions after 2 minutes');
+        get().resetMissions();
+        autoResetTimerId = null;
+      }, AUTO_RESET_DELAY_MS);
+      console.log('⏰ [MissionStore] Auto-reset scheduled in 2 minutes');
     } catch (error) {
       console.error('Failed to upload photo:', error);
       set({ isLoading: false });

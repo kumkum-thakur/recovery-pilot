@@ -76,9 +76,9 @@ echo   Open your browser to:
 echo     http://localhost:5173
 echo.
 echo   Login credentials:
-echo     Patient: divya / recovery123
-echo     Doctor:  sarah / doctor123
-echo     Admin:   admin / admin123
+echo     Patient: divya / divya
+echo     Doctor:  dr.smith / smith
+echo     Admin:   admin / admin
 echo.
 echo   Features:
 echo     Patient Dashboard - Missions, Photo Upload, Real AI Triage

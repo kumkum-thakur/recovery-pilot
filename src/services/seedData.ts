@@ -144,32 +144,48 @@ export function initializeSeedData(persistenceService: {
 
 /**
  * Reinitializes the database with fresh seed data
- * 
- * This function clears all existing data and reinitializes with seed data.
- * Used for recovery from data corruption.
- * 
+ *
+ * This function clears ALL localStorage/sessionStorage and reinitializes
+ * with seed data. Used for demo mode and corruption recovery.
+ *
  * @param persistenceService - The persistence service instance
- * 
+ *
  * Requirements: 12.4 - Reinitialize with seed data on corruption
  */
 export function reinitializeWithSeedData(persistenceService: {
   clearAll: () => void;
   saveUser: (user: UserModel) => void;
   saveMission: (mission: MissionModel) => void;
+  set: <T>(key: string, value: T) => void;
 }): void {
-  console.warn('⚠️ Reinitializing database with seed data...');
-  
-  // Clear all existing data
+  console.warn('⚠️ Reinitializing database with fresh seed data...');
+
+  // Clear all existing data (localStorage keys managed by the app)
   persistenceService.clearAll();
-  
-  // Reinitialize with seed data
+  // Also clear any extra keys and sessionStorage for a true fresh start
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Reinitialize users
   SEED_USERS.forEach(user => {
     persistenceService.saveUser(user);
   });
-  
+
+  // Reinitialize missions (all pending, fresh dates)
   SEED_MISSIONS.forEach(mission => {
-    persistenceService.saveMission(mission);
+    persistenceService.saveMission({
+      ...mission,
+      status: MissionStatus.PENDING,
+      dueDate: new Date().toISOString(),
+      completedAt: undefined,
+    });
   });
-  
-  console.log('✅ Database reinitialized with seed data');
+
+  // Reinitialize relationships
+  persistenceService.set(ENHANCEMENT_STORAGE_KEYS.RELATIONSHIPS, SEED_RELATIONSHIPS);
+
+  // Reinitialize empty action items
+  persistenceService.set('recovery_pilot_action_items', []);
+
+  console.log('✅ Database reinitialized with fresh seed data');
 }
