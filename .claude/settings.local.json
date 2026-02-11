@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: triage inbox visibility, demo scenario override, and Gemini API key\n\n- Fix action item filter to show unassigned items \\(doctorId undefined\\) to doctors\n- Implement demo scenario override: Ctrl+Shift+D → Risk Detected forces RED result\n- Add VITE_GEMINI_KEY to .env \\(Vite requires VITE_ prefix for client-side env vars\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
