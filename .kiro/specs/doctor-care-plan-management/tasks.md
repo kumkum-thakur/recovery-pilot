@@ -14,7 +14,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
   - _Requirements: 1.3, 2.6, 3.1, 4.2, 10.3_
 
 - [ ] 2. Implement care plan persistence layer
-  - [-] 2.1 Add care plan methods to PersistenceService
+  - [ ] 2.1 Add care plan methods to PersistenceService
     - Implement getCarePlan, getCarePlansForPatient, getCarePlansForDoctor, saveCarePlan, deleteCarePlan
     - Add model conversion functions (carePlanModelToCarePlan, carePlanToCarePlanModel)
     - _Requirements: 10.1, 10.2_
@@ -28,7 +28,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Validates: Requirements 10.3**
 
 - [ ] 3. Implement mission scheduling logic
-  - [~] 3.1 Create mission generation service
+  - [ ] 3.1 Create mission generation service
     - Implement generateMissionInstances function that creates MissionModel instances from CarePlanMission
     - Handle one-time, daily, weekly, and custom recurrence patterns
     - Calculate due dates based on schedule configuration
@@ -46,7 +46,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 4.4_
 
 - [ ] 4. Implement medication mission generation
-  - [~] 4.1 Create medication mission generator
+  - [ ] 4.1 Create medication mission generator
     - Implement generateMedicationMissions function that creates MEDICATION_CHECK missions from MedicationPrescription
     - Calculate mission count based on frequency and duration
     - Space missions evenly throughout the day
@@ -61,7 +61,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Validates: Requirements 11.4**
 
 - [ ] 5. Implement validation logic
-  - [~] 5.1 Create validation service
+  - [ ] 5.1 Create validation service
     - Implement validateCarePlan function
     - Implement validateMissionSchedule function
     - Implement validateMedicationPrescription function
@@ -80,11 +80,11 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Property 9: Scheduling limit validation**
     - **Validates: Requirements 13.4**
 
-- [~] 6. Checkpoint - Ensure all tests pass
+- [ ] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement CarePlanService
-  - [~] 7.1 Create CarePlanService class
+  - [ ] 7.1 Create CarePlanService class
     - Implement createCarePlan, getCarePlan, getCarePlansForPatient, getCarePlansForDoctor
     - Implement updateCarePlan, archiveCarePlan
     - Implement addMissionToCarePlan, updateCarePlanMission, cancelCarePlanMission
@@ -113,12 +113,12 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 1.1, 1.3, 2.1, 3.1_
 
 - [ ] 8. Implement care plan templates
-  - [~] 8.1 Create default templates
+  - [ ] 8.1 Create default templates
     - Define templates for knee replacement, appendectomy, and general wound care
     - Store templates in persistence service
     - _Requirements: 5.1_
   
-  - [~] 8.2 Implement template application logic
+  - [ ] 8.2 Implement template application logic
     - Implement applyTemplate function in CarePlanService
     - Adjust mission dates relative to current date
     - Pre-populate care plan with template data
@@ -137,7 +137,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Validates: Requirements 5.5**
 
 - [ ] 9. Implement CarePlanStore
-  - [~] 9.1 Create CarePlanStore with Zustand
+  - [ ] 9.1 Create CarePlanStore with Zustand
     - Implement state: carePlans, selectedCarePlan, templates, isLoading, error
     - Implement fetchCarePlansForDoctor, fetchCarePlansForPatient
     - Implement selectCarePlan, createCarePlan, updateCarePlan, archiveCarePlan
@@ -156,26 +156,26 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - Test applyTemplate
     - _Requirements: 1.1, 2.1, 3.1_
 
-- [~] 10. Checkpoint - Ensure all tests pass
+- [ ] 10. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 11. Implement integration with existing services
-  - [~] 11.1 Update MissionStore to handle care plan missions
+  - [ ] 11.1 Update MissionStore to handle care plan missions
     - Modify fetchMissions to include care plan-generated missions
     - Ensure mission completion updates care plan status
     - _Requirements: 9.1, 9.2_
   
-  - [~] 11.2 Integrate with medication tracker
+  - [ ] 11.2 Integrate with medication tracker
     - Update addMedicationToCarePlan to register with medication tracker
     - Pass refill threshold to medication tracker
     - _Requirements: 3.5, 15.1, 15.2_
   
-  - [~] 11.3 Integrate with refill engine
+  - [ ] 11.3 Integrate with refill engine
     - Ensure medication mission completion triggers refill check
     - Update care plan when refill is approved
     - _Requirements: 15.4_
   
-  - [~] 11.4 Integrate with triage workflow
+  - [ ] 11.4 Integrate with triage workflow
     - Ensure photo mission completion triggers triage
     - _Requirements: 9.3_
   
@@ -200,7 +200,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Validates: Requirements 15.4**
 
 - [ ] 12. Implement MissionScheduleEditor component
-  - [~] 12.1 Create MissionScheduleEditor component
+  - [ ] 12.1 Create MissionScheduleEditor component
     - Implement start date picker
     - Implement recurrence type selector (one-time, daily, weekly, custom)
     - Implement interval input for custom recurrence
@@ -216,7 +216,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 4.1, 4.2, 4.3_
 
 - [ ] 13. Implement MedicationForm component
-  - [~] 13.1 Create MedicationForm component
+  - [ ] 13.1 Create MedicationForm component
     - Implement medication name input
     - Implement dosage input
     - Implement frequency selector (times per day)
@@ -234,7 +234,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 3.1, 3.2, 3.3_
 
 - [ ] 14. Implement TemplateSelector component
-  - [~] 14.1 Create TemplateSelector component
+  - [ ] 14.1 Create TemplateSelector component
     - Display list of templates grouped by category
     - Show template preview on hover
     - Handle template selection
@@ -246,7 +246,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 5.1, 5.2_
 
 - [ ] 15. Implement CarePlanForm component
-  - [~] 15.1 Create CarePlanForm component
+  - [ ] 15.1 Create CarePlanForm component
     - Implement name and description fields
     - Implement mission list with add/edit/delete
     - Implement medication list with add/edit/delete
@@ -266,11 +266,11 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - Test form submission
     - _Requirements: 1.2, 2.1, 3.1_
 
-- [~] 16. Checkpoint - Ensure all tests pass
+- [ ] 16. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 17. Implement CarePlanOverviewDashboard component
-  - [~] 17.1 Create CarePlanOverviewDashboard component
+  - [ ] 17.1 Create CarePlanOverviewDashboard component
     - Display list of patients with active care plans
     - Show completion percentage per patient
     - Highlight patients with overdue missions
@@ -294,7 +294,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 12.1, 12.2, 12.3, 12.4_
 
 - [ ] 18. Implement CarePlanPanel component
-  - [~] 18.1 Create CarePlanPanel component
+  - [ ] 18.1 Create CarePlanPanel component
     - Implement patient selector with search/filter
     - Display care plan list for selected patient
     - Show create new care plan button
@@ -326,7 +326,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - _Requirements: 1.1, 6.1, 8.1, 8.2_
 
 - [ ] 19. Integrate CarePlanPanel into DoctorDashboard
-  - [~] 19.1 Add care plan management tab to DoctorDashboard
+  - [ ] 19.1 Add care plan management tab to DoctorDashboard
     - Add navigation tab for "Care Plans"
     - Render CarePlanPanel when tab is selected
     - Pass doctor ID to CarePlanPanel
@@ -359,13 +359,13 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - **Validates: Requirements 10.4**
 
 - [ ] 21. Implement error handling and user feedback
-  - [~] 21.1 Add error handling to CarePlanService
+  - [ ] 21.1 Add error handling to CarePlanService
     - Handle storage errors (quota exceeded, serialization errors)
     - Handle validation errors
     - Return user-friendly error messages
     - _Requirements: 10.5_
   
-  - [~] 21.2 Add error display to UI components
+  - [ ] 21.2 Add error display to UI components
     - Display validation errors in forms
     - Display storage errors with recovery suggestions
     - Display warnings for scheduling conflicts
@@ -377,7 +377,7 @@ This implementation plan breaks down the Doctor Care Plan Management feature int
     - Test error message display
     - _Requirements: 10.5_
 
-- [~] 22. Final checkpoint - Ensure all tests pass
+- [ ] 22. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 23. End-to-end integration testing
