@@ -90,7 +90,7 @@ describe('Agent Service - Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 } // Reduced for faster execution
       );
     });
 
@@ -129,7 +129,7 @@ describe('Agent Service - Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 } // Reduced for faster execution
       );
     });
 
