@@ -18,9 +18,11 @@ import { authService } from '../services/authService';
 vi.mock('../services/authService', () => ({
   authService: {
     getCurrentUser: vi.fn(),
+    isAuthenticated: vi.fn(() => false),
     login: vi.fn(),
     logout: vi.fn(),
     validateCredentials: vi.fn(),
+    updateCurrentUser: vi.fn(),
   },
 }));
 
