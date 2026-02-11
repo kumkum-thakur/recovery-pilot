@@ -111,14 +111,18 @@ VITE_GEMINI_KEY=${GEMINI_KEY}
 ENVEOF
 log "Environment file written"
 
-# Install dependencies
-npm ci --omit=dev 2>/dev/null || npm install
+# Install ALL dependencies (devDependencies needed for build: tsc, vite)
+npm install
 log "Dependencies installed"
 
 # Build production static files
 export GEMINI_KEY="${GEMINI_KEY}"
-npm run build
+npx tsc -b && npx vite build
 log "Production build complete → ${APP_DIR}/dist/"
+
+# Prune devDependencies after build to save disk space
+npm prune --omit=dev 2>/dev/null || true
+log "Dev dependencies pruned"
 
 # ── Step 5: Nginx ──────────────────────────────────────────────────────────
 step "Step 5/8 — Installing and configuring Nginx"
@@ -246,8 +250,9 @@ echo "[$(date)] New commits found, updating..." >> "$LOG"
 git reset --hard origin/main
 
 export GEMINI_KEY=$(grep GEMINI_KEY .env | head -1 | cut -d= -f2)
-npm ci --omit=dev 2>/dev/null || npm install
-npm run build
+npm install
+npx tsc -b && npx vite build
+npm prune --omit=dev 2>/dev/null || true
 
 systemctl reload nginx
 echo "[$(date)] Update complete. Now at $(git rev-parse --short HEAD)" >> "$LOG"
