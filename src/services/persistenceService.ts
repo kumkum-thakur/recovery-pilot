@@ -733,6 +733,190 @@ class PersistenceServiceImpl implements IPersistenceService {
   }
 }
 
+// ============================================================================
+// Model Conversion Functions
+// ============================================================================
+
+/**
+ * Converts MissionScheduleModel to MissionSchedule
+ * 
+ * @param model - Mission schedule model from storage
+ * @returns Mission schedule with Date objects
+ * 
+ * Requirements: 10.2, S.3
+ */
+function missionScheduleModelToMissionSchedule(model: MissionScheduleModel): MissionSchedule {
+  return {
+    startDate: new Date(model.startDate),
+    recurrence: model.recurrence,
+    endDate: model.endDate ? new Date(model.endDate) : undefined,
+    occurrences: model.occurrences,
+    timeOfDay: model.timeOfDay,
+  };
+}
+
+/**
+ * Converts MissionSchedule to MissionScheduleModel
+ * 
+ * @param schedule - Mission schedule with Date objects
+ * @returns Mission schedule model for storage
+ * 
+ * Requirements: 10.1, S.3
+ */
+function missionScheduleToMissionScheduleModel(schedule: MissionSchedule): MissionScheduleModel {
+  return {
+    startDate: schedule.startDate.toISOString(),
+    recurrence: schedule.recurrence,
+    endDate: schedule.endDate?.toISOString(),
+    occurrences: schedule.occurrences,
+    timeOfDay: schedule.timeOfDay,
+  };
+}
+
+/**
+ * Converts MedicationPrescriptionModel to MedicationPrescription
+ * 
+ * @param model - Medication prescription model from storage
+ * @returns Medication prescription with Date objects
+ * 
+ * Requirements: 10.2, S.3
+ */
+function medicationPrescriptionModelToMedicationPrescription(
+  model: MedicationPrescriptionModel
+): MedicationPrescription {
+  return {
+    id: model.id,
+    carePlanId: model.carePlanId,
+    medicationName: model.medicationName,
+    dosage: model.dosage,
+    frequency: model.frequency,
+    duration: model.duration,
+    refillThreshold: model.refillThreshold,
+    instructions: model.instructions,
+    startDate: new Date(model.startDate),
+    endDate: model.endDate ? new Date(model.endDate) : undefined,
+    status: model.status,
+    createdAt: new Date(model.createdAt),
+  };
+}
+
+/**
+ * Converts MedicationPrescription to MedicationPrescriptionModel
+ * 
+ * @param medication - Medication prescription with Date objects
+ * @returns Medication prescription model for storage
+ * 
+ * Requirements: 10.1, S.3
+ */
+function medicationPrescriptionToMedicationPrescriptionModel(
+  medication: MedicationPrescription
+): MedicationPrescriptionModel {
+  return {
+    id: medication.id,
+    carePlanId: medication.carePlanId,
+    medicationName: medication.medicationName,
+    dosage: medication.dosage,
+    frequency: medication.frequency,
+    duration: medication.duration,
+    refillThreshold: medication.refillThreshold,
+    instructions: medication.instructions,
+    startDate: medication.startDate.toISOString(),
+    endDate: medication.endDate?.toISOString(),
+    status: medication.status,
+    createdAt: medication.createdAt.toISOString(),
+  };
+}
+
+/**
+ * Converts CarePlanMissionModel to CarePlanMission
+ * 
+ * @param model - Care plan mission model from storage
+ * @returns Care plan mission with Date objects
+ * 
+ * Requirements: 10.2, S.3
+ */
+function carePlanMissionModelToCarePlanMission(model: CarePlanMissionModel): CarePlanMission {
+  return {
+    id: model.id,
+    carePlanId: model.carePlanId,
+    type: model.type,
+    title: model.title,
+    description: model.description,
+    schedule: missionScheduleModelToMissionSchedule(model.schedule),
+    status: model.status,
+    createdAt: new Date(model.createdAt),
+    metadata: model.metadata,
+  };
+}
+
+/**
+ * Converts CarePlanMission to CarePlanMissionModel
+ * 
+ * @param mission - Care plan mission with Date objects
+ * @returns Care plan mission model for storage
+ * 
+ * Requirements: 10.1, S.3
+ */
+function carePlanMissionToCarePlanMissionModel(mission: CarePlanMission): CarePlanMissionModel {
+  return {
+    id: mission.id,
+    carePlanId: mission.carePlanId,
+    type: mission.type,
+    title: mission.title,
+    description: mission.description,
+    schedule: missionScheduleToMissionScheduleModel(mission.schedule),
+    status: mission.status,
+    createdAt: mission.createdAt.toISOString(),
+    metadata: mission.metadata,
+  };
+}
+
+/**
+ * Converts CarePlanModel to CarePlan
+ * 
+ * @param model - Care plan model from storage
+ * @returns Care plan with Date objects
+ * 
+ * Requirements: 10.2, S.3
+ */
+function carePlanModelToCarePlan(model: CarePlanModel): CarePlan {
+  return {
+    id: model.id,
+    patientId: model.patientId,
+    doctorId: model.doctorId,
+    name: model.name,
+    description: model.description,
+    createdAt: new Date(model.createdAt),
+    updatedAt: new Date(model.updatedAt),
+    status: model.status,
+    missions: model.missions.map(carePlanMissionModelToCarePlanMission),
+    medications: model.medications.map(medicationPrescriptionModelToMedicationPrescription),
+  };
+}
+
+/**
+ * Converts CarePlan to CarePlanModel
+ * 
+ * @param carePlan - Care plan with Date objects
+ * @returns Care plan model for storage
+ * 
+ * Requirements: 10.1, S.3
+ */
+function carePlanToCarePlanModel(carePlan: CarePlan): CarePlanModel {
+  return {
+    id: carePlan.id,
+    patientId: carePlan.patientId,
+    doctorId: carePlan.doctorId,
+    name: carePlan.name,
+    description: carePlan.description,
+    createdAt: carePlan.createdAt.toISOString(),
+    updatedAt: carePlan.updatedAt.toISOString(),
+    status: carePlan.status,
+    missions: carePlan.missions.map(carePlanMissionToCarePlanMissionModel),
+    medications: carePlan.medications.map(medicationPrescriptionToMedicationPrescriptionModel),
+  };
+}
+
 // Export singleton instance
 export const persistenceService = new PersistenceServiceImpl();
 
