@@ -12,10 +12,23 @@ dist
 dist-ssr
 *.local
 
-# Environment
+# Environment & Secrets — NEVER commit these
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+service-account*.json
+*secret*
+*token*
+
+# API keys / secrets backup files
+*.credentials
+*.keystore
 
 # Editor directories and files
 .vscode/*
