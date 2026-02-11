@@ -62,7 +62,7 @@ export function DebugMenu() {
   };
 
   /**
-   * Handles mission reset
+   * Handles mission reset - resets missions to pending state
    */
   const handleResetMissions = async () => {
     console.log('🔄 [DebugMenu] Resetting missions...');
@@ -73,11 +73,33 @@ export function DebugMenu() {
         throw new Error('No user logged in');
       }
 
-      // Refetch missions to reset their state
+      // Get all missions for the current user
+      const allMissions = missions;
+      
+      // Reset each mission to pending state and clear completion date
+      for (const mission of allMissions) {
+        const missionModel = await import('../services/persistenceService').then(m => 
+          m.persistenceService.getMission(mission.id)
+        );
+        
+        if (missionModel) {
+          const resetModel = {
+            ...missionModel,
+            status: 'pending' as const,
+            completedAt: undefined,
+          };
+          
+          await import('../services/persistenceService').then(m => 
+            m.persistenceService.saveMission(resetModel)
+          );
+        }
+      }
+
+      // Refetch missions to update UI
       await fetchMissions(currentUser.id);
       
       setResetMessage('✅ Missions reset successfully!');
-      console.log('✅ [DebugMenu] Missions reset');
+      console.log('✅ [DebugMenu] Missions reset to pending state');
       
       // Clear message after 3 seconds
       setTimeout(() => setResetMessage(null), 3000);
