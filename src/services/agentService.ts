@@ -15,7 +15,6 @@ import type {
   AgentService,
   AgentStep,
   AgentStepStatus,
-  DemoScenario,
   TriageResult,
   RefillResult,
   TriageAnalysis,
@@ -23,6 +22,7 @@ import type {
   InventoryStatus,
   ActionItemModel,
 } from '../types';
+import { DemoScenario } from '../types';
 
 // ============================================================================
 // Workflow Step Simulator
@@ -277,6 +277,30 @@ export function createAgentService(): AgentService {
           duration: 1000
         }
       ];
+
+      // Demo scenario override: force RED result for demo purposes
+      if (scenario === DemoScenario.SCENARIO_RISK_DETECTED) {
+        // Run visual workflow steps for demo effect
+        for await (const step of simulateWorkflowSteps(steps)) {
+          void step;
+        }
+
+        const imageUrl = await fileToDataUrl(imageFile);
+        const actionItemId = await createTriageActionItem({
+          imageUrl,
+          analysis: 'red' as TriageAnalysis,
+          analysisText: 'Risk signs detected: Possible infection indicators observed including erythema and localized swelling around the incision site. Recommend in-person evaluation within 24 hours.',
+          confidenceScore: 0.87,
+          patientId: patientId || 'patient-1',
+        });
+
+        return {
+          analysis: 'red' as TriageAnalysis,
+          analysisText: 'Risk signs detected: Possible infection indicators observed including erythema and localized swelling around the incision site. Recommend in-person evaluation within 24 hours.',
+          confidenceScore: 0.87,
+          actionItemId,
+        };
+      }
 
       // Run real Gemini AI analysis in PARALLEL with visual workflow steps
       // The user sees the animated progress while the API call completes
