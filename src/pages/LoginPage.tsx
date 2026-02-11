@@ -112,6 +112,8 @@ export function LoginPage() {
         navigate('/patient');
       } else if (currentUser.role === UserRole.DOCTOR) {
         navigate('/doctor');
+      } else if (currentUser.role === UserRole.ADMIN) {
+        navigate('/admin');
       } else {
         throw new Error('Unknown user role');
       }
