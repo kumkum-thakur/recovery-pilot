@@ -11,9 +11,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Settings, Check, RotateCcw } from 'lucide-react';
+import { Settings, Check, RotateCcw, Key } from 'lucide-react';
 import { useConfigStore, useMissionStore, useUserStore } from '../stores';
 import { DemoScenario } from '../types';
+import { resetAdminPassword, clearAllDataAndReinitialize } from '../utils/resetAdminPassword';
 
 /**
  * DebugMenu component
@@ -27,6 +28,7 @@ export function DebugMenu() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [passwordResetMessage, setPasswordResetMessage] = useState<string | null>(null);
   
   const { config, setDemoScenario, getCurrentScenario } = useConfigStore();
   const { missions, fetchMissions } = useMissionStore();
