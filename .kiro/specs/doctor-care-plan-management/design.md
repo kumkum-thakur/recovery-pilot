@@ -559,3 +559,42 @@ The system will include pre-configured templates for common scenarios:
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
+
+### Property Reflection
+
+After analyzing all acceptance criteria, I've identified the following consolidations to eliminate redundancy:
+
+**Consolidations:**
+- Properties 11.1, 11.2, 11.3 (specific medication frequencies) are edge cases of property 3.4 (general medication mission generation)
+- Properties S.1, S.2, S.4 (individual serialization steps) are covered by S.3 (round-trip property)
+- Properties S.5, S.6, S.7 (schedule serialization) are covered by S.3 (round-trip includes nested structures)
+- Property 15.3 (refill workflow trigger) is already tested in the existing refill engine, not needed here
+
+**Unique Properties Retained:**
+- Care plan persistence and retrieval (round-trip)
+- Mission generation from schedules (recurring missions)
+- Medication mission generation (frequency-based)
+- Patient-care plan association
+- Mission-patient association
+- Data integrity (completion history preservation, cancellation without deletion)
+- Validation (required fields, date constraints, scheduling limits)
+- Integration (mission visibility, status synchronization, service integration)
+
+### Correctness Properties
+
+Property 1: Care plan persistence round-trip
+*For any* valid care plan, serializing it to JSON then deserializing should produce an equivalent care plan with all nested structures (missions, medications, schedules) preserved
+**Validates: Requirements 10.1, 10.2, S.3**
+
+Property 2: Care plan-patient association
+*For any* care plan created with a patient ID, querying care plans for that patient ID should return a list containing that care plan
+**Validates: Requirements 1.3, 6.1**
+
+Property 3: Mission-patient association
+*For any* mission created in a care plan, that mission should be associated with the care plan's patient ID and appear in the patient's mission list
+**Validates: Requirements 2.6, 9.1**
+
+Property 4: Recurring mission instance generation
+*For any* recurring mission with N occurrences, the system should generate exactly N mission instances with due dates matching the recurrence pattern
+**Validates: Requirements 4.4**
+
