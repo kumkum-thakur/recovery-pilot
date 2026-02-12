@@ -20,6 +20,24 @@ import { LoginPage } from './pages/LoginPage';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { FeatureHub } from './pages/FeatureHub';
+import {
+  PainTrackerPage,
+  VitalSignsPage,
+  SymptomCheckerPage,
+  NutritionPage,
+  SleepTrackingPage,
+  JournalPage,
+  MedicationsPage,
+  ExercisePage,
+  ChatPage,
+  TelehealthPage,
+  GamificationPage,
+  AnalyticsPage,
+  EmergencyPage,
+  DataExportPage,
+  WearablesPage,
+} from './pages/FeaturePages';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { SessionMonitor } from './components/SessionMonitor';
 import { DebugMenu } from './components/DebugMenu';
@@ -159,6 +177,24 @@ function App() {
               </RouteErrorBoundary>
             }
           />
+
+          {/* Patient Feature Routes */}
+          <Route path="/patient/features" element={<RouteErrorBoundary routeName="Feature Hub"><ProtectedRoute requiredRole={UserRole.PATIENT}><FeatureHub /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/pain" element={<RouteErrorBoundary routeName="Pain Tracker"><ProtectedRoute requiredRole={UserRole.PATIENT}><PainTrackerPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/vitals" element={<RouteErrorBoundary routeName="Vital Signs"><ProtectedRoute requiredRole={UserRole.PATIENT}><VitalSignsPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/symptoms" element={<RouteErrorBoundary routeName="Symptom Checker"><ProtectedRoute requiredRole={UserRole.PATIENT}><SymptomCheckerPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/nutrition" element={<RouteErrorBoundary routeName="Nutrition"><ProtectedRoute requiredRole={UserRole.PATIENT}><NutritionPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/sleep" element={<RouteErrorBoundary routeName="Sleep Tracking"><ProtectedRoute requiredRole={UserRole.PATIENT}><SleepTrackingPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/journal" element={<RouteErrorBoundary routeName="Journal"><ProtectedRoute requiredRole={UserRole.PATIENT}><JournalPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/medications" element={<RouteErrorBoundary routeName="Medications"><ProtectedRoute requiredRole={UserRole.PATIENT}><MedicationsPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/exercise" element={<RouteErrorBoundary routeName="Exercise"><ProtectedRoute requiredRole={UserRole.PATIENT}><ExercisePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/chat" element={<RouteErrorBoundary routeName="Chat"><ProtectedRoute requiredRole={UserRole.PATIENT}><ChatPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/telehealth" element={<RouteErrorBoundary routeName="Telehealth"><ProtectedRoute requiredRole={UserRole.PATIENT}><TelehealthPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/achievements" element={<RouteErrorBoundary routeName="Achievements"><ProtectedRoute requiredRole={UserRole.PATIENT}><GamificationPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/analytics" element={<RouteErrorBoundary routeName="Analytics"><ProtectedRoute requiredRole={UserRole.PATIENT}><AnalyticsPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/emergency" element={<RouteErrorBoundary routeName="Emergency"><ProtectedRoute requiredRole={UserRole.PATIENT}><EmergencyPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/export" element={<RouteErrorBoundary routeName="Data Export"><ProtectedRoute requiredRole={UserRole.PATIENT}><DataExportPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/wearables" element={<RouteErrorBoundary routeName="Wearables"><ProtectedRoute requiredRole={UserRole.PATIENT}><WearablesPage /></ProtectedRoute></RouteErrorBoundary>} />
 
           {/* Root Route - Redirect to login or appropriate dashboard */}
           <Route

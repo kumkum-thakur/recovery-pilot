@@ -976,7 +976,7 @@ class InsuranceClaimsServiceImpl {
       : (VISIT_TYPE_CPT_MAP[appointment.visitType] ?? ['99213']);
 
     // Build line items
-    const lineItems: ClaimLineItem[] = suggestedCPTs.map((cptCode, index) => {
+    const lineItems: ClaimLineItem[] = suggestedCPTs.map((cptCode, _index) => {
       const cptInfo = this.lookupCPTCode(cptCode);
       const chargeAmount = cptInfo?.averageCost ?? 100;
 

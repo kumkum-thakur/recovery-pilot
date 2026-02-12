@@ -3,40 +3,43 @@
 
 // ─── Enums & Constants ───────────────────────────────────────────────
 
-export enum NotificationType {
-  MEDICATION_REMINDER = 'MEDICATION_REMINDER',
-  MISSION_DUE = 'MISSION_DUE',
-  WOUND_CHECK = 'WOUND_CHECK',
-  EXERCISE_TIME = 'EXERCISE_TIME',
-  APPOINTMENT_REMINDER = 'APPOINTMENT_REMINDER',
-  VITAL_SIGNS_ALERT = 'VITAL_SIGNS_ALERT',
-  RISK_ALERT = 'RISK_ALERT',
-  DOCTOR_MESSAGE = 'DOCTOR_MESSAGE',
-  ACHIEVEMENT = 'ACHIEVEMENT',
-  SYSTEM = 'SYSTEM',
-  PAIN_LOG_REMINDER = 'PAIN_LOG_REMINDER',
-  SLEEP_REMINDER = 'SLEEP_REMINDER',
-  HYDRATION_REMINDER = 'HYDRATION_REMINDER',
-  FOLLOW_UP_NEEDED = 'FOLLOW_UP_NEEDED',
-  CARE_PLAN_UPDATE = 'CARE_PLAN_UPDATE',
-}
+export const NotificationType = {
+  MEDICATION_REMINDER: 'MEDICATION_REMINDER',
+  MISSION_DUE: 'MISSION_DUE',
+  WOUND_CHECK: 'WOUND_CHECK',
+  EXERCISE_TIME: 'EXERCISE_TIME',
+  APPOINTMENT_REMINDER: 'APPOINTMENT_REMINDER',
+  VITAL_SIGNS_ALERT: 'VITAL_SIGNS_ALERT',
+  RISK_ALERT: 'RISK_ALERT',
+  DOCTOR_MESSAGE: 'DOCTOR_MESSAGE',
+  ACHIEVEMENT: 'ACHIEVEMENT',
+  SYSTEM: 'SYSTEM',
+  PAIN_LOG_REMINDER: 'PAIN_LOG_REMINDER',
+  SLEEP_REMINDER: 'SLEEP_REMINDER',
+  HYDRATION_REMINDER: 'HYDRATION_REMINDER',
+  FOLLOW_UP_NEEDED: 'FOLLOW_UP_NEEDED',
+  CARE_PLAN_UPDATE: 'CARE_PLAN_UPDATE',
+} as const;
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
 
-export enum NotificationPriority {
-  CRITICAL = 4,
-  HIGH = 3,
-  MEDIUM = 2,
-  LOW = 1,
-}
+export const NotificationPriority = {
+  CRITICAL: 4,
+  HIGH: 3,
+  MEDIUM: 2,
+  LOW: 1,
+} as const;
+export type NotificationPriority = typeof NotificationPriority[keyof typeof NotificationPriority];
 
-export enum NotificationStatus {
-  PENDING = 'PENDING',
-  DELIVERED = 'DELIVERED',
-  READ = 'READ',
-  SNOOZED = 'SNOOZED',
-  DISMISSED = 'DISMISSED',
-  EXPIRED = 'EXPIRED',
-  ESCALATED = 'ESCALATED',
-}
+export const NotificationStatus = {
+  PENDING: 'PENDING',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ',
+  SNOOZED: 'SNOOZED',
+  DISMISSED: 'DISMISSED',
+  EXPIRED: 'EXPIRED',
+  ESCALATED: 'ESCALATED',
+} as const;
+export type NotificationStatus = typeof NotificationStatus[keyof typeof NotificationStatus];
 
 // ─── Interfaces ──────────────────────────────────────────────────────
 
@@ -930,13 +933,6 @@ class DeduplicationTracker {
 }
 
 // ─── Smart Scheduler ─────────────────────────────────────────────────
-
-interface SmartSchedulerConfig {
-  quietHoursStart: number;
-  quietHoursEnd: number;
-  batchWindowMs: number;
-  optimalTimes: Record<NotificationType, number[]>; // preferred hours
-}
 
 function getDefaultOptimalTimes(): Record<NotificationType, number[]> {
   return {

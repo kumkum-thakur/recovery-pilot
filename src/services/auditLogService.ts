@@ -235,7 +235,7 @@ function generateAuditId(): string {
   return `aud_${ts}_${rand}_${_auditCounter}`;
 }
 
-function generateSessionId(): string {
+export function generateSessionId(): string {
   const ts = Date.now().toString(36);
   const rand = Math.random().toString(36).substring(2, 10);
   return `sess_${ts}_${rand}`;
@@ -266,7 +266,7 @@ const SEED_ACTORS = [
   { id: 'usr_system', role: ActorRole.SYSTEM, name: 'System' },
 ];
 
-const SEED_PATIENT_IDS = [
+export const SEED_PATIENT_IDS = [
   'pat_001', 'pat_002', 'pat_003', 'pat_004', 'pat_005',
   'pat_006', 'pat_007', 'pat_008', 'pat_009', 'pat_010',
   'pat_011', 'pat_012', 'pat_013', 'pat_014', 'pat_015',
@@ -294,10 +294,6 @@ function generateSeedEntries(): AuditEntry[] {
     d.setHours(d.getHours() + hourOffset);
     d.setMinutes(d.getMinutes() + minuteOffset);
     return d.toISOString();
-  }
-
-  function pick<T>(arr: readonly T[]): T {
-    return arr[Math.floor(entries.length * 7 + arr.length) % arr.length];
   }
 
   function pickIdx<T>(arr: readonly T[], idx: number): T {

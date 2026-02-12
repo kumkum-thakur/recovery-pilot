@@ -21,7 +21,7 @@ import { Header } from '../components/Header';
 import { MissionStream } from '../components/MissionStream';
 import { AgentStatusToast } from '../components/AgentStatusToast';
 import { medicationTracker } from '../services/medicationTracker';
-import { Activity, Pill, TrendingUp, Heart, Calendar, Award, Camera, Dumbbell, Flame, CheckCircle2, Loader2, RotateCcw } from 'lucide-react';
+import { Activity, Pill, TrendingUp, Heart, Calendar, Award, Camera, Dumbbell, Flame, CheckCircle2, Loader2, RotateCcw, Stethoscope, Brain, Moon, Utensils, BookOpen, MessageCircle, Video, Trophy, BarChart3, Shield, ChevronRight, Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MissionType, MissionStatus } from '../types';
 import type { MedicationInventory, Mission } from '../types';
@@ -382,7 +382,76 @@ export function PatientDashboard() {
         </section>
 
         {/* ============================================================ */}
-        {/* 5. Mission Stream (All Missions) */}
+        {/* 5. Quick Access Feature Grid */}
+        {/* ============================================================ */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Activity className="w-5 h-5 text-medical-primary" />
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Health Tools
+              </h3>
+            </div>
+            <button
+              onClick={() => navigate('/patient/features')}
+              className="flex items-center gap-1 text-xs font-medium text-medical-primary hover:text-blue-700 transition-colors"
+            >
+              <span>View All</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { icon: Stethoscope, label: 'Symptoms', path: '/patient/symptoms', color: 'text-red-500', bg: 'bg-red-50' },
+              { icon: Heart, label: 'Pain', path: '/patient/pain', color: 'text-pink-500', bg: 'bg-pink-50' },
+              { icon: Brain, label: 'Vitals', path: '/patient/vitals', color: 'text-purple-500', bg: 'bg-purple-50' },
+              { icon: Utensils, label: 'Nutrition', path: '/patient/nutrition', color: 'text-green-500', bg: 'bg-green-50' },
+              { icon: Moon, label: 'Sleep', path: '/patient/sleep', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+              { icon: BookOpen, label: 'Journal', path: '/patient/journal', color: 'text-amber-500', bg: 'bg-amber-50' },
+              { icon: MessageCircle, label: 'Chat', path: '/patient/chat', color: 'text-blue-500', bg: 'bg-blue-50' },
+              { icon: Trophy, label: 'Rewards', path: '/patient/achievements', color: 'text-yellow-500', bg: 'bg-yellow-50' },
+            ].map(({ icon: Icon, label, path, color, bg }) => (
+              <motion.button
+                key={path}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate(path)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}>
+                  <Icon className={`w-5 h-5 ${color}`} />
+                </div>
+                <span className="text-xs font-medium text-gray-700">{label}</span>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Secondary features row */}
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            {[
+              { icon: Video, label: 'Telehealth', desc: 'Virtual visits', path: '/patient/telehealth', color: 'text-teal-600' },
+              { icon: Smartphone, label: 'Wearables', desc: 'Device sync', path: '/patient/wearables', color: 'text-cyan-600' },
+              { icon: BarChart3, label: 'Analytics', desc: 'Health insights', path: '/patient/analytics', color: 'text-violet-600' },
+              { icon: Shield, label: 'Emergency', desc: 'Quick access', path: '/patient/emergency', color: 'text-red-600' },
+            ].map(({ icon: Icon, label, desc, path, color }) => (
+              <motion.button
+                key={path}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate(path)}
+                className="flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow text-left"
+              >
+                <Icon className={`w-5 h-5 ${color} flex-shrink-0`} />
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{label}</p>
+                  <p className="text-xs text-gray-500">{desc}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* 6. Mission Stream (All Missions) */}
         {/* ============================================================ */}
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">

@@ -728,21 +728,6 @@ function scaleMicro(m: Micronutrients, factor: number): Micronutrients {
   };
 }
 
-function emptyMicro(): Micronutrients {
-  return { vitaminC_mg: 0, vitaminD_mcg: 0, vitaminA_mcg: 0, zinc_mg: 0, iron_mg: 0, calcium_mg: 0 };
-}
-
-function addMicro(a: Micronutrients, b: Micronutrients): Micronutrients {
-  return {
-    vitaminC_mg: a.vitaminC_mg + b.vitaminC_mg,
-    vitaminD_mcg: a.vitaminD_mcg + b.vitaminD_mcg,
-    vitaminA_mcg: a.vitaminA_mcg + b.vitaminA_mcg,
-    zinc_mg: a.zinc_mg + b.zinc_mg,
-    iron_mg: a.iron_mg + b.iron_mg,
-    calcium_mg: a.calcium_mg + b.calcium_mg,
-  };
-}
-
 function dayLabel(dayIndex: number): string {
   const labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   return labels[dayIndex % 7];
@@ -1378,7 +1363,6 @@ export class NutritionService {
   generateWeeklyMealPlan(patientId: string, planType?: RecoveryPlanType): WeeklyMealPlan {
     const profile = this.patientProfiles.get(patientId);
     const selectedPlan = planType ?? profile?.activePlan ?? RecoveryPlanType.HIGH_PROTEIN;
-    const targets = this.getPersonalizedTargets(patientId);
     const allergies = (profile?.allergies ?? []).map(a => a.toLowerCase());
 
     // Filter eligible foods
