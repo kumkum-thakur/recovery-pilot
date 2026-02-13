@@ -807,7 +807,7 @@ function generateVitalReadings(
 // Vital Signs Monitor Service
 // ============================================================================
 
-class VitalSignsMonitor {
+export class VitalSignsMonitor {
   private readings: Map<string, VitalSignReading[]> = new Map();
   private profiles: Map<string, PatientProfile> = new Map();
   private baselines: Map<string, PersonalizedBaseline[]> = new Map();

@@ -1154,7 +1154,7 @@ function generateSummaryDocument(patient: PatientProfile, scores: CriterionScore
   }
 
   // DVT prophylaxis for orthopedic and major surgeries
-  if ([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT, SurgeryType.SPINAL_FUSION].includes(patient.surgeryType)) {
+  if (([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT, SurgeryType.SPINAL_FUSION] as SurgeryType[]).includes(patient.surgeryType)) {
     medications.push({
       name: 'Enoxaparin (Lovenox)',
       dosage: '40mg',
@@ -1238,7 +1238,7 @@ function generateSummaryDocument(patient: PatientProfile, scores: CriterionScore
     { name: 'Emergency Services', role: ContactType.EMERGENCY, phone: '911', available: '24/7' },
   ];
 
-  if ([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT, SurgeryType.SPINAL_FUSION].includes(patient.surgeryType)) {
+  if (([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT, SurgeryType.SPINAL_FUSION] as SurgeryType[]).includes(patient.surgeryType)) {
     emergencyContacts.push({
       name: 'Rehabilitation Center',
       role: ContactType.PHYSICAL_THERAPY,
@@ -1529,7 +1529,7 @@ function generateMonitoringPlan(patient: PatientProfile, riskResult: { score: nu
   checkpoints.push(createCheckpoint(startDate, 14, 'in_person', MonitoringPriority.HIGH, patient));
 
   // Day 14: Lab work for certain surgeries
-  if ([SurgeryType.CARDIAC_BYPASS, SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT].includes(patient.surgeryType)) {
+  if (([SurgeryType.CARDIAC_BYPASS, SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT] as SurgeryType[]).includes(patient.surgeryType)) {
     checkpoints.push(createCheckpoint(startDate, 14, 'lab_work', MonitoringPriority.MEDIUM, patient));
   }
 
@@ -1669,7 +1669,7 @@ function getEscalationTriggers(day: number, patient: PatientProfile): string[] {
     'Signs of wound infection',
   ];
 
-  if ([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT].includes(patient.surgeryType)) {
+  if (([SurgeryType.KNEE_REPLACEMENT, SurgeryType.HIP_REPLACEMENT] as SurgeryType[]).includes(patient.surgeryType)) {
     triggers.push('Sudden calf pain or leg swelling (DVT risk)', 'Chest pain or shortness of breath (PE risk)');
   }
   if (patient.surgeryType === SurgeryType.CARDIAC_BYPASS) {
@@ -1685,7 +1685,7 @@ function getEscalationTriggers(day: number, patient: PatientProfile): string[] {
   return triggers;
 }
 
-function generatePreventionStrategies(riskFactors: string[], patient: PatientProfile): string[] {
+function generatePreventionStrategies(riskFactors: string[], _patient: PatientProfile): string[] {
   const strategies: string[] = [];
 
   if (riskFactors.includes('Age over 65')) {

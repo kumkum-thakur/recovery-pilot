@@ -720,7 +720,7 @@ function computePainTrend(snapshots: DailySnapshot[]): PainTrend {
   }
 
   // Trend from linear regression slope
-  const trendLine = computeTrendLine(snapshots.map((s, i) => ({ date: s.date, value: s.painLevel })));
+  const trendLine = computeTrendLine(snapshots.map((s) => ({ date: s.date, value: s.painLevel })));
   const trend: PainTrend['trend'] =
     trendLine.slope < -0.05 ? 'decreasing' : trendLine.slope > 0.05 ? 'increasing' : 'stable';
 
@@ -1210,7 +1210,8 @@ function generateDischargeReadiness(
 ): DischargeReadiness {
   const allSnaps = pipeline.getSnapshotsForPatient(patientId);
   const recent = allSnaps.slice(-7);
-  const patient = pipeline.patients.find((p) => p.patientId === patientId);
+  // patient lookup reserved for future use
+  void pipeline.patients.find((p) => p.patientId === patientId);
 
   const criteria: DischargeReadiness['criteria'] = [];
 
