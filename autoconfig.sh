@@ -14,6 +14,10 @@
 #   Restart only:        ./autoconfig.sh --restart
 #   Health check:        ./autoconfig.sh --health
 #
+# DOMAIN CONFIGURATION:
+#   Set DOMAIN= in your .env file before deploying.
+#   The script reads it automatically — no flags needed.
+#
 # =============================================================================
 
 set -euo pipefail
@@ -42,7 +46,6 @@ step() { echo -e "\n${CYAN}${BOLD}── $1 ──${NC}"; }
 
 # ── Argument Parsing ──────────────────────────────────────────────────────────
 MODE="full"
-DOMAIN_ARG=""
 for arg in "$@"; do
     case "$arg" in
         --deploy)  MODE="deploy" ;;
@@ -50,9 +53,16 @@ for arg in "$@"; do
         --restart) MODE="restart" ;;
         --health)  MODE="health" ;;
         --help|-h) MODE="help" ;;
-        --domain=*) DOMAIN_ARG="${arg#--domain=}" ;;
     esac
 done
+
+# ── Read DOMAIN from .env ────────────────────────────────────────────────────
+# The user sets DOMAIN=app.example.com in .env before running this script.
+# We source it early so DOMAIN is available throughout.
+if [ -f "${SCRIPT_DIR}/.env" ]; then
+    DOMAIN_FROM_ENV=$(grep -E '^DOMAIN=' "${SCRIPT_DIR}/.env" 2>/dev/null | head -1 | cut -d'=' -f2- | tr -d '[:space:]' || true)
+fi
+DOMAIN="${DOMAIN_FROM_ENV:-}"
 
 if [ "$MODE" = "help" ]; then
     echo ""
@@ -62,8 +72,7 @@ if [ "$MODE" = "help" ]; then
     echo ""
     echo "Options:"
     echo "  (no args)          Full local setup: install deps, verify build, start dev server"
-    echo "  --deploy           Full server deployment: system packages, Node.js, Nginx, firewall"
-    echo "  --deploy --domain=app.example.com   Deploy with domain + auto HTTPS (Let's Encrypt)"
+    echo "  --deploy           Full server deployment: system packages, Node.js, Nginx, SSL, firewall"
     echo "  --update           Pull latest code, reinstall deps, rebuild"
     echo "  --restart          Restart the running server (Nginx + API)"
     echo "  --health           Check if the application is running and healthy"
@@ -72,9 +81,11 @@ if [ "$MODE" = "help" ]; then
     echo "Quick start (Google Cloud VM):"
     echo "  1. Create a VM (Ubuntu 22.04+, e2-medium or larger)"
     echo "  2. SSH in and clone the repo"
-    echo "  3. sudo bash autoconfig.sh --deploy --domain=app.yourdomain.com"
-    echo "  4. Point your subdomain A record to the VM's public IP"
-    echo "  5. Wait for DNS propagation, then visit https://app.yourdomain.com"
+    echo "  3. cp .env.example .env"
+    echo "  4. Edit .env and set DOMAIN=app.yourdomain.com"
+    echo "  5. Point your subdomain A record to the VM's public IP"
+    echo "  6. sudo bash autoconfig.sh --deploy"
+    echo "  7. Visit https://app.yourdomain.com"
     echo ""
     exit 0
 fi
@@ -176,7 +187,7 @@ if [ "$MODE" = "health" ]; then
         CERT_EXPIRY=$(openssl x509 -enddate -noout -in "/etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem" 2>/dev/null | cut -d= -f2)
         ok "SSL certificate for ${CERT_DOMAIN} (expires: ${CERT_EXPIRY})"
     else
-        warn "No SSL certificate (use --deploy --domain=yourdomain.com for HTTPS)"
+        warn "No SSL certificate (set DOMAIN= in .env, then run --deploy)"
     fi
 
     # Check .env
@@ -617,7 +628,9 @@ if [ "$MODE" = "deploy" ]; then
     step "Step 7/10 — Configuring Nginx"
 
     PUBLIC_IP=$(curl -s --connect-timeout 5 http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google" 2>/dev/null || curl -s ifconfig.me 2>/dev/null || echo "localhost")
-    DOMAIN="${DOMAIN_ARG:-${DOMAIN:-${PUBLIC_IP}}}"
+    # DOMAIN was already read from .env at the top of the script.
+    # Fall back to public IP if no domain is configured.
+    DOMAIN="${DOMAIN:-${PUBLIC_IP}}"
 
     rm -f /etc/nginx/sites-enabled/default
 
@@ -749,8 +762,8 @@ NGINXEOF
             ok "SSL auto-renewal already active (certbot timer)"
         fi
     else
-        warn "No domain specified — skipping SSL"
-        warn "To add HTTPS later: sudo certbot --nginx -d yourdomain.com"
+        warn "No domain in .env — skipping SSL"
+        warn "To add HTTPS: set DOMAIN=yourdomain.com in .env, then re-run --deploy"
     fi
 
     # ── Auto-update cron ──
@@ -815,7 +828,7 @@ echo "============================================================"
 echo ""
 
 if [ "$MODE" = "deploy" ]; then
-    SHOW_DOMAIN="${DOMAIN_ARG:-${DOMAIN:-${PUBLIC_IP:-localhost}}}"
+    SHOW_DOMAIN="${DOMAIN:-${PUBLIC_IP:-localhost}}"
     if [ -f "/etc/letsencrypt/live/${SHOW_DOMAIN}/fullchain.pem" ] 2>/dev/null; then
         PROTO="https"
     else
