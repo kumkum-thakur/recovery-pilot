@@ -15,9 +15,6 @@ import {
 } from '../nutritionalRiskScreening';
 import type {
   PatientAnthropometrics,
-  NRS2002Input,
-  MUSTInput,
-  SGAInput,
 } from '../nutritionalRiskScreening';
 
 function makeDefaultAnthro(overrides: Partial<PatientAnthropometrics> = {}): PatientAnthropometrics {

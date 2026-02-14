@@ -25,16 +25,6 @@
 
 import { describe, test, expect, beforeAll } from 'vitest';
 
-// Test data generators (will exist at ../test/realWorldTestData)
-import {
-  generateRealisticPatients,
-  generateDoctors,
-  generatePatientDoctorMappings,
-  generateRealisticVitals,
-  generateRealisticMedications,
-  createRng,
-} from './realWorldTestData';
-
 // ML Models
 import {
   RecoveryPredictionModel,
@@ -58,8 +48,6 @@ import {
 } from '../services/mlModels/riskScoringEngine';
 
 import {
-  AnomalyDetectionEngine,
-  createAnomalyDetectionEngine,
   buildBaseline,
   detectVitalSignAnomalies,
   classifyAnomaly,
@@ -787,7 +775,7 @@ describe('Anomaly Detection Engine - Medical Validation', () => {
 // ============================================================================
 
 describe('Drug Interaction Checker - Medical Validation', () => {
-  describe.each(SEEDS)('Round with seed %i', (seed) => {
+  describe.each(SEEDS)('Round with seed %i', (_seed) => {
     let checker: DrugInteractionChecker;
 
     beforeAll(() => {
@@ -1301,7 +1289,7 @@ describe('Medication Adherence Predictor - Medical Validation', () => {
       });
 
       const result = predictor.predict(depressedProfile);
-      const barrierTypes = result.identifiedBarriers.map((b) => b.barrier);
+      const _barrierTypes = result.identifiedBarriers.map((b) => b.barrier);
 
       // At least some expected barriers should be identified
       expect(
@@ -1527,7 +1515,7 @@ describe('Clinical NLP Engine - Medical Validation', () => {
 // ============================================================================
 
 describe('Complication Bayesian Network - Medical Validation', () => {
-  describe.each(SEEDS)('Round with seed %i', (seed) => {
+  describe.each(SEEDS)('Round with seed %i', (_seed) => {
     let network: ComplicationBayesianNetwork;
 
     beforeAll(() => {
@@ -1544,8 +1532,8 @@ describe('Complication Bayesian Network - Medical Validation', () => {
         { variable: 'major_surgery' as const, value: true },
       ];
 
-      const smokerSSI = network.queryComplication('surgical_site_infection' as any, smokerEvidence);
-      const nonSmokerSSI = network.queryComplication('surgical_site_infection' as any, nonSmokerEvidence);
+      const smokerSSI = network.queryComplication('surgical_site_infection' as unknown, smokerEvidence);
+      const nonSmokerSSI = network.queryComplication('surgical_site_infection' as unknown, nonSmokerEvidence);
 
       expect(
         smokerSSI.probabilityTrue,
@@ -1565,8 +1553,8 @@ describe('Complication Bayesian Network - Medical Validation', () => {
         { variable: 'major_surgery' as const, value: true },
       ];
 
-      const diabeticDehiscence = network.queryComplication('wound_dehiscence' as any, diabeticEvidence);
-      const nonDiabeticDehiscence = network.queryComplication('wound_dehiscence' as any, nonDiabeticEvidence);
+      const diabeticDehiscence = network.queryComplication('wound_dehiscence' as unknown, diabeticEvidence);
+      const nonDiabeticDehiscence = network.queryComplication('wound_dehiscence' as unknown, nonDiabeticEvidence);
 
       expect(
         diabeticDehiscence.probabilityTrue,
@@ -1857,13 +1845,13 @@ describe('Cross-Model Validation - Consistency Checks', () => {
   describe.each(SEEDS)('Round with seed %i', (seed) => {
     let recoveryModel: RecoveryPredictionModel;
     let riskEngine: RiskScoringEngine;
-    let rng: () => number;
+    let _rng: () => number;
 
     beforeAll(() => {
       const result = createTrainedModel();
       recoveryModel = result.model;
       riskEngine = createRiskScoringEngine();
-      rng = seededRng(seed);
+      _rng = seededRng(seed);
     });
 
     test('if recovery prediction says DELAYED, risk score should not be LOW', () => {

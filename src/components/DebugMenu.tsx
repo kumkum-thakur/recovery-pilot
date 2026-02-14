@@ -35,18 +35,15 @@ export function DebugMenu() {
   const { currentUser } = useUserStore();
   const currentScenario = getCurrentScenario();
 
-  // Only allow admin users to access the debug menu
-  if (!currentUser || currentUser.role !== UserRole.ADMIN) {
-    return null;
-  }
-
-  console.log('🐛 [DebugMenu] Current scenario:', currentScenario);
-
   /**
    * Keyboard shortcut handler
    * Ctrl+Shift+D (or Cmd+Shift+D on Mac) toggles visibility
    */
   useEffect(() => {
+    if (!currentUser || currentUser.role !== UserRole.ADMIN) {
+      return;
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
       // Check for Ctrl+Shift+D or Cmd+Shift+D
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
@@ -58,7 +55,14 @@ export function DebugMenu() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [currentUser]);
+
+  // Only allow admin users to access the debug menu
+  if (!currentUser || currentUser.role !== UserRole.ADMIN) {
+    return null;
+  }
+
+  console.log('🐛 [DebugMenu] Current scenario:', currentScenario);
 
   /**
    * Handles scenario selection

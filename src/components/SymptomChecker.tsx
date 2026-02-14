@@ -150,7 +150,6 @@ const BODY_REGIONS: BodyRegion[] = [
 // Simulated analysis function
 function analyzeSymptoms(
   selectedSymptoms: string[],
-  _selectedRegions: string[],
 ): {
   results: AnalysisResult[];
   redFlags: RedFlag[];
@@ -397,13 +396,13 @@ export function SymptomChecker() {
 
     // Simulate async analysis
     setTimeout(() => {
-      const analysis = analyzeSymptoms(selectedSymptoms, selectedRegions);
+      const analysis = analyzeSymptoms(selectedSymptoms);
       setResults(analysis.results);
       setRedFlags(analysis.redFlags);
       setFollowUps(analysis.followUps);
       setIsAnalyzing(false);
     }, 1500);
-  }, [selectedSymptoms, selectedRegions]);
+  }, [selectedSymptoms]);
 
   const handleReset = useCallback(() => {
     setSelectedSymptoms([]);

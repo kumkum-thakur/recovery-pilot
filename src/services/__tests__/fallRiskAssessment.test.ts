@@ -11,7 +11,6 @@ import {
   GaitType,
   MentalStatusType,
   TUGRiskCategory,
-  InterventionPriority,
   HIGH_RISK_MEDICATIONS,
 } from '../fallRiskAssessment';
 import type {

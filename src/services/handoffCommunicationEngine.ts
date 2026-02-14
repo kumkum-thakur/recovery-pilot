@@ -617,7 +617,7 @@ function identifyCriticalFlags(patient: PatientData): string[] {
   return flags;
 }
 
-function getApplicableEscalation(patient: PatientData): EscalationCriterion[] {
+function getApplicableEscalation(_patient: PatientData): EscalationCriterion[] {
   const applicable: EscalationCriterion[] = [];
 
   // Always include standard criteria but filter for relevance

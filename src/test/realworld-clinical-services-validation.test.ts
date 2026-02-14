@@ -25,7 +25,6 @@ import {
 import {
   sepsisEarlyWarningSystem,
   SepsisRiskLevel,
-  SepsisStage,
 } from '../services/sepsisEarlyWarningSystem';
 import type { VitalSigns as SepsisVitals, LabValues, VasopressorInfo } from '../services/sepsisEarlyWarningSystem';
 
@@ -52,10 +51,9 @@ import type { PatientContext as PainContext } from '../services/painProtocolEngi
 import {
   nutritionalRiskScreening,
   NutritionRiskLevel,
-  SGAClass,
   BMICategory,
 } from '../services/nutritionalRiskScreening';
-import type { NRS2002Input, MUSTInput, SGAInput, PatientAnthropometrics } from '../services/nutritionalRiskScreening';
+import type { NRS2002Input, MUSTInput, PatientAnthropometrics } from '../services/nutritionalRiskScreening';
 
 import {
   ssiPredictor,
@@ -65,7 +63,6 @@ import {
 import type { PatientSSIProfile, SurgicalProcedure } from '../services/ssiPredictor';
 
 import {
-  bloodGlucoseMonitor,
   classifyGlucose,
   GlucoseStatus,
   calculateCorrectionFactor,
@@ -105,7 +102,6 @@ import { RehabilitationProtocolEngine } from '../services/rehabilitationProtocol
 import {
   labResultInterpreter,
   FlagLevel,
-  REFERENCE_RANGES,
 } from '../services/labResultInterpreter';
 
 import {
@@ -116,7 +112,6 @@ import {
 import type { VitalReading } from '../services/vitalSignForecastingEngine';
 
 import { SymptomPatternRecognition } from '../services/symptomPatternRecognition';
-import type { SymptomDataPoint } from '../services/symptomPatternRecognition';
 
 import {
   qualityMetricsEngine,
@@ -197,11 +192,11 @@ function defaultCapriniFactors(): CapriniRiskFactors {
 describe('Real-World Clinical Services Validation', () => {
 
   // Shared across rounds
-  let allPatients: ReturnType<typeof generateRealisticPatients>;
-  let doctors: ReturnType<typeof generateDoctors>;
+  let _allPatients: ReturnType<typeof generateRealisticPatients>;
+  let _doctors: ReturnType<typeof generateDoctors>;
 
   beforeAll(() => {
-    doctors = generateDoctors();
+    _doctors = generateDoctors();
   });
 
   // ==========================================================================
@@ -217,7 +212,7 @@ describe('Real-World Clinical Services Validation', () => {
 
         test('normal vitals should NOT trigger sepsis warning', () => {
           const vitals = makeSepsisVitals();
-          const labs = makeNormalLabs();
+          const _labs = makeNormalLabs();
           const result = sepsisEarlyWarningSystem.calculateQSOFA(vitals);
           expect(
             result.score,
@@ -284,7 +279,7 @@ describe('Real-World Clinical Services Validation', () => {
         test('screenPatient should return appropriate risk level', () => {
           const rng = createRng(seed);
           const idx = Math.floor(rng() * patients.length);
-          const patient = patients[idx];
+          const _patient = patients[idx];
           const vitals = makeSepsisVitals({
             temperature: 38.9,
             heartRate: 110,
@@ -298,7 +293,7 @@ describe('Real-World Clinical Services Validation', () => {
             vitals, labs, makeNoVasopressors(),
           );
           expect(
-            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as any),
+            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as unknown),
             `Patient with temp 38.9, HR 110, RR 24, SBP 95, WBC 15, lactate 3.5 should be HIGH or CRITICAL risk (got ${alert.riskLevel})`,
           ).toBe(true);
           expect(alert.recommendations.length).toBeGreaterThan(0);
@@ -459,8 +454,8 @@ describe('Real-World Clinical Services Validation', () => {
   describe('4. Pain Protocol Engine (WHO Ladder)', () => {
     SEEDS.forEach((seed) => {
       describe(`Round seed=${seed}`, () => {
-        let patients: ReturnType<typeof generateRealisticPatients>;
-        beforeAll(() => { patients = generateRealisticPatients(50, seed); });
+        let _patients: ReturnType<typeof generateRealisticPatients>;
+        beforeAll(() => { _patients = generateRealisticPatients(50, seed); });
 
         test('mild pain (1-3) should use WHO Step 1 (non-opioid)', () => {
           const step = painProtocolEngine.determineWHOStep(3);
@@ -1331,7 +1326,7 @@ describe('Real-World Clinical Services Validation', () => {
         test('composite score has valid structure', () => {
           const results = QUALITY_MEASURES.slice(0, 5).map(m =>
             qualityMetricsEngine.calculateMeasureResult(m.id, SYNTHETIC_OUTCOMES, '2024-Q4'),
-          ).filter(Boolean) as any[];
+          ).filter(Boolean) as unknown[];
           const composite = qualityMetricsEngine.calculateCompositeScore(results);
           expect(composite.score).toBeGreaterThanOrEqual(0);
           expect(composite.score).toBeLessThanOrEqual(100);
@@ -1471,7 +1466,7 @@ describe('Real-World Clinical Services Validation', () => {
 
           // Sepsis detected
           expect(
-            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as any),
+            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as unknown),
             'Patient must be identified as high/critical sepsis risk before testing discharge readiness',
           ).toBe(true);
 
@@ -1754,7 +1749,7 @@ describe('Real-World Clinical Services Validation', () => {
         'cardiac_bypass', 'cesarean_section',
       ] as const;
       for (const surgeryType of surgeryTypes) {
-        const meds = generateRealisticMedications(surgeryType as any);
+        const meds = generateRealisticMedications(surgeryType as unknown);
         expect(meds.length).toBeGreaterThan(0);
         for (const med of meds) {
           expect(med.name.length).toBeGreaterThan(0);

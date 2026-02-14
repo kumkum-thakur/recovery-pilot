@@ -137,9 +137,9 @@ async function createTriageActionItem(triageData: {
   const patientName = patient.name;
 
   // Find the doctor assigned to this patient
-  const relationships = persistenceService.get<any[]>('recovery_pilot_relationships') || [];
+  const relationships = persistenceService.get<Record<string, unknown>[]>('recovery_pilot_relationships') || [];
   const activeRelationship = relationships.find(
-    (r: any) => r.patientId === triageData.patientId && r.active
+    (r: Record<string, unknown>) => r.patientId === triageData.patientId && r.active
   );
 
   // Create action item model

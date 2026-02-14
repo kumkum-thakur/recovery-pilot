@@ -10,7 +10,6 @@ import {
   PainLevel,
   OpioidName,
   Route,
-  EQUIANALGESIC_TABLE,
 } from '../painProtocolEngine';
 import type { PatientContext } from '../painProtocolEngine';
 

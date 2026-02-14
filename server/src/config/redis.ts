@@ -42,7 +42,7 @@ function createRedisOptions(db: number): Redis.RedisOptions {
   };
 }
 
-function createClusterOptions(): Redis.ClusterNode[] {
+function _createClusterOptions(): Redis.ClusterNode[] {
   return env.REDIS_CLUSTER_NODES
     .split(',')
     .map(node => {

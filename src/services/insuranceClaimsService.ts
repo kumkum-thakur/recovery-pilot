@@ -1264,8 +1264,8 @@ class InsuranceClaimsServiceImpl {
     const allowedRate = networkStatus === NetworkStatus.IN_NETWORK ? 0.80 : 0.60;
     const allowedAmount = Math.round(estimatedTotalCost * allowedRate * 100) / 100;
 
-    let remainingDeductible = Math.max(0, benefits.annualDeductible - benefits.deductibleMet);
-    let remainingOOP = Math.max(0, benefits.outOfPocketMax - benefits.outOfPocketMet);
+    const remainingDeductible = Math.max(0, benefits.annualDeductible - benefits.deductibleMet);
+    const remainingOOP = Math.max(0, benefits.outOfPocketMax - benefits.outOfPocketMet);
     let appliedToDeductible = 0;
     let copayAmount = 0;
     let coinsuranceAmount = 0;

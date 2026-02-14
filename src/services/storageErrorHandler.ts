@@ -49,7 +49,7 @@ export async function withStorageErrorHandling<T>(
           // Retry the operation once after recovery
           try {
             return await operation();
-          } catch (retryError) {
+          } catch (_retryError) {
             throw new Error(
               `Failed to ${operationName} after recovery. Please refresh the page.`
             );

@@ -1175,7 +1175,7 @@ export function detectBehavioralAnomalies(activities: ActivityLog[]): Anomaly[] 
 export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
   // Already has severity from detection, but we refine with clinical context
   let severity = anomaly.severity;
-  let description = anomaly.description;
+  const description = anomaly.description;
   let recommendedAction: string | undefined;
   let clinicalSignificance: 'low' | 'moderate' | 'high' = 'moderate';
 
@@ -1407,12 +1407,13 @@ function generateVitalValue(
       );
       break;
 
-    case VitalType.PAIN_LEVEL:
+    case VitalType.PAIN_LEVEL: {
       // Higher early post-op, decreasing over time
       const painBase = 6 * postOpFactor + 1;
       value = normalRandom(rng, painBase, 1.5);
       value = clamp(Math.round(value), 0, 10);
       break;
+    }
 
     case VitalType.BLOOD_GLUCOSE:
       value = normalRandom(rng,

@@ -4,7 +4,6 @@ import {
   SurgeryType,
   MilestoneCategory,
   PatientFactors,
-  DeviationStatus,
 } from '../recoveryMilestoneTracker';
 
 describe('RecoveryMilestoneTracker', () => {

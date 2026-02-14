@@ -57,7 +57,7 @@ healthRouter.get('/ready', async (_req: Request, res: Response) => {
         },
       },
     });
-  } catch (err) {
+  } catch (_err) {
     res.status(503).json({
       status: 'error',
       message: 'Health check failed',

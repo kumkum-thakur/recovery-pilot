@@ -356,21 +356,21 @@ describe('AppointmentSchedulingEngine', () => {
 
     it('should group appointments by location for multiple appointments', () => {
       const date = getNextWeekday(1); // A Monday
-      const appt1 = engine.scheduleAppointment({
+      const _appt1 = engine.scheduleAppointment({
         patientId: 'patient_1',
         providerId: 'prov_1', // Location A
         type: 'follow_up',
         priority: 'routine',
         scheduledAt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 0),
       });
-      const appt2 = engine.scheduleAppointment({
+      const _appt2 = engine.scheduleAppointment({
         patientId: 'patient_1',
         providerId: 'prov_3', // Location B
         type: 'physical_therapy',
         priority: 'routine',
         scheduledAt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 10, 0),
       });
-      const appt3 = engine.scheduleAppointment({
+      const _appt3 = engine.scheduleAppointment({
         patientId: 'patient_1',
         providerId: 'prov_1', // Location A again
         type: 'wound_check',

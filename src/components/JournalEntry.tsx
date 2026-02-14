@@ -95,14 +95,18 @@ function sliderLevelColor(value: number): string {
 // Confetti sub-component
 // ---------------------------------------------------------------------------
 
-function CelebrationBurst({ isVisible }: { isVisible: boolean }) {
-  const particles = Array.from({ length: 24 }, (_, i) => ({
+function generateParticles() {
+  return Array.from({ length: 24 }, (_, i) => ({
     id: i,
     angle: (i / 24) * 360,
     distance: 40 + Math.random() * 30,
     size: 4 + Math.random() * 4,
     color: ['#8b5cf6', '#34d399', '#fbbf24', '#f472b6', '#60a5fa'][Math.floor(Math.random() * 5)],
   }));
+}
+
+function CelebrationBurst({ isVisible }: { isVisible: boolean }) {
+  const [particles] = useState(generateParticles);
 
   return (
     <AnimatePresence>

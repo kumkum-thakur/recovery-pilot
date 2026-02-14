@@ -189,7 +189,7 @@ function extractFeatureVector(profile: PatientMedicationProfile): number[] {
   ];
 }
 
-const FEATURE_NAMES_LIST = [
+const _FEATURE_NAMES_LIST = [
   'age', 'num_medications', 'doses_per_day', 'has_side_effects',
   'side_effect_severity', 'medication_cost', 'has_insurance',
   'health_literacy', 'depression_score', 'cognitive_score',

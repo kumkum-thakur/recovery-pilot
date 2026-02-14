@@ -12,7 +12,6 @@ import {
   GenevaPEProbability,
   ProphylaxisType,
   CAPRINI_POINTS,
-  PROPHYLAXIS_MEDICATIONS,
 } from '../dvtRiskCalculator';
 import type {
   CapriniRiskFactors,

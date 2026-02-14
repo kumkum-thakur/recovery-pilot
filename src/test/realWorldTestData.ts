@@ -28,7 +28,6 @@ import {
 import {
   UserRole,
   MissionType,
-  MissionStatus,
   CarePlanStatus,
   CarePlanMissionStatus,
   MedicationStatus,
@@ -38,7 +37,6 @@ import type {
   UserModel,
   PatientDoctorRelationship,
   CarePlanModel,
-  MissionModel,
 } from '../types';
 
 // ============================================================================

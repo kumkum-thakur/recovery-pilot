@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authenticateToken, requireRole, AuthenticatedRequest } from '../middleware/authentication.js';
+import { authenticateToken, AuthenticatedRequest } from '../middleware/authentication.js';
 import { processErasureRequest, processPortabilityRequest } from '../middleware/compliance.js';
 import { createLogger } from '../utils/logger.js';
 import { env, COMPLIANCE_CONFIG } from '../config/environment.js';

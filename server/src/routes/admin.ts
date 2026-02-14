@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { authenticateToken, requireRole, AuthenticatedRequest } from '../middleware/authentication.js';
-import { getReadDb, getWriteDb } from '../config/database.js';
+import { authenticateToken, requireRole } from '../middleware/authentication.js';
+import { getReadDb } from '../config/database.js';
 import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('admin');

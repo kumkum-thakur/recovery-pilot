@@ -1407,11 +1407,12 @@ export class NutritionService {
           if (food.fiber_g >= 3) score += 2;
           if (food.carbs_g > 30 && food.fiber_g < 2) score -= 3;
           break;
-        case RecoveryPlanType.SOFT_FOOD_PROGRESSION:
+        case RecoveryPlanType.SOFT_FOOD_PROGRESSION: {
           const soft = ['yogurt', 'egg', 'banana', 'applesauce', 'oatmeal', 'soup', 'broth', 'shake',
             'smoothie', 'mashed', 'cottage', 'ricotta', 'tofu', 'hummus', 'avocado'];
           if (soft.some(s => food.name.toLowerCase().includes(s))) score += 3;
           break;
+        }
         case RecoveryPlanType.IRON_RICH:
           if (food.micronutrients.iron_mg >= 2) score += 3;
           if (food.micronutrients.vitaminC_mg >= 20) score += 2;

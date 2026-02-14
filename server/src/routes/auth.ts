@@ -338,7 +338,7 @@ authRouter.post('/refresh', async (req: Request, res: Response) => {
       refreshToken: newRefreshToken,
       expiresIn: env.JWT_EXPIRY,
     });
-  } catch (err) {
+  } catch (_err) {
     res.status(401).json({ error: 'Token refresh failed' });
   }
 });

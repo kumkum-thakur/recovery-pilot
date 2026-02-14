@@ -6,15 +6,15 @@ import { SymptomChecker } from '../SymptomChecker';
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const { initial, animate, exit, transition, whileHover, whileTap, variants, layout, ...validProps } = props as Record<string, unknown>;
+      const { initial: _initial, animate: _animate, exit: _exit, transition: _transition, whileHover: _whileHover, whileTap: _whileTap, variants: _variants, layout: _layout, ...validProps } = props as Record<string, unknown>;
       return <div {...(validProps as React.HTMLAttributes<HTMLDivElement>)}>{children}</div>;
     },
     button: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const { initial, animate, exit, transition, whileHover, whileTap, variants, layout, ...validProps } = props as Record<string, unknown>;
+      const { initial: _initial, animate: _animate, exit: _exit, transition: _transition, whileHover: _whileHover, whileTap: _whileTap, variants: _variants, layout: _layout, ...validProps } = props as Record<string, unknown>;
       return <button {...(validProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}>{children}</button>;
     },
     span: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const { initial, animate, exit, transition, whileHover, whileTap, variants, layout, ...validProps } = props as Record<string, unknown>;
+      const { initial: _initial, animate: _animate, exit: _exit, transition: _transition, whileHover: _whileHover, whileTap: _whileTap, variants: _variants, layout: _layout, ...validProps } = props as Record<string, unknown>;
       return <span {...(validProps as React.HTMLAttributes<HTMLSpanElement>)}>{children}</span>;
     },
   },

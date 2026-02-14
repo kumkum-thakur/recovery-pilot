@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { getWriteDb } from '../config/database.js';
 import { createLogger } from '../utils/logger.js';
-import { env, COMPLIANCE_CONFIG } from '../config/environment.js';
+import { env } from '../config/environment.js';
 
 const log = createLogger('audit');
 

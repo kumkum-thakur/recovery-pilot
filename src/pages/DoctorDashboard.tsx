@@ -709,38 +709,40 @@ export function DoctorDashboard() {
 
   // Compute stats whenever action items or data changes
   useEffect(() => {
-    try {
-      // Count patients assigned to this doctor
-      const patients = currentUser?.id
-        ? userManagementService.getPatientsForDoctor(currentUser.id)
-        : [];
-      setPatientCount(patients.length);
+    queueMicrotask(() => {
+      try {
+        // Count patients assigned to this doctor
+        const patients = currentUser?.id
+          ? userManagementService.getPatientsForDoctor(currentUser.id)
+          : [];
+        setPatientCount(patients.length);
 
-      // Count resolved today and critical from all action items (not just pending)
-      const allActionItems: ActionItemModel[] = currentUser?.id
-        ? persistenceService.getActionItems(currentUser.id)
-        : [];
+        // Count resolved today and critical from all action items (not just pending)
+        const allActionItems: ActionItemModel[] = currentUser?.id
+          ? persistenceService.getActionItems(currentUser.id)
+          : [];
 
-      const resolvedToday = allActionItems.filter(
-        (item) =>
-          (item.status === ActionItemStatus.APPROVED ||
-            item.status === ActionItemStatus.REJECTED) &&
-          item.updatedAt &&
-          isToday(item.updatedAt)
-      );
-      setResolvedTodayCount(resolvedToday.length);
+        const resolvedToday = allActionItems.filter(
+          (item) =>
+            (item.status === ActionItemStatus.APPROVED ||
+              item.status === ActionItemStatus.REJECTED) &&
+            item.updatedAt &&
+            isToday(item.updatedAt)
+        );
+        setResolvedTodayCount(resolvedToday.length);
 
-      // Critical alerts: red triage items that are still pending
-      const critical = allActionItems.filter(
-        (item) =>
-          item.status === ActionItemStatus.PENDING_DOCTOR &&
-          item.type === ActionItemType.TRIAGE &&
-          item.triageAnalysis === 'red'
-      );
-      setCriticalCount(critical.length);
-    } catch (error) {
-      console.error('Failed to compute stats:', error);
-    }
+        // Critical alerts: red triage items that are still pending
+        const critical = allActionItems.filter(
+          (item) =>
+            item.status === ActionItemStatus.PENDING_DOCTOR &&
+            item.type === ActionItemType.TRIAGE &&
+            item.triageAnalysis === 'red'
+        );
+        setCriticalCount(critical.length);
+      } catch (error) {
+        console.error('Failed to compute stats:', error);
+      }
+    });
   }, [actionItems, currentUser?.id]);
 
   // Active cases = pending action items (from the store which already filters for pending_doctor)
@@ -827,7 +829,7 @@ export function DoctorDashboard() {
     if (currentUser?.id) {
       fetchActionItems(currentUser.id);
     }
-  }, [currentUser?.id, fetchActionItems]);
+  }, [currentUser, fetchActionItems]);
 
   const handleApprove = useCallback(
     async (itemId: string) => {
@@ -844,7 +846,7 @@ export function DoctorDashboard() {
         console.error('Failed to approve item:', error);
       }
     },
-    [approveItem, fetchActionItems, currentUser?.id, detailTarget]
+    [approveItem, fetchActionItems, currentUser, detailTarget]
   );
 
   const handleRejectClick = useCallback(
@@ -873,7 +875,7 @@ export function DoctorDashboard() {
         console.error('Failed to reject item:', error);
       }
     },
-    [rejectItem, fetchActionItems, currentUser?.id]
+    [rejectItem, fetchActionItems, currentUser]
   );
 
   const handleViewDetails = useCallback((item: ActionItem) => {

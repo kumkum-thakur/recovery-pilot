@@ -14,7 +14,7 @@
  * Requirements: 1.1, 2.1, 1.2, 2.2, 15.1, 15.2, Task 21.1, Task 21.2
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { PatientDashboard } from './pages/PatientDashboard';
@@ -59,16 +59,17 @@ import { useUserStore } from './stores/userStore';
 import { useConfigStore } from './stores/configStore';
 import { errorLogger } from './services/errorLogger';
 import { UserRole } from './types';
+import type { UserModel } from './types';
 
 function App() {
   const { isAuthenticated, currentUser } = useUserStore();
   const { loadConfig } = useConfigStore();
-  const [debugInfo, setDebugInfo] = useState({
-    mounted: false,
-    isAuthenticated: false,
-    currentUser: null as any,
-    location: '',
-  });
+  const debugInfo = useMemo(() => ({
+    mounted: true,
+    isAuthenticated,
+    currentUser: currentUser as UserModel | null,
+    location: window.location.pathname,
+  }), [isAuthenticated, currentUser]);
 
   console.log('🎯 App component rendering');
   console.log('🔐 isAuthenticated:', isAuthenticated);
@@ -78,23 +79,7 @@ function App() {
   useEffect(() => {
     console.log('⚙️ Loading config...');
     loadConfig();
-    setDebugInfo({
-      mounted: true,
-      isAuthenticated,
-      currentUser,
-      location: window.location.pathname,
-    });
   }, [loadConfig]);
-
-  // Update debug info when auth state changes
-  useEffect(() => {
-    setDebugInfo({
-      mounted: true,
-      isAuthenticated,
-      currentUser,
-      location: window.location.pathname,
-    });
-  }, [isAuthenticated, currentUser]);
 
   // Global error handler for the entire app
   const handleAppError = (error: Error, errorInfo: React.ErrorInfo) => {

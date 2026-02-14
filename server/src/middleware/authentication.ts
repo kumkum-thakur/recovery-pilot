@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 import bcrypt from 'bcryptjs';
 import { authenticator } from 'otplib';
+import crypto from 'node:crypto';
 import { env } from '../config/environment.js';
 import { sessionRedis } from '../config/redis.js';
 import { createLogger } from '../utils/logger.js';
@@ -182,12 +183,12 @@ export async function revokeAllUserSessions(userId: string): Promise<void> {
 // --- Token Blacklisting ---
 
 export async function blacklistToken(token: string, expiresInSeconds: number): Promise<void> {
-  const hash = require('node:crypto').createHash('sha256').update(token).digest('hex');
+  const hash = crypto.createHash('sha256').update(token).digest('hex');
   await sessionRedis.setex(`${BLACKLIST_PREFIX}${hash}`, expiresInSeconds, '1');
 }
 
 export async function isTokenBlacklisted(token: string): Promise<boolean> {
-  const hash = require('node:crypto').createHash('sha256').update(token).digest('hex');
+  const hash = crypto.createHash('sha256').update(token).digest('hex');
   const result = await sessionRedis.get(`${BLACKLIST_PREFIX}${hash}`);
   return result !== null;
 }
@@ -195,7 +196,7 @@ export async function isTokenBlacklisted(token: string): Promise<boolean> {
 // --- Refresh Token Storage ---
 
 export async function storeRefreshToken(sessionId: string, refreshToken: string): Promise<void> {
-  const hash = require('node:crypto').createHash('sha256').update(refreshToken).digest('hex');
+  const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
   await sessionRedis.setex(
     `${REFRESH_PREFIX}${sessionId}`,
     7 * 24 * 60 * 60,
@@ -206,7 +207,7 @@ export async function storeRefreshToken(sessionId: string, refreshToken: string)
 export async function validateRefreshToken(sessionId: string, refreshToken: string): Promise<boolean> {
   const storedHash = await sessionRedis.get(`${REFRESH_PREFIX}${sessionId}`);
   if (!storedHash) return false;
-  const hash = require('node:crypto').createHash('sha256').update(refreshToken).digest('hex');
+  const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
   return storedHash === hash;
 }
 

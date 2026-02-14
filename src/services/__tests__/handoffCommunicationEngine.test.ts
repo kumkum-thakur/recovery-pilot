@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   handoffCommunicationEngine,
   HANDOFF_TEMPLATES,
-  HandoffFormat,
   IllnessSeverity,
   ShiftType,
   VerificationStatus,

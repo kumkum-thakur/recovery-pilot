@@ -2,12 +2,10 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { authenticateToken, requireRole, requireDataAccess, AuthenticatedRequest } from '../middleware/authentication.js';
 import { patientDataRateLimitMiddleware } from '../middleware/security.js';
-import { requireConsent, ConsentType } from '../middleware/compliance.js';
 import { getReadDb, getWriteDb } from '../config/database.js';
 import { cache } from '../config/redis.js';
-import { encryptPHI, decryptPHI } from '../utils/encryption.js';
+import { decryptPHI } from '../utils/encryption.js';
 import { createLogger } from '../utils/logger.js';
-import { env } from '../config/environment.js';
 
 const log = createLogger('patients');
 

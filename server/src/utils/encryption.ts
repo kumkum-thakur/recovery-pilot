@@ -30,7 +30,7 @@ const IV_LENGTH = 16;
 const AUTH_TAG_LENGTH = 16;
 const KEY_LENGTH = 32; // 256 bits
 const PBKDF2_ITERATIONS = 100000;
-const SALT_LENGTH = 32;
+const _SALT_LENGTH = 32;
 
 let masterKey: Buffer | null = null;
 

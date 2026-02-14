@@ -640,7 +640,7 @@ class SSIPredictor {
     return assessment;
   }
 
-  recordSSIOutcome(patientId: string, hadSSI: boolean, ssiType?: SSIClassification): void {
+  recordSSIOutcome(patientId: string, hadSSI: boolean, _ssiType?: SSIClassification): void {
     const assessment = this.assessments.get(patientId);
     const wasHighRisk = assessment &&
       (assessment.overallRiskLevel === SSIRiskLevel.HIGH || assessment.overallRiskLevel === SSIRiskLevel.VERY_HIGH);

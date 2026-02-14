@@ -299,7 +299,7 @@ describe('SymptomPatternRecognition', () => {
     });
 
     it('should update template lastUpdated timestamp', () => {
-      const before = Date.now();
+      const _before = Date.now();
       engine.recordConfirmedDiagnosis('P003', 'Surgical Site Infection', 10);
       // Detect patterns to indirectly verify the template was updated
       const patterns = engine.detectProdromalPatterns('P003', 'knee_replacement', 10);

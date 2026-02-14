@@ -364,7 +364,7 @@ export function ClinicalNLPPage() {
 // 6. Complication Network Page
 // ===========================================================================
 
-import { createComplicationBayesianNetwork, RiskFactor, Complication } from '../services/mlModels/complicationBayesianNetwork';
+import { createComplicationBayesianNetwork, RiskFactor } from '../services/mlModels/complicationBayesianNetwork';
 
 export function ComplicationNetworkPage() {
   const result = useMemo(() => {

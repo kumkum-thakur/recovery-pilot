@@ -22,18 +22,18 @@ interface MissionCardProps {
 }
 
 /**
- * Get the appropriate icon for a mission type
+ * Renders the appropriate icon for a mission type
  */
-function getMissionIcon(type: MissionType) {
+function MissionIcon({ type, className }: { type: MissionType; className?: string }) {
   switch (type) {
     case MissionType.PHOTO_UPLOAD:
-      return Camera;
+      return <Camera className={className} />;
     case MissionType.MEDICATION_CHECK:
-      return CheckCircle;
+      return <CheckCircle className={className} />;
     case MissionType.EXERCISE_LOG:
-      return Activity;
+      return <Activity className={className} />;
     default:
-      return Activity;
+      return <Activity className={className} />;
   }
 }
 
@@ -69,22 +69,23 @@ function getStatusBadge(status: MissionStatus) {
  * and a context-aware action button
  */
 export function MissionCard({ mission, onAction }: MissionCardProps) {
-  const Icon = getMissionIcon(mission.type);
   const statusBadge = getStatusBadge(mission.status);
   const StatusIcon = statusBadge.icon;
-  
+
   // State for medication count
   const [tabletCount, setTabletCount] = useState<number | null>(null);
-  
+
   // Determine if the mission is actionable (not completed)
   const isActionable = mission.status !== MissionStatus.COMPLETED;
-  
+
   // Load tablet count for medication missions
   useEffect(() => {
     if (mission.type === MissionType.MEDICATION_CHECK) {
       try {
         const count = medicationTracker.getTabletCount('patient-1', 'med-1');
-        setTabletCount(count);
+        queueMicrotask(() => {
+          setTabletCount(count);
+        });
         console.log('💊 [MissionCard] Tablet count loaded:', count);
       } catch (error) {
         console.error('❌ [MissionCard] Error loading tablet count:', error);
@@ -99,7 +100,7 @@ export function MissionCard({ mission, onAction }: MissionCardProps) {
         <div className="flex items-center gap-3">
           {/* Mission icon with gamification styling */}
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-medical-primary to-gamification-accent flex items-center justify-center flex-shrink-0">
-            <Icon className="w-6 h-6 text-white" />
+            <MissionIcon type={mission.type} className="w-6 h-6 text-white" />
           </div>
           
           {/* Mission title */}
@@ -144,7 +145,7 @@ export function MissionCard({ mission, onAction }: MissionCardProps) {
           className="w-full bg-medical-primary hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 min-h-[44px]"
           aria-label={`${mission.actionButtonText} for ${mission.title}`}
         >
-          <Icon className="w-5 h-5" />
+          <MissionIcon type={mission.type} className="w-5 h-5" />
           <span>{mission.actionButtonText}</span>
         </button>
       )}

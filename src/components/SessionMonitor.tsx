@@ -42,6 +42,15 @@ export function SessionMonitor() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   /**
+   * Handles session expiration
+   */
+  const handleSessionExpired = useCallback(() => {
+    setShowWarning(false);
+    logout();
+    navigate('/login', { state: { sessionExpired: true }, replace: true });
+  }, [logout, navigate]);
+
+  /**
    * Checks session status and updates warning state
    */
   const checkSession = useCallback(() => {
@@ -62,16 +71,7 @@ export function SessionMonitor() {
     } else {
       setShowWarning(false);
     }
-  }, [isAuthenticated]);
-
-  /**
-   * Handles session expiration
-   */
-  const handleSessionExpired = useCallback(() => {
-    setShowWarning(false);
-    logout();
-    navigate('/login', { state: { sessionExpired: true }, replace: true });
-  }, [logout, navigate]);
+  }, [isAuthenticated, handleSessionExpired]);
 
   /**
    * Extends the session
@@ -104,7 +104,7 @@ export function SessionMonitor() {
     }
 
     // Check immediately
-    checkSession();
+    queueMicrotask(checkSession);
 
     // Set up interval
     const intervalId = setInterval(checkSession, CHECK_INTERVAL_MS);

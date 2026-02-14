@@ -13,7 +13,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 // --- Clinical Decision Support Services ---
 import {
-  sepsisEarlyWarningSystem,
   calculateQSOFA,
   calculateSIRS,
   calculateSOFA,
@@ -25,25 +24,21 @@ import type {
 } from '../sepsisEarlyWarningSystem';
 
 import {
-  dvtRiskCalculator,
   calculateCapriniScore,
 } from '../dvtRiskCalculator';
 import type { CapriniRiskFactors } from '../dvtRiskCalculator';
 
 import {
-  fallRiskAssessment,
   calculateMorseFallScale,
 } from '../fallRiskAssessment';
 
 import {
-  painProtocolEngine,
   generateWHOLadder,
   determineWHOStep,
 } from '../painProtocolEngine';
 import type { PatientContext } from '../painProtocolEngine';
 
 import {
-  bloodGlucoseMonitor,
   classifyGlucose,
   GlucoseStatus,
 } from '../bloodGlucoseMonitor';
@@ -55,7 +50,6 @@ import {
 import type { LabValue } from '../labResultInterpreter';
 
 import {
-  nutritionalRiskScreening,
   calculateNRS2002,
 } from '../nutritionalRiskScreening';
 import type { NRS2002Input } from '../nutritionalRiskScreening';
