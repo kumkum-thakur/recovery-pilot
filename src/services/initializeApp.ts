@@ -47,7 +47,7 @@ export function initializeApp(): void {
     }
 
     // DEMO MODE: Always force-reinitialize to a fresh state on every startup.
-    // This ensures every launch of autostart.bat gives a clean-slate experience.
+    // This ensures every launch gives a clean-slate experience.
     try {
       console.log('🔄 Demo mode: force-reinitializing to fresh state...');
       reinitializeWithSeedData(persistenceService);
