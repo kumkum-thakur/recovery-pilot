@@ -60,6 +60,9 @@ class RefillEngine {
   /**
    * Process refill workflow using agent service
    */
+  // NOTE: This workflow processes the refill request through insurance/pharmacy checks.
+  // Final dispensing authorization requires doctor approval via the action item system.
+  // The agent service creates a PENDING_DOCTOR action item for physician review.
   private async processRefillWorkflow(requestId: string, medicationName: string): Promise<void> {
     console.log('🔄 [RefillEngine] Processing workflow for request:', requestId);
 

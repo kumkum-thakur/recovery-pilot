@@ -565,7 +565,7 @@ export class MedicationAdherencePredictor {
     return {
       predictedAdherenceRate: predictedRate,
       adherenceLevel,
-      confidence: Math.max(0.3, confidence),
+      confidence, // Raw confidence — no artificial floor. Low values indicate uncertain predictions.
       identifiedBarriers,
       interventions,
       treeVotes,
@@ -599,6 +599,8 @@ export class MedicationAdherencePredictor {
    * Get the synthetic dataset
    */
   getSyntheticDataset(): Array<PatientMedicationProfile & { actualAdherenceRate: number }> {
+    // WARNING: This is SYNTHETIC training data generated algorithmically.
+    // It does NOT represent real patients. Do not use for clinical decisions.
     return [...this.syntheticData];
   }
 

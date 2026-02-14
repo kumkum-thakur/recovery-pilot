@@ -692,6 +692,8 @@ export class PatientClusteringEngine {
    * Get the synthetic dataset
    */
   getSyntheticDataset(): PatientFeatureVector[] {
+    // WARNING: This is SYNTHETIC training data generated algorithmically.
+    // It does NOT represent real patients. Do not use for clinical decisions.
     return [...this.syntheticData];
   }
 

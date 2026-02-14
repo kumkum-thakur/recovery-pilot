@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react';
 import { Settings, Check, RotateCcw, Key } from 'lucide-react';
 import { useConfigStore, useMissionStore, useUserStore } from '../stores';
-import { DemoScenario } from '../types';
+import { DemoScenario, UserRole } from '../types';
 import { resetAdminPassword, clearAllDataAndReinitialize } from '../utils/resetAdminPassword';
 
 /**
@@ -34,6 +34,11 @@ export function DebugMenu() {
   const { missions, fetchMissions } = useMissionStore();
   const { currentUser } = useUserStore();
   const currentScenario = getCurrentScenario();
+
+  // Only allow admin users to access the debug menu
+  if (!currentUser || currentUser.role !== UserRole.ADMIN) {
+    return null;
+  }
 
   console.log('🐛 [DebugMenu] Current scenario:', currentScenario);
 

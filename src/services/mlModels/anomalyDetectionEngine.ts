@@ -1162,6 +1162,10 @@ export function detectBehavioralAnomalies(activities: ActivityLog[]): Anomaly[] 
 // Anomaly Classification
 // ============================================================================
 
+// IMPORTANT: Recommendations below are AI-generated suggestions only.
+// All recommendations require physician review and approval before implementation.
+// No recommendation should be acted upon without a licensed physician's authorization.
+
 /**
  * Classify an anomaly by severity and provide clinical context.
  *
@@ -1181,14 +1185,14 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
         if (anomaly.observedValue > 130 || anomaly.observedValue < 45) {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
-          recommendedAction = 'Immediate clinical review. Assess for arrhythmia, hemorrhage, or sepsis.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Immediate clinical review. Assess for arrhythmia, hemorrhage, or sepsis.';
         } else if (anomaly.observedValue > 110 || anomaly.observedValue < 50) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Monitor closely. Consider ECG and medication review.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Monitor closely. Consider ECG and medication review.';
         } else {
           clinicalSignificance = 'low';
-          recommendedAction = 'Continue monitoring. Note in chart.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Continue monitoring. Note in chart.';
         }
         break;
 
@@ -1196,15 +1200,15 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
         if (anomaly.observedValue >= 39.0) {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
-          recommendedAction = 'High fever post-operative: evaluate for surgical site infection, UTI, or pneumonia. Order blood cultures and CBC.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] High fever post-operative: evaluate for surgical site infection, UTI, or pneumonia. Order blood cultures and CBC.';
         } else if (anomaly.observedValue >= 38.0) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Low-grade fever: monitor trend. Consider wound assessment and urine culture if persistent.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Low-grade fever: monitor trend. Consider wound assessment and urine culture if persistent.';
         } else if (anomaly.observedValue < 35.5) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Hypothermia noted. Assess for sepsis or metabolic causes.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Hypothermia noted. Assess for sepsis or metabolic causes.';
         } else {
           clinicalSignificance = 'low';
         }
@@ -1214,14 +1218,14 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
         if (anomaly.observedValue < 90) {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
-          recommendedAction = 'Severe hypoxia. Immediate assessment. Consider PE, pneumothorax, or pneumonia. Supplemental O2 and stat ABG.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Severe hypoxia. Immediate assessment. Consider PE, pneumothorax, or pneumonia. Supplemental O2 and stat ABG.';
         } else if (anomaly.observedValue < 93) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'high';
-          recommendedAction = 'Hypoxia detected. Assess respiratory status, encourage incentive spirometry. Consider chest X-ray.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Hypoxia detected. Assess respiratory status, encourage incentive spirometry. Consider chest X-ray.';
         } else {
           clinicalSignificance = 'low';
-          recommendedAction = 'Mild desaturation. Encourage deep breathing exercises.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Mild desaturation. Encourage deep breathing exercises.';
         }
         break;
 
@@ -1230,12 +1234,12 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
           recommendedAction = anomaly.observedValue > 180
-            ? 'Hypertensive urgency. Assess symptoms, administer antihypertensive, recheck in 30 minutes.'
-            : 'Hypotension. Assess for hemorrhage, fluid status, or sepsis. IV fluid bolus may be indicated.';
+            ? '[AI SUGGESTION - Requires physician order] Hypertensive urgency. Assess symptoms, administer antihypertensive, recheck in 30 minutes.'
+            : '[AI SUGGESTION - Requires physician order] Hypotension. Assess for hemorrhage, fluid status, or sepsis. IV fluid bolus may be indicated.';
         } else if (anomaly.observedValue > 160 || anomaly.observedValue < 90) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Blood pressure outside target range. Review medications and fluid balance.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Blood pressure outside target range. Review medications and fluid balance.';
         } else {
           clinicalSignificance = 'low';
         }
@@ -1245,11 +1249,11 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
         if (anomaly.observedValue >= 8) {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
-          recommendedAction = 'Severe pain. Reassess pain management plan. Consider breakthrough medication and rule out surgical complications.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Severe pain. Reassess pain management plan. Consider breakthrough medication and rule out surgical complications.';
         } else if (anomaly.observedValue >= 6) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Elevated pain. Review analgesic regimen. Assess for new pathology.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Elevated pain. Review analgesic regimen. Assess for new pathology.';
         } else {
           clinicalSignificance = 'low';
         }
@@ -1260,12 +1264,12 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
           severity = AnomalySeverity.CRITICAL;
           clinicalSignificance = 'high';
           recommendedAction = anomaly.observedValue < 50
-            ? 'Severe hypoglycemia. Administer glucose immediately. Assess diabetic medication dosing.'
-            : 'Severe hyperglycemia. Check for DKA. Insulin correction and hydration.';
+            ? '[AI SUGGESTION - Requires physician order] Severe hypoglycemia. Administer glucose immediately. Assess diabetic medication dosing.'
+            : '[AI SUGGESTION - Requires physician order] Severe hyperglycemia. Check for DKA. Insulin correction and hydration.';
         } else if (anomaly.observedValue < 60 || anomaly.observedValue > 250) {
           severity = AnomalySeverity.WARNING;
           clinicalSignificance = 'moderate';
-          recommendedAction = 'Blood glucose out of range. Review diabetic medications and dietary intake.';
+          recommendedAction = '[AI SUGGESTION - Requires physician order] Blood glucose out of range. Review diabetic medications and dietary intake.';
         } else {
           clinicalSignificance = 'low';
         }
@@ -1277,7 +1281,7 @@ export function classifyAnomaly(anomaly: Anomaly): AnomalyClassification {
   } else {
     // Behavioral anomaly
     clinicalSignificance = anomaly.severity === AnomalySeverity.CRITICAL ? 'high' : 'moderate';
-    recommendedAction = 'Review patient engagement patterns. Consider outreach or care team notification.';
+    recommendedAction = '[AI SUGGESTION - Requires physician order] Review patient engagement patterns. Consider outreach or care team notification.';
   }
 
   return {

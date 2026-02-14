@@ -885,6 +885,15 @@ export function DoctorDashboard() {
     return null;
   }
 
+  // Data ownership verification: Only doctors should see the doctor dashboard
+  if (currentUser.role !== 'doctor') {
+    return (
+      <div className="min-h-screen bg-medical-bg flex items-center justify-center">
+        <p className="text-red-600 font-semibold">Access denied: This dashboard is for authorized physicians only.</p>
+      </div>
+    );
+  }
+
   // ============================================================================
   // Render
   // ============================================================================

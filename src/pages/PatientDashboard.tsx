@@ -129,6 +129,15 @@ export function PatientDashboard() {
     return null;
   }
 
+  // Data ownership verification: Only patients should see the patient dashboard
+  if (currentUser.role !== 'patient') {
+    return (
+      <div className="min-h-screen bg-medical-bg flex items-center justify-center">
+        <p className="text-red-600 font-semibold">Access denied: This dashboard is for patients only.</p>
+      </div>
+    );
+  }
+
   // Calculate recovery progress
   const totalMissions = missions.length;
   const completedMissions = missions.filter(m => m.status === MissionStatus.COMPLETED).length;

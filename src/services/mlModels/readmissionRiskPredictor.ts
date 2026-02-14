@@ -691,6 +691,8 @@ export class ReadmissionRiskPredictor {
    * Get the synthetic dataset (for testing/validation)
    */
   getSyntheticDataset(): Array<PatientProfile & { wasReadmitted: boolean }> {
+    // WARNING: This is SYNTHETIC training data generated algorithmically.
+    // It does NOT represent real patients. Do not use for clinical decisions.
     return [...this.syntheticDataset];
   }
 

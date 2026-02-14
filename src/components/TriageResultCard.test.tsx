@@ -104,7 +104,7 @@ describe('TriageResultCard', () => {
       );
 
       // Check for doctor review section
-      expect(screen.getByText('Doctor Review Requested')).toBeInTheDocument();
+      expect(screen.getByText(/AWAITING DOCTOR APPROVAL/)).toBeInTheDocument();
       expect(screen.getByText(/automatically created a review request/)).toBeInTheDocument();
       
       // Check for action item ID display (truncated)

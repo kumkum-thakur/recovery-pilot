@@ -2954,6 +2954,10 @@ export class EmergencyProtocolService {
     vitals: VitalSigns,
     symptoms: Symptom[]
   ): EmergencyEvent | null {
+    // IMPORTANT: This method auto-notifies contacts for all emergency levels.
+    // For LIFE_THREATENING: Immediate auto-escalation is appropriate.
+    // For EMERGENCY/URGENT: Notifications are sent but care plan changes
+    // should be reviewed by a physician before implementation.
     const assessment = evaluateEmergency(vitals, symptoms);
 
     if (assessment.triggeredRules.length === 0) {
@@ -2972,6 +2976,16 @@ export class EmergencyProtocolService {
 
     // Record the event
     const event = recordEmergencyEvent(patientId, assessment, notifiedNames);
+
+    // Flag for physician confirmation requirement
+    // LIFE_THREATENING: Auto-notify immediately (delay could be fatal)
+    // EMERGENCY/URGENT: Notify but flag for physician confirmation
+    if (assessment.highestPriority !== 'LIFE_THREATENING') {
+      console.warn(
+        `[EmergencyProtocol] ⚠️ PHYSICIAN CONFIRMATION REQUIRED for ${assessment.highestPriority} event. ` +
+        `Patient: ${patientId}. Auto-notifications sent but care plan adjustments pending physician review.`
+      );
+    }
 
     // Generate follow-up protocol
     generateFollowUpProtocol(patientId, event);

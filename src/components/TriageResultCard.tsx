@@ -123,13 +123,16 @@ export function TriageResultCard({
       {/* Red result: Action item notification */}
       {!isGreen && actionItemId && (
         <div className="bg-white/50 rounded-lg p-4 border border-red-200">
-          <h4 className="font-semibold text-red-900 mb-2 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" aria-hidden="true" />
-            Doctor Review Requested
+          <h4 className="font-bold text-red-900 mb-2 text-base flex items-center gap-2 uppercase tracking-wide">
+            <AlertCircle className="w-5 h-5" aria-hidden="true" />
+            ⏳ AWAITING DOCTOR APPROVAL
           </h4>
           <p className="text-sm text-red-800 mb-3">
             I've automatically created a review request for Dr. Smith. They'll
             take a look and get back to you soon.
+          </p>
+          <p className="text-xs text-red-800 font-semibold mb-3 bg-red-100 rounded p-2 border border-red-300">
+            This AI assessment is preliminary and requires physician verification before any clinical action.
           </p>
           <div className="text-xs text-red-700 font-medium">
             Action Item ID: {actionItemId.slice(0, 8)}...
@@ -145,6 +148,11 @@ export function TriageResultCard({
           </p>
         </div>
       )}
+
+      {/* Medical disclaimer — shown for all results */}
+      <p className="text-xs text-gray-500 mt-4 text-center">
+        AI-generated assessment — not a medical diagnosis. Always consult your physician.
+      </p>
     </div>
   );
 }
