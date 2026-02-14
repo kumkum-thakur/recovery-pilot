@@ -265,10 +265,10 @@ function calculateQSOFA(vitals: VitalSigns): QSOFAResult {
 function calculateSIRS(vitals: VitalSigns, labs: LabValues): SIRSResult {
   const details: string[] = [];
 
-  // Temperature < 36°C or > 38.3°C
-  const temperatureAbnormal = vitals.temperature < 36 || vitals.temperature > 38.3;
+  // Temperature < 36°C or > 38°C (ACCP/SCCM 1992 Consensus)
+  const temperatureAbnormal = vitals.temperature < 36 || vitals.temperature > 38;
   if (temperatureAbnormal) {
-    details.push(`Temperature abnormal: ${vitals.temperature}°C (normal: 36-38.3°C)`);
+    details.push(`Temperature abnormal: ${vitals.temperature}°C (normal: 36-38°C)`);
   }
 
   // Heart rate > 90 bpm
@@ -338,7 +338,8 @@ function calculateCardiovascularSOFA(
   // Check vasopressor use first (higher scores)
   if (vasopressors.epinephrine > 0.1 || vasopressors.norepinephrine > 0.1) return 4;
   if (vasopressors.epinephrine > 0 || vasopressors.norepinephrine > 0) return 3;
-  if (vasopressors.dopamine > 5 || vasopressors.dobutamine > 0) return 3;
+  if (vasopressors.dopamine > 5) return 3;
+  if (vasopressors.dobutamine > 0) return 2;
   if (vasopressors.dopamine > 0 && vasopressors.dopamine <= 5) return 2;
   if (map < 70) return 1;
   return 0;

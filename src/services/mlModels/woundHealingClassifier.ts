@@ -329,13 +329,14 @@ function computePUSHScore(assessment: WoundAssessment): PUSHScoreResult {
     assessment.exudateAmount === ExudateAmount.LIGHT ? 1 :
     assessment.exudateAmount === ExudateAmount.MODERATE ? 2 : 3;
 
-  // Surface Type score (0-4)
+  // Surface Type score (0-4) per PUSH Tool 3.0 (NPUAP):
+  // 0=Closed/resurfaced, 1=Epithelial, 2=Granulation, 3=Slough, 4=Necrotic/Eschar
   const surfaceType =
-    assessment.tissueType === TissueType.EPITHELIAL ? 0 :  // closed/resurfaced = 0
-    assessment.tissueType === TissueType.GRANULATION ? 1 :
-    assessment.tissueType === TissueType.SLOUGH ? 2 :
-    assessment.tissueType === TissueType.NECROTIC ? 3 :
-    assessment.tissueType === TissueType.ESCHAR ? 4 : 2; // mixed defaults to slough score
+    assessment.tissueType === TissueType.EPITHELIAL ? 1 :
+    assessment.tissueType === TissueType.GRANULATION ? 2 :
+    assessment.tissueType === TissueType.SLOUGH ? 3 :
+    assessment.tissueType === TissueType.NECROTIC ? 4 :
+    assessment.tissueType === TissueType.ESCHAR ? 4 : 0; // closed/resurfaced = 0
 
   const totalScore = lengthWidth + exudateScore + surfaceType;
   const maxScore = 17;

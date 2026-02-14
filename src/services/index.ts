@@ -124,3 +124,83 @@ export type { SymptomDefinition, ConditionDefinition, AnalysisContext, Condition
 // ML Models - Self Learning Engine
 export { selfLearningEngine, SelfLearningEngine, SLE_STORAGE_KEYS, FeatureName, FEATURE_COUNT, FEATURE_LABELS, RiskLevel as SLERiskLevel } from './mlModels/selfLearningEngine';
 export type { ModelWeights, PatientFeatures, PredictionRecord, PredictionResult as SLEPredictionResult, ThresholdState, RecoveryPattern, KnowledgeRule, CalibrationBucket, CalibrationState, ModelVariant, ABTestState, FeatureDistribution, DriftState, RetrainState, EngineMetadata, EngineStats, LearningUpdate } from './mlModels/selfLearningEngine';
+
+// ============================================================================
+// New ML Models (8 features)
+// ============================================================================
+
+// ML Models - Drug Interaction Checker
+export { drugInteractionChecker } from './mlModels/drugInteractionChecker';
+
+// ML Models - Readmission Risk Predictor
+export { readmissionRiskPredictor } from './mlModels/readmissionRiskPredictor';
+
+// ML Models - Wound Healing Classifier
+export { woundHealingClassifier } from './mlModels/woundHealingClassifier';
+
+// ML Models - Medication Adherence Predictor
+export { medicationAdherencePredictor } from './mlModels/medicationAdherencePredictor';
+
+// ML Models - Clinical NLP Engine
+export { clinicalNLPEngine } from './mlModels/clinicalNLPEngine';
+
+// ML Models - Complication Bayesian Network
+export { complicationBayesianNetwork } from './mlModels/complicationBayesianNetwork';
+
+// ML Models - Patient Clustering Engine
+export { patientClusteringEngine } from './mlModels/patientClusteringEngine';
+
+// ML Models - Treatment Response Predictor
+export { treatmentResponsePredictor } from './mlModels/treatmentResponsePredictor';
+
+// ============================================================================
+// Clinical Decision Support (8 features)
+// ============================================================================
+
+export { sepsisEarlyWarningSystem } from './sepsisEarlyWarningSystem';
+export { dvtRiskCalculator } from './dvtRiskCalculator';
+export { fallRiskAssessment } from './fallRiskAssessment';
+export { painProtocolEngine } from './painProtocolEngine';
+export { nutritionalRiskScreening } from './nutritionalRiskScreening';
+export { ssiPredictor } from './ssiPredictor';
+export { bloodGlucoseMonitor } from './bloodGlucoseMonitor';
+export { antibioticStewardshipEngine } from './antibioticStewardshipEngine';
+
+// ============================================================================
+// Patient Engagement (8 features)
+// ============================================================================
+
+export { medicalTranslationEngine } from './medicalTranslationEngine';
+export { patientEducationEngine } from './patientEducationEngine';
+export { caregiverAccessSystem } from './caregiverAccessSystem';
+export { appointmentSchedulingEngine } from './appointmentSchedulingEngine';
+export { recoveryMilestoneTracker } from './recoveryMilestoneTracker';
+export { patientSatisfactionEngine } from './patientSatisfactionEngine';
+export { symptomPatternRecognition } from './symptomPatternRecognition';
+export { rehabilitationProtocolEngine } from './rehabilitationProtocolEngine';
+
+// ============================================================================
+// Clinical Operations (8 features)
+// ============================================================================
+
+export { clinicalPathwayEngine } from './clinicalPathwayEngine';
+export { handoffCommunicationEngine } from './handoffCommunicationEngine';
+export { labResultInterpreter } from './labResultInterpreter';
+export { vitalSignForecastingEngine } from './vitalSignForecastingEngine';
+export { alertFatigueManager } from './alertFatigueManager';
+export { qualityMetricsEngine } from './qualityMetricsEngine';
+export { bedManagementEngine } from './bedManagementEngine';
+export { staffWorkloadBalancer } from './staffWorkloadBalancer';
+
+// ============================================================================
+// Data & Integration (8 features)
+// ============================================================================
+
+export { fhirResourceEngine } from './fhirResourceEngine';
+export { clinicalDocumentGenerator } from './clinicalDocumentGenerator';
+export { pharmacyFormularyChecker } from './pharmacyFormularyChecker';
+export { sdohScreener } from './sdohScreener';
+export { clinicalTrialMatcher } from './clinicalTrialMatcher';
+export { populationHealthAnalytics } from './populationHealthAnalytics';
+export { predictiveStaffingModel } from './predictiveStaffingModel';
+export { consentManagementEngine } from './consentManagementEngine';

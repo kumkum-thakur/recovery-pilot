@@ -149,21 +149,22 @@ describe('WoundHealingClassifier', () => {
 
   // ---- PUSH Tool Tests ----
 
-  it('should compute PUSH score of 0 for healed wound', () => {
+  it('should compute PUSH score of 1 for epithelial tissue (per PUSH 3.0: epithelial=1, closed=0)', () => {
     const wound = createTestWound({ lengthCm: 0, widthCm: 0, exudateAmount: ExudateAmount.NONE, tissueType: TissueType.EPITHELIAL });
     const result = classifier.computePUSHScore(wound);
-    expect(result.totalScore).toBe(0);
-    expect(result.healingTrajectory).toBe('healed');
+    // Per PUSH Tool 3.0: epithelial tissue scores 1 (closed/resurfaced scores 0)
+    expect(result.totalScore).toBe(1);
+    expect(result.healingTrajectory).toBe('healing_well');
   });
 
   it('should compute correct PUSH score for small granulating wound', () => {
     const wound = createTestWound({ lengthCm: 1.0, widthCm: 0.5, exudateAmount: ExudateAmount.LIGHT, tissueType: TissueType.GRANULATION });
     const result = classifier.computePUSHScore(wound);
-    // Area = 0.5 -> score 2; exudate light -> 1; granulation -> 1 = total 4
+    // Area = 0.5 -> score 2; exudate light -> 1; granulation -> 2 (per PUSH 3.0) = total 5
     expect(result.components.lengthWidth).toBe(2);
     expect(result.components.exudateAmount).toBe(1);
-    expect(result.components.surfaceType).toBe(1);
-    expect(result.totalScore).toBe(4);
+    expect(result.components.surfaceType).toBe(2);
+    expect(result.totalScore).toBe(5);
   });
 
   it('should compute high PUSH score for large necrotic wound', () => {

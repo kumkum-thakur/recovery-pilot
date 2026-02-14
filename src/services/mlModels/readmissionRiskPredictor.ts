@@ -151,15 +151,15 @@ function computeHOSPITALScore(patient: PatientProfile): HOSPITALScoreResult {
   // I: Index type (non-elective admission) = 1 point
   const indexType = patient.admissionType !== AdmissionType.ELECTIVE ? 1 : 0;
 
-  // T: Number of hospital admissions in prior year >= 5 = 2 points; 2-5 = 1 point
-  const admissions = patient.previousAdmissions6Months >= 5 ? 2 :
+  // T: Number of hospital admissions in prior 12 months (per Donze et al.): >5 = 2 points; 2-5 = 1 point
+  const admissions = patient.previousAdmissions6Months > 5 ? 2 :
     patient.previousAdmissions6Months >= 2 ? 1 : 0;
 
   // A: Length of stay >= 5 days = 2 points
   const lengthOfStay = patient.lengthOfStayDays >= 5 ? 2 : 0;
 
   const totalScore = hemoglobin + oncology + sodium + procedureType + indexType + admissions + lengthOfStay;
-  const maxScore = 9;
+  const maxScore = 10;
 
   // Probability mapping from original paper
   const readmissionProbability =
@@ -247,7 +247,7 @@ function computeLACEIndex(patient: PatientProfile): LACEIndexResult {
 // Logistic Regression Model
 // ============================================================================
 
-// Coefficients derived from medical literature meta-analyses
+// Coefficients inspired by published risk factor literature (approximate, not from a single source)
 // Features: [intercept, age_norm, female, los_norm, cci_norm, emergency, prior_admits, ed_visits,
 //            med_count_norm, lives_alone, no_followup, bmi_norm, smoker, diabetes, hf, copd, renal,
 //            oncology, low_hgb, low_sodium, no_caregiver]

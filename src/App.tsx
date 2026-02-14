@@ -38,6 +38,18 @@ import {
   DataExportPage,
   WearablesPage,
 } from './pages/FeaturePages';
+import {
+  DrugInteractionPage, ReadmissionRiskPage, WoundHealingPage, MedicationAdherencePage,
+  ClinicalNLPPage, ComplicationNetworkPage, PatientClusteringPage, TreatmentResponsePage,
+  SepsisWarningPage, DVTRiskPage, FallRiskPage, PainProtocolPage,
+  NutritionalScreeningPage, SSIPredictorPage, BloodGlucosePage, AntibioticStewardshipPage,
+  MedicalTranslationPage, PatientEducationPage, CaregiverAccessPage, AppointmentSchedulingPage,
+  RecoveryMilestonePage, PatientSatisfactionPage, SymptomPatternPage, RehabilitationPage,
+  ClinicalPathwayPage, HandoffCommunicationPage, LabResultPage, VitalForecastPage,
+  AlertFatiguePage, QualityMetricsPage, BedManagementPage, StaffWorkloadPage,
+  FHIRResourcePage, ClinicalDocumentPage, PharmacyFormularyPage, SDOHScreenerPage,
+  ClinicalTrialPage, PopulationHealthPage, PredictiveStaffingPage, ConsentManagementPage,
+} from './pages/ClinicalFeaturePages';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { SessionMonitor } from './components/SessionMonitor';
 import { DebugMenu } from './components/DebugMenu';
@@ -195,6 +207,56 @@ function App() {
           <Route path="/patient/emergency" element={<RouteErrorBoundary routeName="Emergency"><ProtectedRoute requiredRole={UserRole.PATIENT}><EmergencyPage /></ProtectedRoute></RouteErrorBoundary>} />
           <Route path="/patient/export" element={<RouteErrorBoundary routeName="Data Export"><ProtectedRoute requiredRole={UserRole.PATIENT}><DataExportPage /></ProtectedRoute></RouteErrorBoundary>} />
           <Route path="/patient/wearables" element={<RouteErrorBoundary routeName="Wearables"><ProtectedRoute requiredRole={UserRole.PATIENT}><WearablesPage /></ProtectedRoute></RouteErrorBoundary>} />
+
+          {/* Clinical Feature Routes - ML/AI Models */}
+          <Route path="/patient/drug-interactions" element={<RouteErrorBoundary routeName="Drug Interactions"><ProtectedRoute requiredRole={UserRole.PATIENT}><DrugInteractionPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/readmission-risk" element={<RouteErrorBoundary routeName="Readmission Risk"><ProtectedRoute requiredRole={UserRole.PATIENT}><ReadmissionRiskPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/wound-healing" element={<RouteErrorBoundary routeName="Wound Healing"><ProtectedRoute requiredRole={UserRole.PATIENT}><WoundHealingPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/medication-adherence" element={<RouteErrorBoundary routeName="Medication Adherence"><ProtectedRoute requiredRole={UserRole.PATIENT}><MedicationAdherencePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/clinical-nlp" element={<RouteErrorBoundary routeName="Clinical NLP"><ProtectedRoute requiredRole={UserRole.PATIENT}><ClinicalNLPPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/complication-network" element={<RouteErrorBoundary routeName="Complication Network"><ProtectedRoute requiredRole={UserRole.PATIENT}><ComplicationNetworkPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/patient-clustering" element={<RouteErrorBoundary routeName="Patient Clustering"><ProtectedRoute requiredRole={UserRole.PATIENT}><PatientClusteringPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/treatment-response" element={<RouteErrorBoundary routeName="Treatment Response"><ProtectedRoute requiredRole={UserRole.PATIENT}><TreatmentResponsePage /></ProtectedRoute></RouteErrorBoundary>} />
+
+          {/* Clinical Feature Routes - Decision Support */}
+          <Route path="/patient/sepsis-warning" element={<RouteErrorBoundary routeName="Sepsis Warning"><ProtectedRoute requiredRole={UserRole.PATIENT}><SepsisWarningPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/dvt-risk" element={<RouteErrorBoundary routeName="DVT Risk"><ProtectedRoute requiredRole={UserRole.PATIENT}><DVTRiskPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/fall-risk" element={<RouteErrorBoundary routeName="Fall Risk"><ProtectedRoute requiredRole={UserRole.PATIENT}><FallRiskPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/pain-protocol" element={<RouteErrorBoundary routeName="Pain Protocol"><ProtectedRoute requiredRole={UserRole.PATIENT}><PainProtocolPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/nutritional-screening" element={<RouteErrorBoundary routeName="Nutritional Screening"><ProtectedRoute requiredRole={UserRole.PATIENT}><NutritionalScreeningPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/ssi-predictor" element={<RouteErrorBoundary routeName="SSI Predictor"><ProtectedRoute requiredRole={UserRole.PATIENT}><SSIPredictorPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/blood-glucose" element={<RouteErrorBoundary routeName="Blood Glucose"><ProtectedRoute requiredRole={UserRole.PATIENT}><BloodGlucosePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/antibiotic-stewardship" element={<RouteErrorBoundary routeName="Antibiotic Stewardship"><ProtectedRoute requiredRole={UserRole.PATIENT}><AntibioticStewardshipPage /></ProtectedRoute></RouteErrorBoundary>} />
+
+          {/* Clinical Feature Routes - Patient Engagement */}
+          <Route path="/patient/medical-translation" element={<RouteErrorBoundary routeName="Medical Translation"><ProtectedRoute requiredRole={UserRole.PATIENT}><MedicalTranslationPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/patient-education" element={<RouteErrorBoundary routeName="Patient Education"><ProtectedRoute requiredRole={UserRole.PATIENT}><PatientEducationPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/caregiver-access" element={<RouteErrorBoundary routeName="Caregiver Access"><ProtectedRoute requiredRole={UserRole.PATIENT}><CaregiverAccessPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/appointment-scheduling" element={<RouteErrorBoundary routeName="Appointments"><ProtectedRoute requiredRole={UserRole.PATIENT}><AppointmentSchedulingPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/recovery-milestones" element={<RouteErrorBoundary routeName="Recovery Milestones"><ProtectedRoute requiredRole={UserRole.PATIENT}><RecoveryMilestonePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/patient-satisfaction" element={<RouteErrorBoundary routeName="Patient Satisfaction"><ProtectedRoute requiredRole={UserRole.PATIENT}><PatientSatisfactionPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/symptom-patterns" element={<RouteErrorBoundary routeName="Symptom Patterns"><ProtectedRoute requiredRole={UserRole.PATIENT}><SymptomPatternPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/rehabilitation" element={<RouteErrorBoundary routeName="Rehabilitation"><ProtectedRoute requiredRole={UserRole.PATIENT}><RehabilitationPage /></ProtectedRoute></RouteErrorBoundary>} />
+
+          {/* Clinical Feature Routes - Operations */}
+          <Route path="/patient/clinical-pathway" element={<RouteErrorBoundary routeName="Clinical Pathway"><ProtectedRoute requiredRole={UserRole.PATIENT}><ClinicalPathwayPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/handoff-communication" element={<RouteErrorBoundary routeName="Handoff Communication"><ProtectedRoute requiredRole={UserRole.PATIENT}><HandoffCommunicationPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/lab-results" element={<RouteErrorBoundary routeName="Lab Results"><ProtectedRoute requiredRole={UserRole.PATIENT}><LabResultPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/vital-forecast" element={<RouteErrorBoundary routeName="Vital Forecast"><ProtectedRoute requiredRole={UserRole.PATIENT}><VitalForecastPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/alert-fatigue" element={<RouteErrorBoundary routeName="Alert Fatigue"><ProtectedRoute requiredRole={UserRole.PATIENT}><AlertFatiguePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/quality-metrics" element={<RouteErrorBoundary routeName="Quality Metrics"><ProtectedRoute requiredRole={UserRole.PATIENT}><QualityMetricsPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/bed-management" element={<RouteErrorBoundary routeName="Bed Management"><ProtectedRoute requiredRole={UserRole.PATIENT}><BedManagementPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/staff-workload" element={<RouteErrorBoundary routeName="Staff Workload"><ProtectedRoute requiredRole={UserRole.PATIENT}><StaffWorkloadPage /></ProtectedRoute></RouteErrorBoundary>} />
+
+          {/* Clinical Feature Routes - Data & Integration */}
+          <Route path="/patient/fhir-resources" element={<RouteErrorBoundary routeName="FHIR Resources"><ProtectedRoute requiredRole={UserRole.PATIENT}><FHIRResourcePage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/clinical-documents" element={<RouteErrorBoundary routeName="Clinical Documents"><ProtectedRoute requiredRole={UserRole.PATIENT}><ClinicalDocumentPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/pharmacy-formulary" element={<RouteErrorBoundary routeName="Pharmacy Formulary"><ProtectedRoute requiredRole={UserRole.PATIENT}><PharmacyFormularyPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/sdoh-screening" element={<RouteErrorBoundary routeName="SDOH Screening"><ProtectedRoute requiredRole={UserRole.PATIENT}><SDOHScreenerPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/clinical-trials" element={<RouteErrorBoundary routeName="Clinical Trials"><ProtectedRoute requiredRole={UserRole.PATIENT}><ClinicalTrialPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/population-health" element={<RouteErrorBoundary routeName="Population Health"><ProtectedRoute requiredRole={UserRole.PATIENT}><PopulationHealthPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/predictive-staffing" element={<RouteErrorBoundary routeName="Predictive Staffing"><ProtectedRoute requiredRole={UserRole.PATIENT}><PredictiveStaffingPage /></ProtectedRoute></RouteErrorBoundary>} />
+          <Route path="/patient/consent-management" element={<RouteErrorBoundary routeName="Consent Management"><ProtectedRoute requiredRole={UserRole.PATIENT}><ConsentManagementPage /></ProtectedRoute></RouteErrorBoundary>} />
 
           {/* Root Route - Redirect to login or appropriate dashboard */}
           <Route

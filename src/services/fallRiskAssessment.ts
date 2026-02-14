@@ -264,7 +264,7 @@ function calculateHendrichII(input: HendrichIIInput): HendrichIIResult {
     genderMale: input.genderMale ? 1 : 0,
     antiepileptics: input.antiepileptics ? 7 : 0,
     benzodiazepines: input.benzodiazepines ? 1 : 0,
-    getUpAndGoTestRisk: input.getUpAndGoTestRisk ? 1 : 0,
+    getUpAndGoTestRisk: input.getUpAndGoTestRisk ? 4 : 0,
   };
 
   const totalScore = Object.values(components).reduce((sum, v) => sum + v, 0);

@@ -404,7 +404,7 @@ function calculateGenevaPE(criteria: GenevaPECriteria): GenevaPEResult {
     score += 3;
   }
   if (criteria.painOnDeepPalpation) score += 4;
-  if (criteria.unilateralEdema) score += 4;
+  if (criteria.unilateralEdema) score += 3;
 
   let probability: GenevaPEProbability;
   let peRiskPercent: number;

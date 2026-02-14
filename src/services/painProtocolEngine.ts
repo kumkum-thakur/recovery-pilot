@@ -234,7 +234,10 @@ const EQUIANALGESIC_TABLE: EquianalgesicEntry[] = [
   },
   {
     drug: OpioidName.METHADONE,
-    oralDoseMg: 15, parenteralDoseMg: 7.5,
+    // WARNING: Methadone equianalgesic dosing is dose-dependent and NOT a fixed ratio.
+    // Use variable ratios: morphine <90mg/d -> 4:1, 90-300mg/d -> 8:1, >300mg/d -> 12:1+
+    // Values below are approximate for LOW-DOSE conversions only (morphine <90mg/day).
+    oralDoseMg: 20, parenteralDoseMg: 10,
     oralBioavailability: 0.80, halfLifeHours: 25, onsetMinutes: 30, peakHours: 3, durationHours: 8,
   },
   {

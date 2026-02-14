@@ -56,11 +56,11 @@ describe('DrugInteractionChecker', () => {
     expect(result!.clinicalRecommendation).toContain('respiratory');
   });
 
-  it('should detect contraindicated fentanyl-midazolam combination', () => {
+  it('should detect major fentanyl-midazolam combination (used in monitored anesthesia)', () => {
     const result = checker.checkPairInteraction('fentanyl', 'midazolam');
     expect(result).not.toBeNull();
-    expect(result!.severity).toBe(InteractionSeverity.CONTRAINDICATED);
-    expect(result!.severityScore).toBeGreaterThan(0.9);
+    expect(result!.severity).toBe(InteractionSeverity.MAJOR);
+    expect(result!.severityScore).toBeGreaterThan(0.8);
   });
 
   it('should detect NSAID-anticoagulant bleeding risk', () => {
@@ -119,7 +119,7 @@ describe('DrugInteractionChecker', () => {
 
   it('should identify highest severity in medication list', () => {
     const result = checker.checkMedicationList(['fentanyl', 'midazolam', 'acetaminophen']);
-    expect(result.highestSeverity).toBe(InteractionSeverity.CONTRAINDICATED);
+    expect(result.highestSeverity).toBe(InteractionSeverity.MAJOR);
   });
 
   it('should return no interactions for single drug', () => {

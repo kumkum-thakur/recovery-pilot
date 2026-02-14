@@ -1,0 +1,1573 @@
+/**
+ * ClinicalFeaturePages - Page components for 40 clinical features
+ *
+ * Each page imports its corresponding service, computes real results
+ * using sample data, and displays key metrics using the same card/layout
+ * patterns as FeaturePages.tsx.
+ */
+
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../stores/userStore';
+import { Header } from '../components/Header';
+import {
+  ArrowLeft,
+  Activity,
+  AlertTriangle,
+  Beaker,
+  BedDouble,
+  Brain,
+  CalendarDays,
+  Clipboard,
+  ClipboardList,
+  FileText,
+  FlaskConical,
+  Heart,
+  HeartPulse,
+  Layers,
+  ListChecks,
+  Pill,
+  Scale,
+  ScrollText,
+  Shield,
+  ShieldCheck,
+  Stethoscope,
+  Syringe,
+  Target,
+  TestTube,
+  Thermometer,
+  TrendingUp,
+  Users,
+  Zap,
+} from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// Shared layout components (mirrors FeaturePages.tsx pattern)
+// ---------------------------------------------------------------------------
+
+interface PageLayoutProps {
+  children: React.ReactNode;
+  title?: string;
+}
+
+function PageLayout({ children, title }: PageLayoutProps) {
+  const { currentUser, logout } = useUserStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (!currentUser) return null;
+
+  return (
+    <div className="min-h-screen bg-medical-bg flex flex-col">
+      <Header
+        userName={currentUser.name}
+        streakCount={currentUser.streakCount ?? 0}
+        onLogout={handleLogout}
+      />
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => navigate('/patient')}
+            className="flex items-center gap-2 text-sm text-medical-primary font-medium hover:text-blue-700 transition-colors mb-3"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+          {title && (
+            <h2 className="text-2xl font-bold text-medical-text">{title}</h2>
+          )}
+        </div>
+        {children}
+      </main>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  iconBg,
+  iconColor,
+}: {
+  label: string;
+  value: string | number;
+  icon: typeof Activity;
+  iconBg: string;
+  iconColor: string;
+}) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-3">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}>
+        <Icon className={`w-5 h-5 ${iconColor}`} />
+      </div>
+      <div>
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-lg font-bold text-medical-text">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function InfoRow({ label, value, color }: { label: string; value: string | number; color?: string }) {
+  return (
+    <div className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-b-0">
+      <span className="text-sm text-gray-600">{label}</span>
+      <span className={`text-sm font-semibold ${color ?? 'text-medical-text'}`}>{value}</span>
+    </div>
+  );
+}
+
+// ===========================================================================
+// 1. Drug Interaction Page
+// ===========================================================================
+
+import { createDrugInteractionChecker } from '../services/mlModels/drugInteractionChecker';
+
+export function DrugInteractionPage() {
+  const result = useMemo(() => {
+    const checker = createDrugInteractionChecker();
+    const interaction = checker.checkPairInteraction('warfarin', 'aspirin');
+    const drugs = checker.getAllDrugs();
+    return { interaction, drugCount: drugs.length };
+  }, []);
+
+  return (
+    <PageLayout title="Drug Interaction Checker">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">AI-powered drug-drug interaction detection with FDA-sourced data and CYP450 enzyme modeling.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Drug Database" value={result.drugCount} icon={Pill} iconBg="bg-rose-100" iconColor="text-rose-600" />
+          <StatCard label="Severity" value={result.interaction?.severity ?? 'N/A'} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Sample Check: Warfarin + Aspirin">
+          {result.interaction ? (
+            <>
+              <InfoRow label="Severity" value={result.interaction.severity} color="text-red-600" />
+              <InfoRow label="Mechanism" value={result.interaction.mechanism} />
+              <InfoRow label="Confidence" value={`${(result.interaction.confidence * 100).toFixed(0)}%`} />
+              <p className="text-xs text-gray-500 mt-2">{result.interaction.recommendation}</p>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">No interaction found.</p>
+          )}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 2. Readmission Risk Page
+// ===========================================================================
+
+import { createReadmissionRiskPredictor, type PatientProfile as ReadmitProfile, AdmissionType, ProcedureType } from '../services/mlModels/readmissionRiskPredictor';
+
+export function ReadmissionRiskPage() {
+  const result = useMemo(() => {
+    const predictor = createReadmissionRiskPredictor();
+    const sample: ReadmitProfile = {
+      patientId: 'demo-001', age: 68, gender: 'male', hemoglobinAtDischarge: 11.2,
+      sodiumAtDischarge: 136, hasOncologyDiagnosis: false, procedureType: ProcedureType.ORTHOPEDIC,
+      admissionType: AdmissionType.ELECTIVE, lengthOfStayDays: 5, previousAdmissions6Months: 1,
+      emergencyVisits6Months: 0, charlsonComorbidityIndex: 3, comorbidities: ['hypertension', 'diabetes'],
+      dischargeDisposition: 'home', insuranceType: 'medicare', livesAlone: false, hasCaregiver: true,
+      medicationCount: 8, hasFollowUpScheduled: true, bmi: 29, isSmoker: false, hasDiabetes: true,
+      hasHeartFailure: false, hasCOPD: false, hasRenalDisease: false,
+    };
+    return predictor.predict(sample);
+  }, []);
+
+  return (
+    <PageLayout title="Readmission Risk Predictor">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">HOSPITAL and LACE scoring systems with logistic regression for 30-day readmission risk prediction.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="HOSPITAL Score" value={`${result.hospitalScore.totalScore}/${result.hospitalScore.maxScore}`} icon={Clipboard} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="LACE Index" value={`${result.laceIndex.totalScore}/${result.laceIndex.maxScore}`} icon={Activity} iconBg="bg-purple-100" iconColor="text-purple-600" />
+          <StatCard label="Risk Level" value={result.overallRiskLevel} icon={AlertTriangle} iconBg="bg-red-100" iconColor="text-red-600" />
+        </div>
+        <SectionCard title="Prediction Details">
+          <InfoRow label="30-Day Readmission Probability" value={`${(result.logisticPrediction.probability * 100).toFixed(1)}%`} />
+          <InfoRow label="HOSPITAL Risk" value={result.hospitalScore.riskLevel} />
+          <InfoRow label="LACE Risk" value={result.laceIndex.riskLevel} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 3. Wound Healing Page
+// ===========================================================================
+
+import { createWoundHealingClassifier, TissueType, ExudateType, ExudateAmount, WoundEdge, PeriwoundCondition } from '../services/mlModels/woundHealingClassifier';
+
+export function WoundHealingPage() {
+  const result = useMemo(() => {
+    const classifier = createWoundHealingClassifier();
+    return classifier.assessWound({
+      woundId: 'w-001', patientId: 'demo-001', measurementDate: new Date().toISOString(),
+      lengthCm: 3.2, widthCm: 2.1, depthCm: 0.5, tissueBedComposition: { epithelial: 10, granulation: 50, slough: 30, necrotic: 10, eschar: 0 },
+      predominantTissueType: TissueType.GRANULATION, exudateType: ExudateType.SEROUS, exudateAmount: ExudateAmount.MODERATE,
+      woundEdge: WoundEdge.WELL_DEFINED, periwoundCondition: PeriwoundCondition.ERYTHEMA, painLevel: 4,
+      signsOfInfection: false, hasTunneling: false, hasUndermining: false, isOnAntibiotic: false,
+      isDiabetic: true, isSmoker: false, albumin: 3.2, hba1c: 7.5,
+    });
+  }, []);
+
+  return (
+    <PageLayout title="Wound Healing Classifier">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Wagner classification, Braden Scale, and PUSH Tool scoring for comprehensive wound assessment.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Wagner Grade" value={result.wagnerResult.grade} icon={Target} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="PUSH Score" value={result.pushResult.totalScore} icon={TrendingUp} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Healing Phase" value={result.healingPhase} icon={Heart} iconBg="bg-rose-100" iconColor="text-rose-600" />
+        </div>
+        <SectionCard title="Assessment Summary">
+          <InfoRow label="Wagner Description" value={result.wagnerResult.description.slice(0, 60) + '...'} />
+          <InfoRow label="Braden Score" value={`${result.bradenResult.totalScore}/${result.bradenResult.maxScore}`} />
+          <InfoRow label="Braden Risk" value={result.bradenResult.riskLevel} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 4. Medication Adherence Page
+// ===========================================================================
+
+import { createMedicationAdherencePredictor } from '../services/mlModels/medicationAdherencePredictor';
+
+export function MedicationAdherencePage() {
+  const result = useMemo(() => {
+    const predictor = createMedicationAdherencePredictor();
+    const mmas = predictor.scoreMMA8({
+      q1_forgetToTake: true, q2_missedLastTwoWeeks: false, q3_stoppedFeelWorse: false,
+      q4_forgetOnTravel: true, q5_tookYesterday: true, q6_stoppedFeelBetter: false,
+      q7_feelHassled: false, q8_difficultyRemembering: 'once_in_a_while',
+    });
+    const prediction = predictor.predict({
+      patientId: 'demo-001', age: 62, gender: 'female', numberOfMedications: 6, dosesPerDay: 3,
+      hasExperiencedSideEffects: true, sideEffectSeverity: 4, monthlyMedicationCost: 120,
+      hasInsuranceCoverage: true, healthLiteracyScore: 6, depressionScreenScore: 2, cognitiveScore: 8,
+      hasSocialSupport: true, livesAlone: false, hasTransportationAccess: true, hasSymptoms: true,
+      durationOfTherapyMonths: 3, hasAutoRefill: false, usesPillOrganizer: true,
+      hasPharmacistCounseling: false, numberOfDailyDoseTimings: 3, isNewPrescription: false,
+      hasHistoryOfNonadherence: false, comorbidityCount: 3, employmentStatus: 'retired',
+    });
+    return { mmas, prediction };
+  }, []);
+
+  return (
+    <PageLayout title="Medication Adherence Predictor">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">MMAS-8 scoring with random forest ensemble for adherence prediction and barrier identification.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="MMAS-8 Score" value={result.mmas.score.toFixed(1)} icon={Pill} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Adherence Level" value={result.mmas.level} icon={ListChecks} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Predicted Rate" value={`${(result.prediction.predictedAdherenceRate * 100).toFixed(0)}%`} icon={TrendingUp} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        </div>
+        <SectionCard title="Identified Barriers">
+          {result.prediction.identifiedBarriers.slice(0, 3).map((b, i) => (
+            <InfoRow key={i} label={b.barrier} value={`Severity: ${b.severity.toFixed(1)}`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 5. Clinical NLP Page
+// ===========================================================================
+
+import { createClinicalNLPEngine } from '../services/mlModels/clinicalNLPEngine';
+
+export function ClinicalNLPPage() {
+  const result = useMemo(() => {
+    const engine = createClinicalNLPEngine();
+    const extraction = engine.extractEntities(
+      'Patient is a 65yo male, POD #3 after total knee arthroplasty. Currently on morphine 4mg IV q4h and cefazolin 1g IV q8h. No signs of DVT. WBC 11.2, Hgb 10.8. Wound shows granulation tissue, no erythema.'
+    );
+    const dictSize = engine.getDictionarySize();
+    return { extraction, dictSize };
+  }, []);
+
+  return (
+    <PageLayout title="Clinical NLP Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Named entity recognition with 500+ medical terms, negation detection (NegEx), and relation extraction.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Entities Found" value={result.extraction.entities.length} icon={Brain} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
+          <StatCard label="Relations" value={result.extraction.relations.length} icon={Layers} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Dictionary Size" value={result.dictSize} icon={ScrollText} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Extracted Entities (Sample Note)">
+          {result.extraction.entities.slice(0, 6).map((e) => (
+            <InfoRow key={e.id} label={e.text} value={`${e.type}${e.isNegated ? ' (negated)' : ''}`} color={e.isNegated ? 'text-gray-400' : undefined} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 6. Complication Network Page
+// ===========================================================================
+
+import { createComplicationBayesianNetwork, RiskFactor, Complication } from '../services/mlModels/complicationBayesianNetwork';
+
+export function ComplicationNetworkPage() {
+  const result = useMemo(() => {
+    const network = createComplicationBayesianNetwork();
+    const inference = network.queryAllComplications([
+      { variable: RiskFactor.AGE_OVER_65, value: true },
+      { variable: RiskFactor.DIABETES, value: true },
+      { variable: RiskFactor.MAJOR_SURGERY, value: true },
+      { variable: RiskFactor.OBESITY, value: true },
+    ]);
+    return inference;
+  }, []);
+
+  return (
+    <PageLayout title="Complication Bayesian Network">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Directed acyclic graph with conditional probability tables for 9 post-operative complications and 16 risk factors.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Risk Level" value={result.riskLevel} icon={AlertTriangle} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Overall Score" value={`${(result.overallRiskScore * 100).toFixed(1)}%`} icon={Activity} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="Highest Risk" value={result.highestRiskComplication.variable.replace(/_/g, ' ').slice(0, 20)} icon={Zap} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Complication Probabilities">
+          {result.complications.slice(0, 5).map((c) => (
+            <InfoRow key={c.variable} label={c.variable.replace(/_/g, ' ')} value={`${(c.probabilityTrue * 100).toFixed(1)}% (${c.riskMultiplier.toFixed(1)}x)`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 7. Patient Clustering Page
+// ===========================================================================
+
+import { createPatientClusteringEngine } from '../services/mlModels/patientClusteringEngine';
+
+export function PatientClusteringPage() {
+  const result = useMemo(() => {
+    const engine = createPatientClusteringEngine();
+    return engine.cluster(4);
+  }, []);
+
+  return (
+    <PageLayout title="Patient Clustering Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">K-means clustering with silhouette scoring to identify recovery phenotypes across 200+ patient profiles.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Total Patients" value={result.totalPatients} icon={Users} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Clusters (k)" value={result.k} icon={Layers} iconBg="bg-purple-100" iconColor="text-purple-600" />
+          <StatCard label="Silhouette" value={result.silhouetteScore.toFixed(3)} icon={TrendingUp} iconBg="bg-teal-100" iconColor="text-teal-600" />
+        </div>
+        <SectionCard title="Cluster Phenotypes">
+          {result.clusters.map((c) => (
+            <div key={c.clusterId} className="py-2 border-b border-gray-50 last:border-b-0">
+              <div className="flex justify-between">
+                <span className="text-sm font-semibold text-medical-text">{c.phenotype.replace(/_/g, ' ')}</span>
+                <span className="text-sm text-gray-500">{c.size} patients</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">{c.phenotypeDescription.slice(0, 100)}...</p>
+            </div>
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 8. Treatment Response Page
+// ===========================================================================
+
+import { createTreatmentResponsePredictor, TreatmentCategory, PainTreatmentType } from '../services/mlModels/treatmentResponsePredictor';
+
+export function TreatmentResponsePage() {
+  const result = useMemo(() => {
+    const predictor = createTreatmentResponsePredictor();
+    return predictor.predict(
+      {
+        patientId: 'demo-001', age: 55, gender: 'male', bmi: 28,
+        comorbidities: ['hypertension', 'diabetes'], geneticsProxy: {
+          cyp2d6Metabolizer: 'normal', opioidSensitivity: 'normal', inflammatoryProfile: 'moderate', healingCapacity: 'normal',
+        },
+        priorResponses: [], currentPainLevel: 7, currentWoundStatus: 5, currentMobilityScore: 4,
+        infectionPresent: false, daysSinceSurgery: 3, renalFunction: 85, hepaticFunction: 'normal',
+        isSmoker: false, hasDiabetes: true, isImmunosuppressed: false, nutritionStatus: 'adequate',
+      },
+      { category: TreatmentCategory.PAIN_MANAGEMENT, specificType: PainTreatmentType.MULTIMODAL },
+    );
+  }, []);
+
+  return (
+    <PageLayout title="Treatment Response Predictor">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Gradient boosted trees predicting treatment effectiveness for pain, antibiotics, PT, and wound care.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Response" value={result.predictedResponse} icon={TrendingUp} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Score" value={`${(result.responseScore * 100).toFixed(0)}%`} icon={Target} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Side Effect Risk" value={`${(result.riskOfSideEffects * 100).toFixed(0)}%`} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Prediction Details">
+          <InfoRow label="Confidence" value={`${(result.confidence * 100).toFixed(0)}%`} />
+          <InfoRow label="Time to Effect" value={result.expectedTimeToEffect} />
+          <p className="text-xs text-gray-500 mt-2">{result.explanation}</p>
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 9. Sepsis Warning Page
+// ===========================================================================
+
+import { sepsisEarlyWarningSystem } from '../services/sepsisEarlyWarningSystem';
+
+export function SepsisWarningPage() {
+  const result = useMemo(() => {
+    const vitals = {
+      timestamp: new Date().toISOString(), heartRate: 105, systolicBP: 88, diastolicBP: 55,
+      meanArterialPressure: 66, respiratoryRate: 24, temperature: 38.6, spo2: 93,
+      gcsScore: 13, supplementalO2: true,
+    };
+    const labs = {
+      wbc: 14.2, lactate: 2.8, creatinine: 1.6, bilirubin: 1.1, platelets: 140,
+      pao2: 72, fio2: 0.4, bandNeutrophils: 12, glucose: 165, pco2: 30,
+    };
+    const qsofa = sepsisEarlyWarningSystem.calculateQSOFA(vitals);
+    const sirs = sepsisEarlyWarningSystem.calculateSIRS(vitals, labs);
+    return { qsofa, sirs };
+  }, []);
+
+  return (
+    <PageLayout title="Sepsis Early Warning System">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Real-time qSOFA, SIRS, and SOFA scoring for early sepsis detection with automated alert escalation.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="qSOFA Score" value={`${result.qsofa.score}/3`} icon={Thermometer} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="SIRS Criteria" value={`${result.sirs.criteriaCount}/4`} icon={HeartPulse} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="Sepsis Likely" value={result.qsofa.sepsisLikely ? 'Yes' : 'No'} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="qSOFA Components">
+          <InfoRow label="Altered Mentation (GCS < 15)" value={result.qsofa.alteredMentation ? 'Met' : 'Not Met'} color={result.qsofa.alteredMentation ? 'text-red-600' : 'text-green-600'} />
+          <InfoRow label="Low Systolic BP (<=100)" value={result.qsofa.lowSystolicBP ? 'Met' : 'Not Met'} color={result.qsofa.lowSystolicBP ? 'text-red-600' : 'text-green-600'} />
+          <InfoRow label="Elevated RR (>=22)" value={result.qsofa.elevatedRR ? 'Met' : 'Not Met'} color={result.qsofa.elevatedRR ? 'text-red-600' : 'text-green-600'} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 10. DVT Risk Page
+// ===========================================================================
+
+import { dvtRiskCalculator } from '../services/dvtRiskCalculator';
+
+export function DVTRiskPage() {
+  const result = useMemo(() => {
+    const caprini = dvtRiskCalculator.calculateCapriniScore({
+      age41to60: false, age61to74: true, age75plus: false,
+      minorSurgery: false, majorOpenSurgery: true, arthroscopicSurgery: false,
+      laparoscopicSurgery: false, bmi25to30: false, swollenLegs: false,
+      varicoseVeins: true, pregnancy: false, postpartum: false,
+      historyUnexplainedStillbirth: false, oralContraceptives: false,
+      hormoneReplacementTherapy: false, sepsis: false, seriousLungDisease: false,
+      abnormalPulmonaryFunction: false, acuteMI: false, chf: false,
+      medicalPatientBedRest: false, inflammatoryBowelDisease: false,
+      malignancy: false, confinedToBedMoreThan72h: true,
+      immobilizingCast: false, centralVenousAccess: false,
+      historyOfDVT: false, familyHistoryOfVTE: false,
+      factorVLeiden: false, prothrombin20210A: false, lupusAnticoagulant: false,
+      anticardiolipinAntibodies: false, heparinInducedThrombocytopenia: false,
+      otherThrombophilia: false, stroke: false, multipleTrauma: false,
+      acuteSpinalCordInjury: false, hipPelvisLegFracture: false,
+    } as never);
+    const wells = dvtRiskCalculator.calculateWellsDVT({
+      activeCancer: false, paralysisParesisImmobilization: false,
+      bedriddenMoreThan3Days: true, localizedTenderness: false,
+      entireLegSwollen: false, calfSwellingMoreThan3cm: false,
+      pittingEdema: false, collateralSuperficialVeins: false,
+      previousDVT: false, alternativeDiagnosisLikely: false,
+    });
+    return { caprini, wells };
+  }, []);
+
+  return (
+    <PageLayout title="DVT Risk Calculator">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Caprini VTE risk score and Wells DVT/PE probability assessment with prophylaxis recommendations.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Caprini Score" value={result.caprini.totalScore} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Wells DVT Score" value={result.wells.score} icon={Heart} iconBg="bg-rose-100" iconColor="text-rose-600" />
+        </div>
+        <SectionCard title="Risk Assessment">
+          <InfoRow label="Caprini Risk Level" value={result.caprini.riskLevel} />
+          <InfoRow label="Wells Probability" value={result.wells.probability} />
+          <InfoRow label="Prophylaxis" value={String(result.caprini.recommendedProphylaxis)} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 11. Fall Risk Page
+// ===========================================================================
+
+import { fallRiskAssessment, GaitType, MentalStatusType } from '../services/fallRiskAssessment';
+
+export function FallRiskPage() {
+  const result = useMemo(() => {
+    const morse = fallRiskAssessment.calculateMorseFallScale({
+      historyOfFalling: true, secondaryDiagnosis: true,
+      ambulatoryAid: 'crutch_cane_walker',
+      ivOrHeparinLock: true, gait: 'weak' as GaitType, mentalStatus: 'forgets_limitations' as MentalStatusType,
+    });
+    const hendrich = fallRiskAssessment.calculateHendrichII({
+      confusion: true, alteredElimination: true,
+      dizzinessVertigo: true, genderMale: true, antiepileptics: false,
+      benzodiazepines: true, getUpAndGoTestRisk: true,
+    } as never);
+    return { morse, hendrich };
+  }, []);
+
+  return (
+    <PageLayout title="Fall Risk Assessment">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Morse Fall Scale and Hendrich II scoring with intervention recommendations and high-risk medication checks.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Morse Score" value={result.morse.totalScore} icon={AlertTriangle} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="Morse Risk" value={result.morse.riskLevel} icon={Shield} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Hendrich II" value={result.hendrich.totalScore} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Assessment">
+          <p className="text-sm text-gray-600 py-1">{result.morse.interpretation}</p>
+          <p className="text-sm text-gray-600 py-1">{result.hendrich.interpretation}</p>
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 12. Pain Protocol Page
+// ===========================================================================
+
+import { painProtocolEngine } from '../services/painProtocolEngine';
+
+export function PainProtocolPage() {
+  const result = useMemo(() => {
+    const whoStep = painProtocolEngine.determineWHOStep(7);
+    const ladder = painProtocolEngine.generateWHOLadder(7, {
+      age: 65, weight: 80, renalFunction: 'moderate_impairment' as never, hepaticFunction: 'normal' as never,
+      isOpioidNaive: true, allergies: [], currentMedications: [],
+      surgeryType: 'orthopedic' as never, daysSinceSurgery: 2,
+    });
+    return { whoStep, ladder };
+  }, []);
+
+  return (
+    <PageLayout title="Pain Protocol Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">WHO Analgesic Ladder, multimodal protocols, PCA pump configuration, and equianalgesic dosing.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="WHO Step" value={result.whoStep} icon={Stethoscope} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
+          <StatCard label="Primary Agent" value={result.ladder.primaryAgent?.drug ?? 'N/A'} icon={Pill} iconBg="bg-emerald-100" iconColor="text-emerald-600" />
+        </div>
+        <SectionCard title="WHO Ladder Protocol (Pain 7/10)">
+          <InfoRow label="Step" value={result.ladder.step} />
+          {result.ladder.adjuvants.slice(0, 3).map((a, i) => (
+            <InfoRow key={i} label={`Adjuvant ${i + 1}`} value={`${a.drug} ${a.dose} ${a.route}`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 13. Nutritional Screening Page
+// ===========================================================================
+
+import { nutritionalRiskScreening } from '../services/nutritionalRiskScreening';
+
+export function NutritionalScreeningPage() {
+  const result = useMemo(() => {
+    const bmi = nutritionalRiskScreening.calculateBMI(78, 172);
+    const must = nutritionalRiskScreening.calculateMUST({
+      bmi: bmi.value, unintentionalWeightLoss: 'five_to_ten_percent' as never,
+      acutelyIll: true,
+    });
+    return { bmi, must };
+  }, []);
+
+  return (
+    <PageLayout title="Nutritional Risk Screening">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">NRS-2002, MUST, and SGA screening tools with BMR calculation and nutrition care planning.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="BMI" value={result.bmi.value.toFixed(1)} icon={Scale} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="BMI Category" value={result.bmi.category} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="MUST Score" value={result.must.totalScore} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="MUST Assessment">
+          <InfoRow label="Risk Level" value={result.must.riskLevel} />
+          <InfoRow label="Management" value={result.must.managementPlan.slice(0, 60) + '...'} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 14. SSI Predictor Page
+// ===========================================================================
+
+import { ssiPredictor } from '../services/ssiPredictor';
+
+export function SSIPredictorPage() {
+  const result = useMemo(() => {
+    const factors = ssiPredictor.identifyRiskFactors(
+      {
+        patientId: 'demo-001', age: 70, bmi: 34, diabetesStatus: 'uncontrolled' as never,
+        smokingStatus: 'former' as never, immunosuppressed: false, albumin: 2.8,
+        ascScore: 3 as never, preoperativeGlucose: 180, preoperativeHba1c: 8.2,
+        mrsa: false, hasRemoteInfection: false, steroidUse: false, recentHospitalization: true,
+        radiationTherapy: false, malnutrition: true,
+      },
+      {
+        procedureType: 'colon' as never, woundClass: 'clean_contaminated' as never,
+        duration: 150, emergent: false, laparoscopic: false, implant: false,
+        antibiotic: { given: true, timely: true, appropriate: true, discontinued24h: true },
+        hairRemovalMethod: 'clipping' as never, skinPrepAgent: 'chlorhexidine' as never,
+        normothermia: true, glucoseControlled: false, oxygenation: true,
+      },
+    );
+    return { factors, count: factors.length };
+  }, []);
+
+  return (
+    <PageLayout title="SSI Risk Predictor">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Surgical site infection prediction using NHSN rates, NNIS risk index, and evidence-based risk factor analysis.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Risk Factors" value={result.count} icon={Shield} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Assessment" value={result.count > 5 ? 'High Risk' : 'Moderate Risk'} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Identified Risk Factors">
+          {result.factors.slice(0, 5).map((f, i) => (
+            <InfoRow key={i} label={f.name} value={f.category} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 15. Blood Glucose Page
+// ===========================================================================
+
+import { bloodGlucoseMonitor } from '../services/bloodGlucoseMonitor';
+
+export function BloodGlucosePage() {
+  const result = useMemo(() => {
+    const classification = bloodGlucoseMonitor.classifyGlucose(245);
+    const targets = bloodGlucoseMonitor.getGlucoseTargets();
+    const correction = bloodGlucoseMonitor.calculateCorrectionFactor(40);
+    const hba1c = bloodGlucoseMonitor.estimateHbA1c(185);
+    return { classification, targets, correction, hba1c };
+  }, []);
+
+  return (
+    <PageLayout title="Blood Glucose Monitor">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Glucose classification, insulin dosing, sliding scale protocols, and hypoglycemia management.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Status (245 mg/dL)" value={result.classification} icon={Beaker} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Correction Factor" value={`1:${result.correction.factor}`} icon={Syringe} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Est. HbA1c" value={`${result.hba1c.estimatedA1c.toFixed(1)}%`} icon={TestTube} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        </div>
+        <SectionCard title="Glucose Targets">
+          <InfoRow label="Pre-meal" value={`${result.targets.preMeal.min}-${result.targets.preMeal.max} mg/dL`} />
+          <InfoRow label="Post-meal" value={`${result.targets.postMeal.min}-${result.targets.postMeal.max} mg/dL`} />
+          <InfoRow label="Bedtime" value={`${result.targets.bedtime.min}-${result.targets.bedtime.max} mg/dL`} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 16. Antibiotic Stewardship Page
+// ===========================================================================
+
+import { antibioticStewardshipEngine } from '../services/antibioticStewardshipEngine';
+
+export function AntibioticStewardshipPage() {
+  const result = useMemo(() => {
+    const database = antibioticStewardshipEngine.getAntibioticDatabase();
+    const vanc = antibioticStewardshipEngine.getAntibiotic('vancomycin');
+    const durations = antibioticStewardshipEngine.getTherapyDuration('surgical_site_infection');
+    return { totalDrugs: database.length, vanc, durations };
+  }, []);
+
+  return (
+    <PageLayout title="Antibiotic Stewardship Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Evidence-based antibiotic selection, de-escalation guidance, IV-to-oral conversion, and drug-level monitoring.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Antibiotic Database" value={result.totalDrugs} icon={FlaskConical} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="SSI Duration" value={result.durations ? `${result.durations.minDays}-${result.durations.maxDays}d` : 'N/A'} icon={CalendarDays} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        {result.vanc && (
+          <SectionCard title="Vancomycin Profile">
+            <InfoRow label="Class" value={result.vanc.class} />
+            <InfoRow label="Spectrum" value={result.vanc.spectrum} />
+            <InfoRow label="Route" value={result.vanc.routes.join(', ')} />
+          </SectionCard>
+        )}
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 17. Medical Translation Page
+// ===========================================================================
+
+import { MedicalTranslationEngine } from '../services/medicalTranslationEngine';
+
+export function MedicalTranslationPage() {
+  const result = useMemo(() => {
+    const engine = new MedicalTranslationEngine();
+    const translated = engine.translate('Take ibuprofen 400mg twice daily after meals', 'en', 'es');
+    const languages = engine.getSupportedLanguages();
+    const dictSize = engine.getDictionarySize();
+    return { translated, languages: languages.length, dictSize };
+  }, []);
+
+  return (
+    <PageLayout title="Medical Translation Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Multi-language medical terminology translation with readability assessment and clinician correction learning.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Languages" value={result.languages} icon={ScrollText} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
+          <StatCard label="Dictionary" value={result.dictSize} icon={Layers} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Translation" value="EN -> ES" icon={FileText} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Sample Translation">
+          <InfoRow label="English" value="ibuprofen 400mg twice daily" />
+          <InfoRow label="Spanish" value={result.translated.slice(0, 60)} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 18. Patient Education Page
+// ===========================================================================
+
+import { PatientEducationEngine } from '../services/patientEducationEngine';
+
+export function PatientEducationPage() {
+  const result = useMemo(() => {
+    const engine = new PatientEducationEngine();
+    const conditions = engine.getAllConditions();
+    const content = conditions.length > 0 ? engine.getContent(conditions[0].conditionId) : null;
+    return { conditionCount: conditions.length, content, conditions };
+  }, []);
+
+  return (
+    <PageLayout title="Patient Education Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Personalized education materials with reading-level adaptation, teach-back questions, and engagement tracking.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Conditions" value={result.conditionCount} icon={ScrollText} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Materials" value={result.content ? 'Available' : 'N/A'} icon={FileText} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Available Education Topics">
+          {result.conditions.slice(0, 5).map((c) => (
+            <InfoRow key={c.conditionId} label={c.title} value={c.conditionId} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 19. Caregiver Access Page
+// ===========================================================================
+
+import { CaregiverAccessSystem } from '../services/caregiverAccessSystem';
+
+export function CaregiverAccessPage() {
+  const result = useMemo(() => {
+    const system = new CaregiverAccessSystem();
+    const questions = system.getZaritQuestions();
+    return { questionCount: questions.length };
+  }, []);
+
+  return (
+    <PageLayout title="Caregiver Access System">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Caregiver registration, permission management, Zarit Burden Interview, task assignment, and notification preferences.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Zarit Questions" value={result.questionCount} icon={Users} iconBg="bg-purple-100" iconColor="text-purple-600" />
+          <StatCard label="Permission System" value="Role-based" icon={Shield} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Features">
+          <InfoRow label="Access Control" value="Role-based permissions" />
+          <InfoRow label="Burden Assessment" value="Zarit Burden Interview" />
+          <InfoRow label="Task Management" value="Assignment & tracking" />
+          <InfoRow label="Notifications" value="Multi-channel with quiet hours" />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 20. Appointment Scheduling Page
+// ===========================================================================
+
+import { AppointmentSchedulingEngine } from '../services/appointmentSchedulingEngine';
+
+export function AppointmentSchedulingPage() {
+  const result = useMemo(() => {
+    const engine = new AppointmentSchedulingEngine();
+    const providers = engine.getProviders();
+    const accuracy = engine.getModelAccuracy();
+    return { providerCount: providers.length, accuracy };
+  }, []);
+
+  return (
+    <PageLayout title="Appointment Scheduling Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Smart scheduling with no-show prediction, provider matching, overbooking optimization, and wait-time forecasting.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Providers" value={result.providerCount} icon={Stethoscope} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="No-Show Model" value="Active" icon={CalendarDays} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Model Performance">
+          <InfoRow label="Total Predictions" value={result.accuracy.totalPredictions} />
+          <InfoRow label="Accuracy" value={result.accuracy.totalPredictions > 0 ? `${(result.accuracy.accuracy * 100).toFixed(0)}%` : 'N/A (no data)'} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 21. Recovery Milestone Page
+// ===========================================================================
+
+import { RecoveryMilestoneTracker } from '../services/recoveryMilestoneTracker';
+
+export function RecoveryMilestonePage() {
+  const result = useMemo(() => {
+    const tracker = new RecoveryMilestoneTracker();
+    const milestones = tracker.getMilestones('knee_replacement');
+    return { milestoneCount: milestones.length, milestones };
+  }, []);
+
+  return (
+    <PageLayout title="Recovery Milestone Tracker">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Surgery-specific milestone timelines with progress tracking and expected recovery benchmarks.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="KR Milestones" value={result.milestoneCount} icon={ListChecks} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Categories" value="Multi-phase" icon={Target} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Knee Replacement Milestones">
+          {result.milestones.slice(0, 5).map((m, i) => (
+            <InfoRow key={i} label={m.description} value={`Day ${m.expectedDayPostOp}`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 22. Patient Satisfaction Page
+// ===========================================================================
+
+import { PatientSatisfactionEngine } from '../services/patientSatisfactionEngine';
+
+export function PatientSatisfactionPage() {
+  const result = useMemo(() => {
+    const engine = new PatientSatisfactionEngine();
+    const nps = engine.getNPS();
+    const drivers = engine.getDriverAnalysis();
+    return { nps, drivers };
+  }, []);
+
+  return (
+    <PageLayout title="Patient Satisfaction Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">NPS scoring, satisfaction trend analysis, driver identification, and HCAHPS-aligned benchmarking.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="NPS Score" value={result.nps.score} icon={TrendingUp} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Promoters" value={result.nps.promoters} icon={Heart} iconBg="bg-rose-100" iconColor="text-rose-600" />
+          <StatCard label="Detractors" value={result.nps.detractors} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Satisfaction Drivers">
+          {result.drivers.slice(0, 4).map((d, i) => (
+            <InfoRow key={i} label={d.domain} value={`Priority: ${d.priority} (r=${d.correlationWithOverall.toFixed(2)})`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 23. Symptom Pattern Page
+// ===========================================================================
+
+import { SymptomPatternRecognition } from '../services/symptomPatternRecognition';
+
+export function SymptomPatternPage() {
+  const result = useMemo(() => {
+    const engine = new SymptomPatternRecognition();
+    const history = engine.getPatternHistory();
+    return { history };
+  }, []);
+
+  return (
+    <PageLayout title="Symptom Pattern Recognition">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Time-series symptom analysis with pattern detection, clustering, and early deterioration warnings.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Data Points" value={result.history.totalDataPoints} icon={Activity} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
+          <StatCard label="Patients Tracked" value={result.history.patientsTracked} icon={Users} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        </div>
+        <SectionCard title="Pattern Detection">
+          <InfoRow label="Analysis Status" value="Ready" />
+          <InfoRow label="Total Data Points" value={result.history.totalDataPoints} />
+          <InfoRow label="Templates" value={result.history.templateCount} />
+          <InfoRow label="Confirmed Diagnoses" value={result.history.confirmedDiagnoses} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 24. Rehabilitation Page
+// ===========================================================================
+
+import { RehabilitationProtocolEngine } from '../services/rehabilitationProtocolEngine';
+
+export function RehabilitationPage() {
+  const result = useMemo(() => {
+    const engine = new RehabilitationProtocolEngine();
+    const protocol = engine.getProtocol('knee_replacement');
+    return { protocol };
+  }, []);
+
+  return (
+    <PageLayout title="Rehabilitation Protocol Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Evidence-based rehab protocols by surgery type with phased exercise progressions and outcome tracking.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Protocol" value={result.protocol?.surgeryType ?? 'N/A'} icon={Stethoscope} iconBg="bg-cyan-100" iconColor="text-cyan-600" />
+          <StatCard label="Phases" value={result.protocol?.phases?.length ?? 0} icon={Layers} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Protocol Phases">
+          {result.protocol?.phases?.slice(0, 4).map((p: { name: string; dayRange: [number, number] }, i: number) => (
+            <InfoRow key={i} label={p.name} value={`Days ${p.dayRange[0]}-${p.dayRange[1]}`} />
+          )) ?? <p className="text-sm text-gray-500">No protocol data available.</p>}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 25. Clinical Pathway Page
+// ===========================================================================
+
+import { clinicalPathwayEngine, PATHWAY_TEMPLATES, SurgeryType as PathwaySurgeryType } from '../services/clinicalPathwayEngine';
+
+export function ClinicalPathwayPage() {
+  const result = useMemo(() => {
+    const template = clinicalPathwayEngine.getTemplate(PathwaySurgeryType.ORTHOPEDIC);
+    const pathway = template ? clinicalPathwayEngine.initializePathway('demo-001', template.surgeryType) : null;
+    return { template, pathway, templateCount: PATHWAY_TEMPLATES.length };
+  }, []);
+
+  return (
+    <PageLayout title="Clinical Pathway Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">ERAS-compliant clinical pathways with milestone tracking, compliance scoring, and deviation detection.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Templates" value={result.templateCount} icon={ClipboardList} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Milestones" value={result.template?.milestones?.length ?? 0} icon={ListChecks} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="ERAS Elements" value={result.template?.criticalElements?.length ?? 0} icon={ShieldCheck} iconBg="bg-teal-100" iconColor="text-teal-600" />
+        </div>
+        <SectionCard title="Orthopedic ERAS Milestones">
+          {result.template?.milestones?.slice(0, 5).map((m: { id: string; description: string; target: string; phase: string }, i: number) => (
+            <InfoRow key={i} label={m.description.slice(0, 50)} value={m.target} />
+          )) ?? <p className="text-sm text-gray-500">No pathway data.</p>}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 26. Handoff Communication Page
+// ===========================================================================
+
+import { handoffCommunicationEngine } from '../services/handoffCommunicationEngine';
+
+export function HandoffCommunicationPage() {
+  const result = useMemo(() => {
+    const sbar = handoffCommunicationEngine.generateSBARNote({
+      id: 'demo-001', name: 'John Smith', age: 65, sex: 'male', mrn: 'MRN-12345',
+      room: '412B', admitDate: '2025-01-10', diagnosis: 'Post TKA', surgeryType: 'orthopedic',
+      postOpDay: 2, allergies: ['Penicillin'], codeStatus: 'Full Code',
+      vitals: { hr: 82, bp: '138/82', temp: 37.1, rr: 16, spo2: 96 },
+      medications: [{ name: 'morphine', dose: '4mg', route: 'IV', frequency: 'q4h' }],
+      labs: [{ test: 'WBC', value: 11.2, unit: 'K/uL', timestamp: new Date().toISOString() }],
+      activeProblems: ['Pain', 'Limited mobility'], pendingTasks: ['AM labs', 'PT evaluation'],
+      ivAccess: 'PIV left forearm',
+    });
+    const score = handoffCommunicationEngine.scoreCompleteness(sbar);
+    return { sbar, score };
+  }, []);
+
+  return (
+    <PageLayout title="Handoff Communication Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Structured SBAR and I-PASS handoff generation with completeness scoring and critical flag identification.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Completeness" value={`${result.score.totalScore}%`} icon={ClipboardList} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Format" value="SBAR" icon={FileText} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Generated SBAR Note">
+          <p className="text-xs text-gray-600 whitespace-pre-line">{result.sbar.situation.slice(0, 200)}...</p>
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 27. Lab Result Page
+// ===========================================================================
+
+import { labResultInterpreter } from '../services/labResultInterpreter';
+
+export function LabResultPage() {
+  const result = useMemo(() => {
+    const now = new Date().toISOString();
+    const wbc = labResultInterpreter.interpretResult({ testCode: 'WBC', value: 14.5, unit: 'x10^3/uL', collectedAt: now, patientId: 'demo-001' }, 65, 'male');
+    const creat = labResultInterpreter.interpretResult({ testCode: 'CREATININE', value: 1.8, unit: 'mg/dL', collectedAt: now, patientId: 'demo-001' }, 70, 'male');
+    const egfr = labResultInterpreter.calculateEGFR(1.8, 70, 'male', false);
+    return { wbc, creat, egfr };
+  }, []);
+
+  return (
+    <PageLayout title="Lab Result Interpreter">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Automated lab interpretation with reference ranges, delta checking, trend analysis, and clinical correlations.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="WBC" value={`${result.wbc.value} - ${result.wbc.flag}`} icon={TestTube} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Creatinine" value={`${result.creat.value} - ${result.creat.flag}`} icon={Beaker} iconBg="bg-amber-100" iconColor="text-amber-600" />
+          <StatCard label="eGFR" value={`${result.egfr.value.toFixed(0)} mL/min`} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Interpretation Details">
+          <InfoRow label="WBC Interpretation" value={result.wbc.interpretation} />
+          <InfoRow label="Creatinine Interpretation" value={result.creat.interpretation} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 28. Vital Forecast Page
+// ===========================================================================
+
+import { vitalSignForecastingEngine } from '../services/vitalSignForecastingEngine';
+
+export function VitalForecastPage() {
+  const result = useMemo(() => {
+    const news2 = vitalSignForecastingEngine.calculateNEWS2(22, 94, 100, 105, 38.2, 'alert', true);
+    const mews = vitalSignForecastingEngine.calculateMEWS(100, 105, 22, 38.2, 'responding_to_voice');
+    return { news2, mews };
+  }, []);
+
+  return (
+    <PageLayout title="Vital Sign Forecasting">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">NEWS2 and MEWS scoring with exponential smoothing forecasts and post-operative recovery curves.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="NEWS2 Score" value={result.news2.totalScore} icon={HeartPulse} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="NEWS2 Risk" value={result.news2.riskLevel} icon={AlertTriangle} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="MEWS Score" value={result.mews.totalScore} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="NEWS2 Component Scores">
+          {Object.entries(result.news2.componentScores).slice(0, 5).map(([key, val]) => (
+            <InfoRow key={key} label={key.replace(/_/g, ' ')} value={val as number} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 29. Alert Fatigue Page
+// ===========================================================================
+
+import { alertFatigueManager } from '../services/alertFatigueManager';
+
+export function AlertFatiguePage() {
+  const result = useMemo(() => {
+    const overrideRates = alertFatigueManager.calculateOverrideRates();
+    const effectiveness = alertFatigueManager.calculateAlertEffectiveness();
+    const insights = alertFatigueManager.generateLearningInsights();
+    const avgOverride = overrideRates.length > 0 ? overrideRates.reduce((s, r) => s + r.overrideRate, 0) / overrideRates.length : 0;
+    const avgAction = effectiveness.length > 0 ? effectiveness.reduce((s, e) => s + e.actionRate, 0) / effectiveness.length : 0;
+    return { overrideRates, effectiveness, insights, avgOverride, avgAction };
+  }, []);
+
+  return (
+    <PageLayout title="Alert Fatigue Manager">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Intelligent alert prioritization, suppression rules, bundling, and override rate monitoring to reduce alert fatigue.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Override Rate" value={`${(result.avgOverride * 100).toFixed(0)}%`} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+          <StatCard label="Action Rate" value={`${(result.avgAction * 100).toFixed(0)}%`} icon={Target} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Insights">
+          {result.insights.slice(0, 3).map((insight, i) => (
+            <p key={i} className="text-sm text-gray-600 py-1">{insight}</p>
+          ))}
+          {result.insights.length === 0 && <p className="text-sm text-gray-500">No insights yet. Process alerts to generate learning data.</p>}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 30. Quality Metrics Page
+// ===========================================================================
+
+import { qualityMetricsEngine, QUALITY_MEASURES, SYNTHETIC_OUTCOMES } from '../services/qualityMetricsEngine';
+
+export function QualityMetricsPage() {
+  const result = useMemo(() => {
+    const measureResults = QUALITY_MEASURES.map(m => qualityMetricsEngine.calculateMeasureResult(m.id, SYNTHETIC_OUTCOMES)).filter(Boolean) as Array<{ measureId: string; measureName: string; rate: number; performanceLevel: string }>;
+    const composite = qualityMetricsEngine.calculateCompositeScore(measureResults as never);
+    return { measureCount: QUALITY_MEASURES.length, composite };
+  }, []);
+
+  return (
+    <PageLayout title="Quality Metrics Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Healthcare quality measurement with SPC charts, risk-adjusted rates, composite scoring, and benchmarking.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Measures" value={result.measureCount} icon={ClipboardList} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Composite Score" value={`${result.composite.score.toFixed(0)}%`} icon={TrendingUp} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Performance" value={result.composite.performanceLevel} icon={Target} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        </div>
+        <SectionCard title="Quality Measures">
+          {QUALITY_MEASURES.slice(0, 4).map((m) => (
+            <InfoRow key={m.id} label={m.name} value={m.type} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 31. Bed Management Page
+// ===========================================================================
+
+import { bedManagementEngine } from '../services/bedManagementEngine';
+
+export function BedManagementPage() {
+  const result = useMemo(() => {
+    bedManagementEngine.initializeBeds();
+    const snapshot = bedManagementEngine.getOccupancySnapshot();
+    const flow = bedManagementEngine.getPatientFlowMetrics();
+    return { snapshot, flow };
+  }, []);
+
+  return (
+    <PageLayout title="Bed Management Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Real-time bed occupancy tracking, LOS prediction, capacity forecasting, and surge planning.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Total Beds" value={result.snapshot.totalBeds} icon={BedDouble} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Occupied" value={result.snapshot.occupiedBeds} icon={Users} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="Occupancy" value={`${result.snapshot.occupancyRate}%`} icon={Activity} iconBg="bg-teal-100" iconColor="text-teal-600" />
+        </div>
+        <SectionCard title="Capacity by Bed Type">
+          {Object.entries(result.snapshot.byType).slice(0, 4).map(([type, data]) => (
+            <InfoRow key={type} label={type} value={`${(data as { occupied: number; total: number }).occupied}/${(data as { total: number }).total} occupied`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 32. Staff Workload Page
+// ===========================================================================
+
+import { staffWorkloadBalancer, STAFF_PROFILES } from '../services/staffWorkloadBalancer';
+
+export function StaffWorkloadPage() {
+  const result = useMemo(() => {
+    const profiles = STAFF_PROFILES;
+    const acuity = staffWorkloadBalancer.calculatePatientAcuity({
+      patientId: 'p-001', respiratoryStatus: 2, hemodynamicStatus: 1, neurologicalStatus: 1,
+      mobilityStatus: 3, nutritionStatus: 2, woundCare: 2, ivMedications: 3,
+      psychosocial: 2, educationNeeds: 3, dischargePlanning: 2,
+    });
+    return { staffCount: profiles.length, acuity };
+  }, []);
+
+  return (
+    <PageLayout title="Staff Workload Balancer">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Acuity-based patient assignment optimization, overtime prediction, and burnout risk assessment.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Staff Profiles" value={result.staffCount} icon={Users} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Sample Acuity" value={result.acuity.acuityLevel} icon={Activity} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="Acuity Score" value={result.acuity.acuityScore} icon={Scale} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Acuity Components">
+          {result.acuity.components.slice(0, 5).map((c: { category: string; score: number; description: string }, i: number) => (
+            <InfoRow key={i} label={c.category} value={`${c.score}/4 - ${c.description}`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 33. FHIR Resource Page
+// ===========================================================================
+
+import { createFHIRResourceEngine } from '../services/fhirResourceEngine';
+
+export function FHIRResourcePage() {
+  const result = useMemo(() => {
+    const engine = createFHIRResourceEngine();
+    const patient = engine.createPatient({
+      givenName: 'John', familyName: 'Smith', gender: 'male', birthDate: '1958-03-15',
+      mrn: 'MRN-12345', phone: '555-0123', email: 'john@example.com',
+    });
+    return { patient, resourceType: patient.resourceType };
+  }, []);
+
+  return (
+    <PageLayout title="FHIR Resource Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">HL7 FHIR R4 resource generation with US Core profiles, SNOMED/LOINC coding, and bundle creation.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Resource Type" value={result.resourceType} icon={FileText} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Profile" value="US Core" icon={ShieldCheck} iconBg="bg-green-100" iconColor="text-green-600" />
+        </div>
+        <SectionCard title="Generated FHIR Patient">
+          <InfoRow label="Resource ID" value={result.patient.id ?? 'N/A'} />
+          <InfoRow label="Version" value={result.patient.meta?.versionId ?? '1'} />
+          <InfoRow label="Active" value={result.patient.active ? 'Yes' : 'No'} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 34. Clinical Document Page
+// ===========================================================================
+
+import { createClinicalDocumentGenerator, CDADocumentType } from '../services/clinicalDocumentGenerator';
+
+export function ClinicalDocumentPage() {
+  const result = useMemo(() => {
+    const generator = createClinicalDocumentGenerator();
+    const doc = generator.generateDischargeSummary({
+      documentType: CDADocumentType.DISCHARGE_SUMMARY,
+      patient: { id: 'p-001', name: 'John Smith', mrn: 'MRN-12345', dob: '1958-03-15', gender: 'male', address: '123 Main St' },
+      author: { id: 'dr-001', name: 'Dr. Sarah Johnson', npi: '1234567890', specialty: 'Orthopedics' },
+      encounter: { id: 'enc-001', admitDate: '2025-01-10', dischargeDate: '2025-01-15', facility: 'General Hospital', department: 'Orthopedics' },
+      sections: [],
+    });
+    return { doc, sectionCount: doc.sections?.length ?? 0 };
+  }, []);
+
+  return (
+    <PageLayout title="Clinical Document Generator">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">CDA R2 document generation including discharge summaries, operative notes, progress notes, and CCDs.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Document Type" value={result.doc.documentType ?? 'Discharge'} icon={FileText} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
+          <StatCard label="Sections" value={result.sectionCount} icon={Layers} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Document Details">
+          <InfoRow label="Document ID" value={result.doc.id ?? 'Generated'} />
+          <InfoRow label="Created" value={result.doc.effectiveTime ?? new Date().toISOString().split('T')[0]} />
+          <InfoRow label="Confidentiality" value={result.doc.confidentialityCode ?? 'Normal'} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 35. Pharmacy Formulary Page
+// ===========================================================================
+
+import { createPharmacyFormularyChecker } from '../services/pharmacyFormularyChecker';
+
+export function PharmacyFormularyPage() {
+  const result = useMemo(() => {
+    const checker = createPharmacyFormularyChecker();
+    const formularyCheck = checker.checkFormulary('metformin');
+    const stats = checker.getFormularyStats();
+    return { formularyCheck, stats };
+  }, []);
+
+  return (
+    <PageLayout title="Pharmacy Formulary Checker">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Drug formulary lookup with tier classification, prior authorization prediction, step therapy, and cost estimation.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Total Drugs" value={result.stats.totalDrugs} icon={Pill} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="PA Required" value={result.stats.paRequiredCount} icon={Shield} iconBg="bg-amber-100" iconColor="text-amber-600" />
+          <StatCard label="Metformin Tier" value={result.formularyCheck?.tier ?? 'N/A'} icon={Layers} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="Formulary Check: Metformin">
+          {result.formularyCheck ? (
+            <>
+              <InfoRow label="On Formulary" value={result.formularyCheck.onFormulary ? 'Yes' : 'No'} />
+              <InfoRow label="Tier" value={result.formularyCheck.tier} />
+              <InfoRow label="Prior Auth" value={result.formularyCheck.requiresPriorAuth ? 'Required' : 'Not Required'} />
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">Drug not found in formulary.</p>
+          )}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 36. SDOH Screener Page
+// ===========================================================================
+
+import { createSDOHScreener } from '../services/sdohScreener';
+
+export function SDOHScreenerPage() {
+  const result = useMemo(() => {
+    const screener = createSDOHScreener();
+    const resources = screener.getAllResources();
+    return { resourceCount: resources.length };
+  }, []);
+
+  return (
+    <PageLayout title="SDOH Screener">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">PRAPARE and AHC HRSN social determinants screening with ICD-10 Z-code mapping and community resource matching.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Community Resources" value={result.resourceCount} icon={Users} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Screening Tools" value="PRAPARE, AHC" icon={ClipboardList} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        <SectionCard title="SDOH Domains">
+          <InfoRow label="Housing Instability" value="Z59.x" />
+          <InfoRow label="Food Insecurity" value="Z59.4x" />
+          <InfoRow label="Transportation" value="Z59.82" />
+          <InfoRow label="Financial Strain" value="Z59.7x" />
+          <InfoRow label="Social Isolation" value="Z60.2" />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 37. Clinical Trial Page
+// ===========================================================================
+
+import { createClinicalTrialMatcher } from '../services/clinicalTrialMatcher';
+
+export function ClinicalTrialPage() {
+  const result = useMemo(() => {
+    const matcher = createClinicalTrialMatcher();
+    const trials = matcher.getAllTrials();
+    const matches = matcher.matchPatient({
+      age: 62, gender: 'male' as never, conditions: ['osteoarthritis', 'hypertension'],
+      procedures: ['total_knee_arthroplasty'], medications: ['metoprolol', 'lisinopril'],
+      labValues: {}, location: { lat: 40.7128, lng: -74.006 },
+    });
+    return { trialCount: trials.length, matchCount: matches.length, topMatch: matches[0] };
+  }, []);
+
+  return (
+    <PageLayout title="Clinical Trial Matcher">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Patient-trial matching using eligibility criteria evaluation, distance calculations, and enrollment prediction.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Available Trials" value={result.trialCount} icon={FlaskConical} iconBg="bg-purple-100" iconColor="text-purple-600" />
+          <StatCard label="Matches Found" value={result.matchCount} icon={Target} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Top Match" value={result.topMatch ? `${(result.topMatch.matchScore * 100).toFixed(0)}%` : 'N/A'} icon={TrendingUp} iconBg="bg-blue-100" iconColor="text-blue-600" />
+        </div>
+        {result.topMatch && (
+          <SectionCard title="Best Match">
+            <InfoRow label="Trial" value={result.topMatch.trial.title.slice(0, 50) + '...'} />
+            <InfoRow label="Phase" value={result.topMatch.trial.phase} />
+            <InfoRow label="Match Score" value={`${(result.topMatch.matchScore * 100).toFixed(0)}%`} />
+            <InfoRow label="Eligibility" value={result.topMatch.eligibility} />
+          </SectionCard>
+        )}
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 38. Population Health Page
+// ===========================================================================
+
+import { createPopulationHealthAnalytics } from '../services/populationHealthAnalytics';
+
+export function PopulationHealthPage() {
+  const result = useMemo(() => {
+    const analytics = createPopulationHealthAnalytics();
+    const population = analytics.getPopulation();
+    const cohort = analytics.analyzeCohort({
+      name: 'All Patients', filters: [],
+    });
+    return { populationSize: population.length, cohort };
+  }, []);
+
+  return (
+    <PageLayout title="Population Health Analytics">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Cohort analysis, risk stratification, utilization patterns, age-adjusted rates, and emerging trend detection.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Population" value={result.populationSize} icon={Users} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Avg LOS" value={`${result.cohort.outcomes.meanLOS.toFixed(1)}d`} icon={BedDouble} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="30d Readmit" value={`${(result.cohort.outcomes.readmission30DayRate * 100).toFixed(1)}%`} icon={TrendingUp} iconBg="bg-red-100" iconColor="text-red-600" />
+        </div>
+        <SectionCard title="Population Demographics">
+          <InfoRow label="Mean Age" value={result.cohort.demographics.meanAge.toFixed(1)} />
+          <InfoRow label="Complication Rate" value={`${(result.cohort.outcomes.complicationRate * 100).toFixed(1)}%`} />
+          <InfoRow label="Mean Functional Score" value={result.cohort.outcomes.meanFunctionalScore.toFixed(1)} />
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 39. Predictive Staffing Page
+// ===========================================================================
+
+import { createPredictiveStaffingModel } from '../services/predictiveStaffingModel';
+
+export function PredictiveStaffingPage() {
+  const result = useMemo(() => {
+    const model = createPredictiveStaffingModel();
+    const forecasts = model.forecastCensus(new Date().toISOString().split('T')[0], 7, 'medical_surgical' as never);
+    return { forecasts, forecastDays: forecasts.length };
+  }, []);
+
+  return (
+    <PageLayout title="Predictive Staffing Model">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Census forecasting with seasonal adjustment, acuity-based staffing requirements, and agency need prediction.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <StatCard label="Forecast Days" value={result.forecastDays} icon={CalendarDays} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Avg Census" value={result.forecasts.length > 0 ? Math.round(result.forecasts.reduce((s, f) => s + f.predictedCensus, 0) / result.forecasts.length) : 0} icon={Users} iconBg="bg-purple-100" iconColor="text-purple-600" />
+        </div>
+        <SectionCard title="7-Day Census Forecast">
+          {result.forecasts.slice(0, 7).map((f, i) => (
+            <InfoRow key={i} label={f.date} value={`Census: ${f.predictedCensus} (CI: ${f.confidenceInterval.lower}-${f.confidenceInterval.upper})`} />
+          ))}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}
+
+// ===========================================================================
+// 40. Consent Management Page
+// ===========================================================================
+
+import { createConsentManagementEngine } from '../services/consentManagementEngine';
+
+export function ConsentManagementPage() {
+  const result = useMemo(() => {
+    const engine = createConsentManagementEngine();
+    const documents = engine.getConsentDocuments();
+    const stats = engine.getConsentStats();
+    return { documentCount: documents.length, stats };
+  }, []);
+
+  return (
+    <PageLayout title="Consent Management Engine">
+      <div className="space-y-6">
+        <p className="text-sm text-gray-600">Informed consent tracking with capacity assessment, multi-language support, version history, and audit logging.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <StatCard label="Documents" value={result.documentCount} icon={FileText} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Total Records" value={result.stats.total} icon={ClipboardList} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="Pending" value={result.stats.pendingCount} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
+        </div>
+        <SectionCard title="Consent Statistics">
+          {Object.entries(result.stats.byType).map(([type, count]) => (
+            <InfoRow key={type} label={type.replace(/_/g, ' ')} value={count as number} />
+          ))}
+          {Object.keys(result.stats.byType).length === 0 && (
+            <p className="text-sm text-gray-500">No consent records yet.</p>
+          )}
+        </SectionCard>
+      </div>
+    </PageLayout>
+  );
+}

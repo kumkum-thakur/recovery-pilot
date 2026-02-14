@@ -364,7 +364,7 @@ const ANTIBIOTIC_DATABASE: AntibioticProfile[] = [
   {
     name: 'Doxycycline', genericName: 'doxycycline', class: AntibioticClass.TETRACYCLINE,
     route: ['IV', 'oral'],
-    spectrum: { gramPositive: SpectrumCoverage.GOOD, gramNegative: SpectrumCoverage.MODERATE, anaerobes: SpectrumCoverage.MODERATE, atypicals: SpectrumCoverage.EXCELLENT, mrsa: false, pseudomonas: false, esbl: false },
+    spectrum: { gramPositive: SpectrumCoverage.GOOD, gramNegative: SpectrumCoverage.MODERATE, anaerobes: SpectrumCoverage.MODERATE, atypicals: SpectrumCoverage.EXCELLENT, mrsa: true, pseudomonas: false, esbl: false },
     standardDose: '100mg IV/PO every 12 hours',
     renalAdjustment: [], // No adjustment needed
     hepaticAdjustment: null, commonSideEffects: ['Photosensitivity', 'GI upset', 'Esophagitis'], majorWarnings: ['Photosensitivity', 'Tooth discoloration in children'],
@@ -374,7 +374,7 @@ const ANTIBIOTIC_DATABASE: AntibioticProfile[] = [
   {
     name: 'Clindamycin', genericName: 'clindamycin', class: AntibioticClass.LINCOSAMIDE,
     route: ['IV', 'oral'],
-    spectrum: { gramPositive: SpectrumCoverage.GOOD, gramNegative: SpectrumCoverage.NONE, anaerobes: SpectrumCoverage.EXCELLENT, atypicals: SpectrumCoverage.NONE, mrsa: false, pseudomonas: false, esbl: false },
+    spectrum: { gramPositive: SpectrumCoverage.GOOD, gramNegative: SpectrumCoverage.NONE, anaerobes: SpectrumCoverage.EXCELLENT, atypicals: SpectrumCoverage.NONE, mrsa: true, pseudomonas: false, esbl: false },
     standardDose: '600-900mg IV every 8 hours OR 300-450mg PO every 6 hours',
     renalAdjustment: [], // No adjustment needed
     hepaticAdjustment: 'Reduce dose in severe hepatic disease', commonSideEffects: ['Diarrhea', 'Nausea'], majorWarnings: ['HIGH risk of C. difficile infection'],
