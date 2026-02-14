@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recovery-pilot-config
+  namespace: recovery-pilot
+data:
+  # Server
+  PORT: "3000"
+  HOST: "0.0.0.0"
+  TRUST_PROXY: "2"
+
+  # Database (non-sensitive)
+  DB_PRIMARY_PORT: "5432"
+  DB_PRIMARY_NAME: "recovery_pilot"
+  DB_PRIMARY_SSL: "true"
+  DB_PRIMARY_POOL_MIN: "20"
+  DB_PRIMARY_POOL_MAX: "100"
+  DB_PRIMARY_IDLE_TIMEOUT_MS: "30000"
+  DB_PRIMARY_ACQUIRE_TIMEOUT_MS: "60000"
+  DB_PRIMARY_STATEMENT_TIMEOUT_MS: "30000"
+  DB_REPLICA_POOL_MAX: "200"
+
+  # Redis (non-sensitive)
+  REDIS_PRIMARY_PORT: "6379"
+  REDIS_PRIMARY_TLS: "true"
+  REDIS_PRIMARY_DB: "0"
+  REDIS_MAX_RETRIES: "3"
+  REDIS_KEY_PREFIX: "rp:"
+
+  # Auth
+  JWT_EXPIRY: "15m"
+  JWT_REFRESH_EXPIRY: "7d"
+  JWT_ISSUER: "recovery-pilot"
+  BCRYPT_ROUNDS: "14"
+  MFA_ENABLED: "true"
+
+  # Encryption
+  ENCRYPTION_ALGORITHM: "aes-256-gcm"
+  FIELD_LEVEL_ENCRYPTION: "true"
+
+  # Rate Limiting
+  RATE_LIMIT_WINDOW_MS: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  RATE_LIMIT_AUTH_MAX: "5"
+  RATE_LIMIT_API_MAX: "1000"
+  RATE_LIMIT_STORE: "redis"
+
+  # Logging
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+
+  # Monitoring
+  METRICS_ENABLED: "true"
+  METRICS_PORT: "9090"
+  TRACING_ENABLED: "true"
+
+  # Audit
+  AUDIT_LOG_RETENTION_DAYS: "2555"
+  AUDIT_LOG_IMMUTABLE: "true"
+  AUDIT_LOG_DESTINATION: "both"
+
+  # CORS
+  CORS_CREDENTIALS: "true"
+
+  # S3 Encryption
+  S3_ENCRYPTION: "aws:kms"
+
+---
+# Secrets template (values injected via AWS Secrets Manager / External Secrets Operator)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: recovery-pilot-secrets
+  namespace: recovery-pilot
+type: Opaque
+stringData:
+  # Populated by ExternalSecret controller in production
+  DB_PRIMARY_HOST: "PLACEHOLDER"
+  DB_PRIMARY_USER: "PLACEHOLDER"
+  DB_PRIMARY_PASSWORD: "PLACEHOLDER"
+  DB_REPLICA_HOSTS: "PLACEHOLDER"
+  REDIS_PRIMARY_HOST: "PLACEHOLDER"
+  REDIS_PRIMARY_PASSWORD: "PLACEHOLDER"
+  JWT_SECRET: "PLACEHOLDER"
+  SESSION_SECRET: "PLACEHOLDER"
+  ENCRYPTION_MASTER_KEY: "PLACEHOLDER"
+  AWS_KMS_KEY_ARN: "PLACEHOLDER"
+  GEMINI_API_KEY: "PLACEHOLDER"
+  SENTRY_DSN: "PLACEHOLDER"

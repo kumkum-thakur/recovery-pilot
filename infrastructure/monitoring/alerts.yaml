@@ -1,0 +1,174 @@
+# Alerting rules for RecoveryPilot production monitoring
+# Healthcare-specific SLOs and compliance alerting
+
+groups:
+  - name: api-availability
+    rules:
+      - alert: APIHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5..", job="recovery-pilot-api"}[5m]))
+          /
+          sum(rate(http_requests_total{job="recovery-pilot-api"}[5m]))
+          > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "API error rate exceeds 1%"
+          description: "{{ $value | humanizePercentage }} of requests are failing"
+
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket{job="recovery-pilot-api"}[5m])) by (le)
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "API p99 latency exceeds 2 seconds"
+
+      - alert: APIDown
+        expr: up{job="recovery-pilot-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "API server instance is down"
+
+  - name: database-health
+    rules:
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          pg_stat_activity_count{datname="recovery_pilot"}
+          /
+          pg_settings_max_connections
+          > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Database connection pool >80% utilized"
+
+      - alert: DatabaseReplicationLag
+        expr: pg_replication_lag > 30
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Database replication lag exceeds 30 seconds"
+
+      - alert: DatabaseSlowQueries
+        expr: |
+          rate(pg_stat_statements_mean_time_seconds{datname="recovery_pilot"}[5m]) > 1
+        for: 10m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Average query time exceeds 1 second"
+
+  - name: redis-health
+    rules:
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Redis memory usage exceeds 85%"
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Redis instance is down"
+
+  - name: compliance-monitoring
+    rules:
+      - alert: AuditLogWriteFailure
+        expr: |
+          rate(audit_log_write_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: compliance
+          compliance: hipaa-dpdpa-ukgdpr
+        annotations:
+          summary: "Audit log writes are failing - COMPLIANCE VIOLATION"
+          description: "Immutable audit trail is compromised. Immediate investigation required."
+
+      - alert: UnauthorizedPHIAccess
+        expr: |
+          rate(phi_access_denied_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Multiple unauthorized PHI access attempts detected"
+
+      - alert: BruteForceLoginAttempts
+        expr: |
+          rate(auth_failed_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Possible brute force attack - {{ $value }} failed login attempts/min"
+
+      - alert: DataBreachDetected
+        expr: breach_detected_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          team: security
+          compliance: hipaa-dpdpa-ukgdpr
+        annotations:
+          summary: "DATA BREACH DETECTED - Immediate response required"
+          description: "Notification deadline per compliance: HIPAA=60d, DPDPA=72h, UK_GDPR=72h"
+
+      - alert: CrossBorderDataTransfer
+        expr: |
+          rate(cross_border_transfer_blocked_total[1h]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          team: compliance
+        annotations:
+          summary: "Cross-border data transfer attempt blocked"
+
+  - name: capacity-planning
+    rules:
+      - alert: HighPatientThroughput
+        expr: |
+          rate(patient_requests_total[5m]) * 60 * 60 * 24 > 2000000
+        for: 15m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Patient throughput approaching 2M/day capacity limit"
+
+      - alert: PodScalingNearMax
+        expr: |
+          kube_horizontalpodautoscaler_status_current_replicas{hpa="recovery-pilot-api-hpa"}
+          /
+          kube_horizontalpodautoscaler_spec_max_replicas{hpa="recovery-pilot-api-hpa"}
+          > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "HPA scaling near maximum - consider increasing maxReplicas"

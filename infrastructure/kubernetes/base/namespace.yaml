@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recovery-pilot
+  labels:
+    app: recovery-pilot
+    compliance: healthcare
+    monitoring: enabled
+  annotations:
+    # Network policies enforce namespace isolation
+    description: "RecoveryPilot production namespace - healthcare compliance enforced"

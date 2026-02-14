@@ -1,0 +1,167 @@
+# RecoveryPilot Backup and Disaster Recovery Policy
+# Compliance: HIPAA §164.308(a)(7), DPDPA reasonable safeguards, UK GDPR Art. 32
+
+# ============================================================
+# Backup Strategy
+# ============================================================
+#
+# RTO (Recovery Time Objective): 4 hours
+# RPO (Recovery Point Objective): 1 hour
+#
+# Backup Schedule:
+# - PostgreSQL: Continuous WAL archiving + hourly snapshots + daily full backup
+# - Redis: RDB snapshots every 15 minutes + AOF persistence
+# - S3 (medical images): Cross-region replication
+# - Audit logs: S3 Object Lock (COMPLIANCE mode, 7-year retention)
+# - Application config: Version controlled in Git
+#
+# Retention:
+# - Hourly backups: 7 days
+# - Daily backups: 90 days
+# - Weekly backups: 1 year
+# - Monthly backups: 7 years (HIPAA/compliance requirement)
+#
+# Disaster Recovery:
+# - Primary: ap-south-1 (Mumbai)
+# - DR Site: ap-south-2 (Hyderabad) for India
+# - Cross-region replication for all critical data
+# - Automated failover via Route 53 health checks
+#
+# Testing:
+# - Monthly DR drill (documented)
+# - Quarterly full recovery test
+# - Annual business continuity review
+
+---
+# Velero backup schedule for Kubernetes resources
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: recovery-pilot-daily-backup
+  namespace: velero
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  template:
+    includedNamespaces:
+      - recovery-pilot
+      - recovery-pilot-india
+      - recovery-pilot-us
+      - recovery-pilot-uk
+    includedResources:
+      - configmaps
+      - secrets
+      - deployments
+      - services
+      - ingresses
+      - horizontalpodautoscalers
+      - networkpolicies
+      - poddisruptionbudgets
+    storageLocation: default
+    volumeSnapshotLocations:
+      - default
+    ttl: 2160h  # 90 days
+  useOwnerReferencesInBackup: false
+
+---
+# PostgreSQL backup CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: recovery-pilot
+spec:
+  schedule: "0 * * * *"  # Every hour
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 24
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backupPolicy: OnFailure
+      template:
+        spec:
+          containers:
+            - name: pg-backup
+              image: postgres:17-alpine
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: recovery-pilot-secrets
+                      key: DB_PRIMARY_HOST
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: recovery-pilot-secrets
+                      key: DB_PRIMARY_USER
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: recovery-pilot-secrets
+                      key: DB_PRIMARY_PASSWORD
+                - name: PGDATABASE
+                  value: recovery_pilot
+                - name: S3_BUCKET
+                  value: rp-backups
+                - name: AWS_DEFAULT_REGION
+                  value: ap-south-1
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  BACKUP_FILE="/tmp/recovery_pilot_${TIMESTAMP}.sql.gz"
+
+                  echo "Starting PostgreSQL backup at ${TIMESTAMP}..."
+                  pg_dump --format=custom --compress=9 \
+                    --no-owner --no-privileges \
+                    --exclude-table-data='audit_logs_*' \
+                    ${PGDATABASE} | gzip > ${BACKUP_FILE}
+
+                  if [ $? -eq 0 ]; then
+                    echo "Backup successful, uploading to S3..."
+                    aws s3 cp ${BACKUP_FILE} \
+                      s3://${S3_BUCKET}/postgres/hourly/${TIMESTAMP}.sql.gz \
+                      --sse aws:kms
+                    echo "Backup uploaded successfully"
+                  else
+                    echo "Backup FAILED"
+                    exit 1
+                  fi
+
+                  rm -f ${BACKUP_FILE}
+              resources:
+                requests:
+                  cpu: "200m"
+                  memory: "512Mi"
+                limits:
+                  cpu: "1000m"
+                  memory: "2Gi"
+          restartPolicy: OnFailure
+
+---
+# Audit log archival CronJob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: audit-log-archival
+  namespace: recovery-pilot
+spec:
+  schedule: "0 4 * * *"  # Daily at 4 AM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: audit-archiver
+              image: recovery-pilot/api:latest
+              command: ["node", "dist/jobs/archiveAuditLogs.js"]
+              env:
+                - name: ARCHIVE_DAYS_OLD
+                  value: "30"
+                - name: S3_BUCKET_AUDIT_LOGS
+                  value: rp-audit-logs
+              envFrom:
+                - secretKeyRef:
+                    name: recovery-pilot-secrets
+          restartPolicy: OnFailure
