@@ -1,7 +1,34 @@
 {
   "name": "recovery-pilot",
+  "version": "1.0.0",
+  "description": "Autonomous post-operative care orchestrator with 40+ clinical algorithms and 14 pure-TypeScript ML models",
+  "author": "Kumkum Thakur <kumkum-thakur@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kumkum-thakur/recovery-pilot.git"
+  },
+  "homepage": "https://github.com/kumkum-thakur/recovery-pilot#readme",
+  "bugs": {
+    "url": "https://github.com/kumkum-thakur/recovery-pilot/issues"
+  },
+  "keywords": [
+    "healthcare",
+    "clinical-decision-support",
+    "post-operative-care",
+    "patient-recovery",
+    "medical-algorithms",
+    "machine-learning",
+    "typescript",
+    "react",
+    "gamification",
+    "telehealth",
+    "fhir",
+    "sepsis-screening",
+    "wound-analysis",
+    "ai-triage"
+  ],
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
