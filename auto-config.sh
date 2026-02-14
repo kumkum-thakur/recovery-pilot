@@ -19,7 +19,7 @@ APP_DIR="/opt/recovery-pilot"
 REPO_URL="https://github.com/kumkum-thakur/recovery-pilot.git"
 BRANCH="main"
 NODE_MAJOR=22
-GEMINI_KEY="AIzaSyC2mz4ibtvSSL-_TluJS9WOdm1qZXt_740"
+GEMINI_KEY="${GEMINI_KEY:-}"  # Set via environment: export GEMINI_KEY=your_key_here
 SWAP_SIZE="2G"
 
 # ── Colors ──────────────────────────────────────────────────────────────────
