@@ -240,6 +240,9 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
   // Never suppress critical alerts
   if (alert.priority === AlertPriority.CRITICAL) return { suppress: false };
 
+  // Never suppress high-priority clinical alerts — require physician acknowledgment
+  if (alert.priority === AlertPriority.HIGH) return { suppress: false };
+
   // Check for duplicates (same alert within 1 hour)
   const recentKey = `${alert.patientId}_${alert.category}_${alert.title}`;
   const recent = state.recentAlerts.get(recentKey) ?? [];

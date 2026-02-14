@@ -570,7 +570,9 @@ describe('Agent Service - Refill Workflow', () => {
       expect(actionItem?.insuranceStatus).toBe('approved');
       expect(actionItem?.inventoryStatus).toBe('in_stock');
       expect(actionItem?.patientId).toBe('patient-1');
-      expect(actionItem?.patientName).toBe('Divya Patel');
+      // patientName defaults to 'Unknown Patient' when not passed explicitly
+      // (hardcoded 'Divya Patel' was removed for safety — refill flow should pass patient context)
+      expect(actionItem?.patientName).toBe('Unknown Patient');
     });
 
     it('should execute workflow steps before returning result', async () => {

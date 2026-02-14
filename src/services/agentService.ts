@@ -180,15 +180,16 @@ async function createRefillActionItem(refillData: {
   medicationName: string;
   insuranceStatus: InsuranceStatus;
   inventoryStatus: InventoryStatus;
+  patientId?: string;
+  patientName?: string;
 }): Promise<string> {
   // Import persistence service dynamically to avoid circular dependencies
   const { persistenceService } = await import('./persistenceService');
   const { ActionItemType, ActionItemStatus } = await import('../types');
-  
-  // Get current user to determine patient info
-  // For MVP, we'll use a hardcoded patient since we don't have context here
-  const patientId = 'patient-1';
-  const patientName = 'Divya Patel';
+
+  // Use provided patient info, falling back to defaults for backward compatibility
+  const patientId = refillData.patientId || 'patient-1';
+  const patientName = refillData.patientName || 'Unknown Patient';
   
   // Create action item model
   const actionItemId = generateId();
@@ -389,6 +390,9 @@ export function createAgentService(): AgentService {
       // Requirements: 15.2 - Scenario-based deterministic behavior
       // For refills, both scenarios result in approval (happy path)
       // In a real system, SCENARIO_RISK_DETECTED might deny insurance
+      // MOCK RESPONSE: Insurance status is simulated for demo purposes.
+      // The actual refill still requires doctor approval via the action item system.
+      // The action item created below has status PENDING_DOCTOR.
       const insuranceStatus = 'approved' as InsuranceStatus;
       const inventoryStatus = 'in_stock' as InventoryStatus;
       
