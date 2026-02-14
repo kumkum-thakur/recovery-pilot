@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   hashPassword,
   verifyPassword,
+  needsRehash,
   generateAccessToken,
   generateRefreshToken,
   createSession,
@@ -174,6 +175,15 @@ authRouter.post('/login', authRateLimitMiddleware, async (req: Request, res: Res
     });
 
     await storeRefreshToken(sessionId, refreshToken);
+
+    // Transparent hash migration: rehash legacy bcrypt → argon2id on successful login
+    if (needsRehash(user.password_hash)) {
+      const newHash = await hashPassword(body.password);
+      await getWriteDb()('users')
+        .where({ id: user.id })
+        .update({ password_hash: newHash });
+      log.info({ userId: user.id }, 'Password hash migrated from bcrypt to argon2id');
+    }
 
     // Reset failed attempts on successful login
     await getWriteDb()('users')

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import argon2 from 'argon2';
 import bcrypt from 'bcryptjs';
 import { authenticator } from 'otplib';
 import { env } from '../config/environment.js';
@@ -15,7 +16,8 @@ const log = createLogger('auth');
  * Implements:
  * - JWT access tokens (short-lived: 15min)
  * - JWT refresh tokens (long-lived: 7 days, stored in Redis)
- * - Bcrypt password hashing (14 rounds, timing-attack safe)
+ * - Argon2id password hashing (PHC winner, replaces bcrypt)
+ * - Backward-compatible bcrypt verification for migration
  * - TOTP-based MFA (RFC 6238)
  * - Token blacklisting for logout
  * - Session binding to prevent token theft
@@ -44,14 +46,36 @@ export interface AuthenticatedRequest extends Request {
   region: string;
 }
 
-// --- Password Hashing ---
+// --- Password Hashing (argon2id — PHC winner, OWASP 2025+ recommended) ---
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, env.BCRYPT_ROUNDS);
+  return argon2.hash(password, {
+    type: argon2.argon2id,
+    memoryCost: env.ARGON2_MEMORY_COST,
+    timeCost: env.ARGON2_TIME_COST,
+    parallelism: env.ARGON2_PARALLELISM,
+  });
 }
 
+/**
+ * Verifies a password against a hash.
+ * Supports both argon2id (new) and bcrypt (legacy) hashes for zero-downtime migration.
+ * Bcrypt hashes start with "$2a$" or "$2b$"; argon2id hashes start with "$argon2id$".
+ */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  if (hash.startsWith('$argon2')) {
+    return argon2.verify(hash, password);
+  }
+  // Legacy bcrypt fallback — next login will rehash to argon2id
   return bcrypt.compare(password, hash);
+}
+
+/**
+ * Returns true if the hash uses a legacy algorithm and should be upgraded.
+ * Call after successful login to transparently migrate hashes.
+ */
+export function needsRehash(hash: string): boolean {
+  return !hash.startsWith('$argon2');
 }
 
 // --- JWT Token Management ---

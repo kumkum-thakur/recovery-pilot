@@ -60,6 +60,11 @@ const envSchema = z.object({
   JWT_EXPIRY: z.string().default('15m'),
   JWT_REFRESH_EXPIRY: z.string().default('7d'),
   JWT_ISSUER: z.string().default('recovery-pilot'),
+  // Argon2id password hashing (modern replacement for bcrypt)
+  ARGON2_MEMORY_COST: z.coerce.number().default(65536), // 64 MB
+  ARGON2_TIME_COST: z.coerce.number().default(3),
+  ARGON2_PARALLELISM: z.coerce.number().default(4),
+  // Legacy bcrypt support for migrating existing hashes
   BCRYPT_ROUNDS: z.coerce.number().min(12).default(14),
   MFA_ENABLED: z.coerce.boolean().default(true),
   SESSION_SECRET: z.string().min(32).default('CHANGE_ME_IN_PRODUCTION_32_CHARS_MINIMUM'),
@@ -143,7 +148,7 @@ function validateEnvironment(): Environment {
       { key: 'DB_PRIMARY_SSL', valid: env.DB_PRIMARY_SSL },
       { key: 'REDIS_PRIMARY_TLS', valid: env.REDIS_PRIMARY_TLS },
       { key: 'ENCRYPTION_MASTER_KEY or AWS_KMS_KEY_ARN', valid: env.ENCRYPTION_MASTER_KEY.length > 0 || env.AWS_KMS_KEY_ARN.length > 0 },
-      { key: 'BCRYPT_ROUNDS >= 12', valid: env.BCRYPT_ROUNDS >= 12 },
+      { key: 'ARGON2_MEMORY_COST >= 65536', valid: env.ARGON2_MEMORY_COST >= 65536 },
       { key: 'MFA_ENABLED', valid: env.MFA_ENABLED },
       { key: 'AUDIT_LOG_IMMUTABLE', valid: env.AUDIT_LOG_IMMUTABLE },
     ];
