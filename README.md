@@ -530,6 +530,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ---
 
 <p align="center">
-  <strong>Built by <a href="https://github.com/kumkum-thakur">Kumkum Thakur</a></strong><br />
+  Built by <strong><a href="https://github.com/kumkum-thakur">Kumkum Thakur</a></strong> and <strong><a href="https://github.com/divyamohan1993">Divya Mohan</a></strong><br />
   <sub>Every algorithm is evidence-based. Every line of code is ours.</sub>
 </p>
