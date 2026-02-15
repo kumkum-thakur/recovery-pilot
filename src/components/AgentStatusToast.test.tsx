@@ -203,10 +203,10 @@ describe('AgentStatusToast', () => {
     rerender(
       <AgentStatusToast steps={steps} isVisible={false} onComplete={vi.fn()} />
     );
-    
+
     // Should still be in DOM during animation
     expect(container.firstChild).not.toBeNull();
-    
+
     // The component should have the animating out class
     const toastElement = container.firstChild as HTMLElement;
     expect(toastElement.className).toContain('opacity-0');

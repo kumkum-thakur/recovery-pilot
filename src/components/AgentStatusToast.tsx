@@ -81,10 +81,8 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
         setIsAnimatingOut(false);
       });
     } else if (shouldRender) {
-      // Start exit animation
-      queueMicrotask(() => {
-        setIsAnimatingOut(true);
-      });
+      // Start exit animation (no queueMicrotask needed — element is already in DOM)
+      setIsAnimatingOut(true);
       // Remove from DOM after animation completes
       const timer = setTimeout(() => {
         setShouldRender(false);

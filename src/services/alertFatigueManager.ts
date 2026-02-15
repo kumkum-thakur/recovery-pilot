@@ -259,6 +259,17 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
     return { suppress: true, reason: SuppressionReason.HIGH_OVERRIDE_RATE };
   }
 
+  // Check custom suppression rules (before time-of-day — explicit rules take precedence)
+  for (const rule of state.suppressionRules) {
+    if (!rule.active) continue;
+    if (rule.category === alert.category) {
+      if (!rule.priority || rule.priority === alert.priority) {
+        rule.suppressCount++;
+        return { suppress: true, reason: rule.reason };
+      }
+    }
+  }
+
   // Time-of-day suppression
   const hour = new Date(alert.createdAt).getHours();
   const isNight = hour >= state.timeConfig.nightStartHour || hour < state.timeConfig.nightEndHour;
@@ -270,17 +281,6 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
     const alertWeight = PRIORITY_WEIGHTS[alert.priority] ?? 1;
     if (alertWeight < minPriorityWeight) {
       return { suppress: true, reason: SuppressionReason.TIME_SUPPRESSED };
-    }
-  }
-
-  // Check custom suppression rules
-  for (const rule of state.suppressionRules) {
-    if (!rule.active) continue;
-    if (rule.category === alert.category) {
-      if (!rule.priority || rule.priority === alert.priority) {
-        rule.suppressCount++;
-        return { suppress: true, reason: rule.reason };
-      }
     }
   }
 
