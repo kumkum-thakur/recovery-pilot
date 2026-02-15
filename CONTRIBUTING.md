@@ -1,6 +1,6 @@
 # Contributing to RecoveryPilot
 
-Thank you for your interest in contributing to RecoveryPilot! We welcome contributions from developers, clinicians, and researchers.
+Thank you for your interest in contributing to RecoveryPilot! We welcome contributions from developers, clinicians, researchers, and students.
 
 ## Maintainers
 
@@ -8,6 +8,20 @@ Thank you for your interest in contributing to RecoveryPilot! We welcome contrib
 |------|--------|------|
 | **Kumkum Thakur** | [@kumkum-thakur](https://github.com/kumkum-thakur) | Project Lead |
 | **Divya Mohan** | [@divyamohan1993](https://github.com/divyamohan1993) | Co-Lead, Backend & Infrastructure |
+
+## How You Can Contribute
+
+RecoveryPilot sits at the intersection of software engineering and clinical medicine. Different backgrounds bring different strengths:
+
+| If you are a... | You can help with... | Start here |
+|-----------------|---------------------|------------|
+| **Frontend Developer** | React components, UI/UX, accessibility, responsive design | `src/components/`, `src/pages/` |
+| **Backend Developer** | Express routes, middleware, database, job queues | `server/src/` |
+| **ML / Data Scientist** | Pure-TypeScript ML models, algorithm improvement | `src/services/mlModels/` |
+| **DevOps Engineer** | Kubernetes, Terraform, CI/CD, monitoring | `infrastructure/`, `.github/workflows/` |
+| **Clinician / Researcher** | Clinical algorithm proposals, validation data, evidence review | `src/services/` (clinical engines) |
+| **Student** | Documentation, tests, good-first-issue bugs | Issues labeled `good first issue` |
+| **Anyone** | Bug reports, feature requests, documentation fixes | [Issues](https://github.com/kumkum-thakur/recovery-pilot/issues) |
 
 ## Getting Started
 
@@ -42,10 +56,12 @@ The backend uses Express 5, PostgreSQL (via Knex), Redis (via ioredis), and Bull
 
 All clinical algorithms must:
 
-1. Cite a peer-reviewed source in code comments
-2. Use published scoring criteria exactly as published
-3. Include tests with known clinical outcomes
-4. Be documented in docs/ALGORITHMS.md
+1. **Cite a peer-reviewed source** in code comments (journal, year, DOI)
+2. **Use published scoring criteria** exactly as published -- do not invent thresholds
+3. **Include tests** with known clinical outcomes from the literature
+4. **Be documented** in `docs/ALGORITHMS.md` with the full scoring breakdown
+
+Use the [Clinical Algorithm Proposal](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=clinical_algorithm.yml) issue template to propose new algorithms.
 
 ## Test Requirements
 
@@ -58,7 +74,7 @@ All clinical algorithms must:
 
 1. Ensure all tests pass (frontend and backend)
 2. Ensure linting and type checking pass
-3. Write a clear PR description
+3. Fill out the PR template completely
 4. Link related issues
 5. Request review from a maintainer
 
@@ -80,9 +96,10 @@ Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore
 
 ## Reporting Issues
 
-- Bugs: open a GitHub issue with reproduction steps
-- Features: open an issue labeled `enhancement`
-- Security: see SECURITY.md (do not open a public issue)
+- **Bugs**: Use the [Bug Report](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=bug_report.yml) template
+- **Features**: Use the [Feature Request](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=feature_request.yml) template
+- **Clinical algorithms**: Use the [Clinical Algorithm Proposal](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=clinical_algorithm.yml) template
+- **Security vulnerabilities**: See [SECURITY.md](SECURITY.md) -- do **not** open a public issue
 
 ## License
 

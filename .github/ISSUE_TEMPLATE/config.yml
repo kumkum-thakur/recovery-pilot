@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/kumkum-thakur/recovery-pilot/security/advisories/new
+    about: Report a security vulnerability privately. Do NOT open a public issue.
+  - name: Documentation
+    url: https://github.com/kumkum-thakur/recovery-pilot/tree/main/docs
+    about: Browse the full documentation before asking questions.
