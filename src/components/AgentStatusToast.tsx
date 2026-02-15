@@ -81,13 +81,18 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
         setIsAnimatingOut(false);
       });
     } else if (shouldRender) {
-      // Start exit animation (no queueMicrotask needed — element is already in DOM)
-      setIsAnimatingOut(true);
+      // Start exit animation
+      const animTimer = setTimeout(() => {
+        setIsAnimatingOut(true);
+      }, 0);
       // Remove from DOM after animation completes
       const timer = setTimeout(() => {
         setShouldRender(false);
       }, 300); // Match animation duration
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(animTimer);
+        clearTimeout(timer);
+      };
     }
   }, [isVisible, shouldRender]);
 
