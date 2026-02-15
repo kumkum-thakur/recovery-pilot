@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "Autonomous post-operative care orchestrator with 40+ clinical algorithms and 14 pure-TypeScript ML models",
   "author": "Kumkum Thakur <kumkum-thakur@users.noreply.github.com>",
+  "contributors": [
+    {
+      "name": "Kumkum Thakur",
+      "url": "https://github.com/kumkum-thakur"
+    },
+    {
+      "name": "Divya Mohan",
+      "url": "https://github.com/divyamohan1993"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

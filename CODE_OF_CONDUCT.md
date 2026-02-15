@@ -32,7 +32,12 @@ Given the healthcare nature of this project, contributors must also:
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated and will result in a response deemed necessary and appropriate to the circumstances.
+Instances of unacceptable behavior may be reported to the project maintainers:
+
+- **Kumkum Thakur** -- [@kumkum-thakur](https://github.com/kumkum-thakur)
+- **Divya Mohan** -- [@divyamohan1993](https://github.com/divyamohan1993)
+
+All complaints will be reviewed and investigated and will result in a response deemed necessary and appropriate to the circumstances. Maintainers are obligated to maintain confidentiality with regard to the reporter of an incident.
 
 ## Attribution
 

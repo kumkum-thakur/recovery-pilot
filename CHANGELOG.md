@@ -72,6 +72,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Triage analysis with GREEN/RED risk classification
 - Confidence scoring for AI recommendations
 
+#### Backend Server
+- Express 5 API server scaled for 2M patients/day
+- PostgreSQL database with Knex query builder and migrations
+- Redis caching and session management via ioredis
+- BullMQ job queues for async processing
+- JWT authentication with Passport.js (access + refresh tokens)
+- Argon2id password hashing with bcrypt fallback
+- TOTP-based 2FA support via otplib
+- Zod schema validation on all endpoints
+- Pino structured logging with pino-http request tracing
+- Helmet.js security headers
+- Rate limiting (express-rate-limit + rate-limiter-flexible)
+- AWS S3 file storage, KMS encryption, Secrets Manager integration
+
+#### Infrastructure
+- Kubernetes manifests with network policies and pod security
+- Terraform infrastructure-as-code modules
+- Docker Compose production configuration
+- Nginx reverse proxy with TLS and security headers
+- Prometheus + Grafana monitoring stack
+- Backup and disaster recovery automation
+
 #### Data and Compliance
 - Immutable audit logging for all clinical actions
 - HL7 FHIR R4 resource generation
@@ -79,8 +101,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Patient data anonymization
 - Consent management workflows
 - Insurance claims integration
+- Security controls aligned with HIPAA, DPDPA, and UK GDPR
 
-#### Infrastructure
+#### Frontend Infrastructure
 - React 19 + TypeScript 5.9 (strict mode)
 - Zustand state management (7 primary + 15 feature stores)
 - Vite/Rolldown build system
@@ -88,10 +111,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - 259 test files with 2,727 test cases
 - Property-based testing with fast-check
 - Deterministic seed data (5 seeds) for reproducible testing
-- Automated deployment scripts (autoconfig.sh, autoconfig.bat)
+- Automated deployment scripts (autoconfig.sh, autoconfig.bat, autodeploy-k8s.sh)
 
 ### Security
-- Password hashing with constant-time comparison
-- Role-based access control
-- Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+- Password hashing with Argon2id and constant-time comparison
+- JWT token rotation with configurable expiry
+- Role-based access control with route-level enforcement
+- Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+- Rate limiting and DDoS protection
+- Input validation via Zod schemas
 - No real patient data -- all synthetic/demo data

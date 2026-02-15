@@ -1,6 +1,13 @@
 # Contributing to RecoveryPilot
 
-Thank you for your interest in contributing.
+Thank you for your interest in contributing to RecoveryPilot! We welcome contributions from developers, clinicians, and researchers.
+
+## Maintainers
+
+| Name | GitHub | Role |
+|------|--------|------|
+| **Kumkum Thakur** | [@kumkum-thakur](https://github.com/kumkum-thakur) | Project Lead |
+| **Divya Mohan** | [@divyamohan1993](https://github.com/divyamohan1993) | Co-Lead, Backend & Infrastructure |
 
 ## Getting Started
 
@@ -10,12 +17,26 @@ Thank you for your interest in contributing.
 4. Install dependencies: `npm install`
 5. Start the dev server: `npm run dev`
 
+### Backend Development
+
+```bash
+cd server
+npm install
+npm run dev        # Starts Express server with hot-reload (tsx watch)
+npm run typecheck  # TypeScript type checking
+npm run test       # Run server tests
+```
+
+The backend uses Express 5, PostgreSQL (via Knex), Redis (via ioredis), and BullMQ for job queues.
+
 ## Code Standards
 
-- TypeScript strict mode is enforced
-- Use functional React components with hooks
+- TypeScript strict mode is enforced across both frontend and backend
+- Use functional React components with hooks (frontend)
 - Named exports preferred over default exports
-- TailwindCSS for styling
+- TailwindCSS for styling (frontend)
+- Zod for request validation (backend)
+- Pino for structured logging (backend)
 
 ## Clinical Algorithm Requirements
 
@@ -30,12 +51,13 @@ All clinical algorithms must:
 
 - All new features must include tests
 - All bug fixes must include a regression test
-- Run before submitting: `npm run test && npm run lint`
+- Frontend: `npm run test && npm run lint`
+- Backend: `cd server && npm run test && npm run typecheck`
 
 ## Pull Request Process
 
-1. Ensure all tests pass
-2. Ensure linting passes
+1. Ensure all tests pass (frontend and backend)
+2. Ensure linting and type checking pass
 3. Write a clear PR description
 4. Link related issues
 5. Request review from a maintainer
@@ -43,6 +65,18 @@ All clinical algorithms must:
 ## PR Title Format
 
 Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`
+
+## Areas of Contribution
+
+| Area | Description | Key Files |
+|------|-------------|-----------|
+| Clinical Algorithms | Implement validated scoring systems | `src/services/` |
+| ML Models | Pure TypeScript ML implementations | `src/services/*Model*.ts`, `src/services/*Engine*.ts` |
+| Frontend UI | React components and pages | `src/components/`, `src/pages/` |
+| Backend API | Express routes and middleware | `server/src/routes/`, `server/src/middleware/` |
+| Infrastructure | Kubernetes, Terraform, monitoring | `infrastructure/` |
+| Documentation | Clinical docs, API reference | `docs/` |
+| Testing | Unit, integration, property-based | `src/test/`, `server/src/` |
 
 ## Reporting Issues
 
