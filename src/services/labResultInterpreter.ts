@@ -516,7 +516,7 @@ function analyzeTrend(values: LabValue[]): TrendAnalysis {
   const sumY = ys.reduce((a, b) => a + b, 0);
   const sumXY = xs.reduce((a, x, i) => a + x * ys[i], 0);
   const sumX2 = xs.reduce((a, x) => a + x * x, 0);
-  const _sumY2 = ys.reduce((a, y) => a + y * y, 0);
+  void ys.reduce((a, y) => a + y * y, 0);
 
   const denominator = n * sumX2 - sumX * sumX;
   const slope = denominator !== 0 ? (n * sumXY - sumX * sumY) / denominator : 0;
@@ -669,7 +669,7 @@ function interpretHepaticPanel(results: InterpretedResult[]): PanelInterpretatio
   const alp = results.find(r => r.testCode === 'ALP');
   const tbil = results.find(r => r.testCode === 'TBIL');
   const dbil = results.find(r => r.testCode === 'DBIL');
-  const _ggt = results.find(r => r.testCode === 'GGT');
+  void results.find(r => r.testCode === 'GGT');
   const alb = results.find(r => r.testCode === 'ALB');
 
   let pattern = 'Normal';

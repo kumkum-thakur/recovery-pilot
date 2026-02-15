@@ -68,7 +68,7 @@ function createTestUser(
       username: data.username,
       password: data.password,
       name: data.name,
-      role: data.role as unknown,
+      role: data.role as UserRole,
     },
     createdBy
   );
@@ -305,7 +305,7 @@ describe('End-to-End User Workflow Validation', () => {
   // ==========================================================================
   describe('3. Session Management', () => {
     it('should create session on login and destroy on logout', async () => {
-      const _user = await loginAs('admin', 'admin');
+      await loginAs('admin', 'admin');
       expect(authService.isAuthenticated()).toBe(true);
       expect(authService.getCurrentUser()?.id).toBe('admin-1');
 
@@ -718,7 +718,7 @@ describe('End-to-End User Workflow Validation', () => {
     it('should reflect doctor-created care plan on patient side', async () => {
       // Doctor creates care plan
       await loginAs('dr.cross', 'cross123');
-      const _carePlan = carePlanService.createCarePlan({
+      carePlanService.createCarePlan({
         patientId,
         doctorId,
         name: 'Cross-Dashboard Test Plan',
@@ -1385,7 +1385,7 @@ describe('End-to-End User Workflow Validation', () => {
           bmi: 32,
           isSmoker: false,
           comorbidities: [ComorbidityType.DIABETES, ComorbidityType.HYPERTENSION, ComorbidityType.CHF],
-          asaClass: ASAClass.III,
+          asaClass: ASAClass.ASA_III,
           gender: 'male',
           livesAlone: false,
           hasCaregiver: true,
@@ -1617,13 +1617,13 @@ describe('End-to-End User Workflow Validation', () => {
           priorSSI: false,
         },
         {
-          procedureCode: 'COLO',
-          procedureName: 'Colectomy',
+          name: 'Colectomy',
+          category: 'abdominal',
           durationMinutes: 180,
+          nhsnDurationCutoffMinutes: 180,
           woundClass: WoundClass.CONTAMINATED,
           isLaparoscopic: false,
-          implantUsed: false,
-          procedureCategory: 'abdominal',
+          implant: false,
         }
       );
 

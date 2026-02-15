@@ -252,7 +252,7 @@ describe('End-to-End Patient Scenario: 72yo M, BMI 32, DM, s/p TKR POD#2', () =>
     expect(result.step).toBe(3);
     expect(result.medications.length).toBeGreaterThan(0);
     // Should include opioid recommendations for severe post-op pain
-    expect(result.medications.some(m => m.drug !== undefined || m.name !== undefined)).toBe(true);
+    expect(result.medications.some(m => m.name !== undefined)).toBe(true);
   });
 
   it('should correctly classify glucose for a diabetic patient', () => {
@@ -359,7 +359,7 @@ describe('ML Model Accuracy: Readmission Risk Predictor', () => {
       hemoglobinAtDischarge: 10.2,           // Low, anemia
       sodiumAtDischarge: 132,                 // Hyponatremia
       hasOncologyDiagnosis: false,
-      procedureType: 'none',
+      procedureType: 'other',
       admissionType: 'emergency',
       lengthOfStayDays: 7,
       previousAdmissions6Months: 3,           // Frequent readmissions
@@ -446,8 +446,8 @@ describe('ML Model Accuracy: Wound Healing Classifier', () => {
       tissueType: 'granulation',           // Healing tissue
       exudateType: 'serous',               // Clean exudate
       exudateAmount: 'moderate',
-      woundEdge: 'attached',
-      periwoundCondition: 'intact',
+      woundEdge: 'well_defined',
+      periwoundCondition: 'healthy',
       hasOdor: false,
       hasTunneling: false,
       tunnelingDepthCm: 0,

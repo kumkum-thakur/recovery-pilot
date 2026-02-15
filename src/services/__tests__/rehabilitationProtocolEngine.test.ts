@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   RehabilitationProtocolEngine,
+} from '../rehabilitationProtocolEngine';
+import type {
   SurgeryType,
   FIMLevel,
   MMTGrade,
@@ -88,7 +90,7 @@ describe('RehabilitationProtocolEngine', () => {
       for (const k of motorKeys) items[k] = 7;
       for (const k of cogKeys) items[k] = 7;
 
-      const assessment = engine.assessFunction('P001', items as unknown);
+      const assessment = engine.assessFunction('P001', items as Parameters<typeof engine.assessFunction>[1]);
       expect(assessment.motorScore).toBe(91); // 13 * 7
       expect(assessment.cognitiveScore).toBe(35); // 5 * 7
       expect(assessment.totalScore).toBe(126);

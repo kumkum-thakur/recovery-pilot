@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   SymptomPatternRecognition,
-  SymptomDataPoint,
 } from '../symptomPatternRecognition';
+import type { SymptomDataPoint } from '../symptomPatternRecognition';
 
 describe('SymptomPatternRecognition', () => {
   let engine: SymptomPatternRecognition;
@@ -299,7 +299,7 @@ describe('SymptomPatternRecognition', () => {
     });
 
     it('should update template lastUpdated timestamp', () => {
-      const _before = Date.now();
+      void Date.now();
       engine.recordConfirmedDiagnosis('P003', 'Surgical Site Infection', 10);
       // Detect patterns to indirectly verify the template was updated
       const patterns = engine.detectProdromalPatterns('P003', 'knee_replacement', 10);

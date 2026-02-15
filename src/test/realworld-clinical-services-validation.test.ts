@@ -117,6 +117,7 @@ import {
   qualityMetricsEngine,
   QUALITY_MEASURES,
   SYNTHETIC_OUTCOMES,
+  type MeasureResult,
 } from '../services/qualityMetricsEngine';
 
 import {
@@ -180,8 +181,8 @@ function defaultCapriniFactors(): CapriniRiskFactors {
     lupusAnticoagulant: false, anticardiolipinAntibodies: false,
     elevatedHomocysteine: false, heparinInducedThrombocytopenia: false,
     otherThrombophilia: false,
-    hipKneeArthoplasty: false, stroke: false, multipleTrauma: false,
-    acuteSpinalCordInjury: false, fracturePelvisHip: false,
+    majorLowerExtremitySurgery: false, stroke: false, multipleTrauma: false,
+    acuteSpinalCordInjury: false, hipPelvisFracture: false,
   };
 }
 
@@ -192,11 +193,8 @@ function defaultCapriniFactors(): CapriniRiskFactors {
 describe('Real-World Clinical Services Validation', () => {
 
   // Shared across rounds
-  let _allPatients: ReturnType<typeof generateRealisticPatients>;
-  let _doctors: ReturnType<typeof generateDoctors>;
-
   beforeAll(() => {
-    _doctors = generateDoctors();
+    generateDoctors();
   });
 
   // ==========================================================================
@@ -212,7 +210,7 @@ describe('Real-World Clinical Services Validation', () => {
 
         test('normal vitals should NOT trigger sepsis warning', () => {
           const vitals = makeSepsisVitals();
-          const _labs = makeNormalLabs();
+          void makeNormalLabs();
           const result = sepsisEarlyWarningSystem.calculateQSOFA(vitals);
           expect(
             result.score,
@@ -279,7 +277,7 @@ describe('Real-World Clinical Services Validation', () => {
         test('screenPatient should return appropriate risk level', () => {
           const rng = createRng(seed);
           const idx = Math.floor(rng() * patients.length);
-          const _patient = patients[idx];
+          void patients[idx];
           const vitals = makeSepsisVitals({
             temperature: 38.9,
             heartRate: 110,
@@ -293,7 +291,7 @@ describe('Real-World Clinical Services Validation', () => {
             vitals, labs, makeNoVasopressors(),
           );
           expect(
-            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as unknown),
+            ([SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL] as SepsisRiskLevel[]).includes(alert.riskLevel),
             `Patient with temp 38.9, HR 110, RR 24, SBP 95, WBC 15, lactate 3.5 should be HIGH or CRITICAL risk (got ${alert.riskLevel})`,
           ).toBe(true);
           expect(alert.recommendations.length).toBeGreaterThan(0);
@@ -315,12 +313,12 @@ describe('Real-World Clinical Services Validation', () => {
             majorOpenSurgery: true,
             confinedToBedMoreThan72h: true,
             swollenLegs: true,
-            hipKneeArthoplasty: true,
+            majorLowerExtremitySurgery: true,
             malignancy: false,
           };
           const result = dvtRiskCalculator.calculateCapriniScore(highRiskFactors);
           expect(
-            [DVTRiskLevel.HIGH, DVTRiskLevel.HIGHEST].includes(result.riskLevel),
+            ([DVTRiskLevel.HIGH, DVTRiskLevel.HIGHEST] as DVTRiskLevel[]).includes(result.riskLevel),
             `Immobile post-hip-surgery patient confined to bed >72h with swollen legs scored Caprini ${result.totalScore} (${result.riskLevel}). Age 61-74 (+2), major surgery (+2), bed >72h (+2), swollen legs (+1), hip arthroplasty (+5) = should be HIGH or HIGHEST`,
           ).toBe(true);
           expect(result.totalScore).toBeGreaterThanOrEqual(7);
@@ -330,7 +328,7 @@ describe('Real-World Clinical Services Validation', () => {
           const lowFactors = defaultCapriniFactors();
           const result = dvtRiskCalculator.calculateCapriniScore(lowFactors);
           expect(
-            [DVTRiskLevel.VERY_LOW, DVTRiskLevel.LOW].includes(result.riskLevel),
+            ([DVTRiskLevel.VERY_LOW, DVTRiskLevel.LOW] as DVTRiskLevel[]).includes(result.riskLevel),
             `No risk factors should yield VERY_LOW or LOW Caprini risk (got ${result.riskLevel}, score ${result.totalScore})`,
           ).toBe(true);
         });
@@ -402,7 +400,7 @@ describe('Real-World Clinical Services Validation', () => {
           };
           const result = fallRiskAssessment.calculateMorseFallScale(morseInput);
           expect(
-            [FallRiskLevel.NO_RISK, FallRiskLevel.LOW].includes(result.riskLevel),
+            ([FallRiskLevel.NO_RISK, FallRiskLevel.LOW] as FallRiskLevel[]).includes(result.riskLevel),
             `All Morse factors absent; score should be 0, risk NO_RISK or LOW (got ${result.totalScore}, ${result.riskLevel})`,
           ).toBe(true);
           expect(result.totalScore).toBeLessThanOrEqual(24);
@@ -411,7 +409,7 @@ describe('Real-World Clinical Services Validation', () => {
         test('Hendrich II should flag confusion + antiepileptics as high risk', () => {
           const hendrichInput: HendrichIIInput = {
             confusion: true,
-            'symptomatic depression': false,
+            symptomaticDepression: false,
             alteredElimination: true,
             dizzinessVertigo: true,
             genderMale: true,
@@ -454,8 +452,7 @@ describe('Real-World Clinical Services Validation', () => {
   describe('4. Pain Protocol Engine (WHO Ladder)', () => {
     SEEDS.forEach((seed) => {
       describe(`Round seed=${seed}`, () => {
-        let _patients: ReturnType<typeof generateRealisticPatients>;
-        beforeAll(() => { _patients = generateRealisticPatients(50, seed); });
+        beforeAll(() => { generateRealisticPatients(50, seed); });
 
         test('mild pain (1-3) should use WHO Step 1 (non-opioid)', () => {
           const step = painProtocolEngine.determineWHOStep(3);
@@ -637,7 +634,7 @@ describe('Real-World Clinical Services Validation', () => {
             `ssi-high-${seed}`, patient, procedure,
           );
           expect(
-            [SSIRiskLevel.HIGH, SSIRiskLevel.VERY_HIGH].includes(assessment.overallRiskLevel),
+            ([SSIRiskLevel.HIGH, SSIRiskLevel.VERY_HIGH] as SSIRiskLevel[]).includes(assessment.overallRiskLevel),
             `Diabetic smoker with BMI 34, ASA 3, prior SSI, malnutrition, and uncontrolled glucose on colorectal surgery should be HIGH/VERY_HIGH risk (got ${assessment.overallRiskLevel})`,
           ).toBe(true);
           expect(assessment.predictedSSIRate).toBeGreaterThan(2);
@@ -1124,7 +1121,7 @@ describe('Real-World Clinical Services Validation', () => {
             50, 'M',
           );
           expect(
-            [FlagLevel.LOW, FlagLevel.CRITICAL_LOW].includes(result.flag),
+            ([FlagLevel.LOW, FlagLevel.CRITICAL_LOW] as FlagLevel[]).includes(result.flag),
             `Hemoglobin 9.5 g/dL in male should be flagged LOW (reference ~13.5-17.5 g/dL)`,
           ).toBe(true);
         });
@@ -1183,7 +1180,7 @@ describe('Real-World Clinical Services Validation', () => {
             'Normal vitals should yield NEWS2 total of 0-4 (LOW risk)',
           ).toBeLessThanOrEqual(4);
           expect(
-            [NEWS2Risk.LOW, NEWS2Risk.LOW_MEDIUM].includes(score.riskLevel),
+            ([NEWS2Risk.LOW, NEWS2Risk.LOW_MEDIUM] as NEWS2Risk[]).includes(score.riskLevel),
             `Stable patient NEWS2 should be LOW or LOW_MEDIUM (got ${score.riskLevel})`,
           ).toBe(true);
         });
@@ -1326,7 +1323,7 @@ describe('Real-World Clinical Services Validation', () => {
         test('composite score has valid structure', () => {
           const results = QUALITY_MEASURES.slice(0, 5).map(m =>
             qualityMetricsEngine.calculateMeasureResult(m.id, SYNTHETIC_OUTCOMES, '2024-Q4'),
-          ).filter(Boolean) as unknown[];
+          ).filter(Boolean) as MeasureResult[];
           const composite = qualityMetricsEngine.calculateCompositeScore(results);
           expect(composite.score).toBeGreaterThanOrEqual(0);
           expect(composite.score).toBeLessThanOrEqual(100);
@@ -1466,7 +1463,7 @@ describe('Real-World Clinical Services Validation', () => {
 
           // Sepsis detected
           expect(
-            [SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL].includes(alert.riskLevel as unknown),
+            ([SepsisRiskLevel.HIGH, SepsisRiskLevel.CRITICAL] as SepsisRiskLevel[]).includes(alert.riskLevel),
             'Patient must be identified as high/critical sepsis risk before testing discharge readiness',
           ).toBe(true);
 
@@ -1527,7 +1524,7 @@ describe('Real-World Clinical Services Validation', () => {
             `cross-ssi-${seed}`, ssiPatient, procedure,
           );
           expect(
-            [SSIRiskLevel.HIGH, SSIRiskLevel.VERY_HIGH].includes(ssiAssessment.overallRiskLevel),
+            ([SSIRiskLevel.HIGH, SSIRiskLevel.VERY_HIGH] as SSIRiskLevel[]).includes(ssiAssessment.overallRiskLevel),
             'Patient with multiple SSI risk factors should be HIGH or VERY_HIGH',
           ).toBe(true);
 
@@ -1749,7 +1746,7 @@ describe('Real-World Clinical Services Validation', () => {
         'cardiac_bypass', 'cesarean_section',
       ] as const;
       for (const surgeryType of surgeryTypes) {
-        const meds = generateRealisticMedications(surgeryType as unknown);
+        const meds = generateRealisticMedications(surgeryType);
         expect(meds.length).toBeGreaterThan(0);
         for (const med of meds) {
           expect(med.name.length).toBeGreaterThan(0);

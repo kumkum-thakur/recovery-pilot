@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   PatientSatisfactionEngine,
-  SurveyDomain,
 } from '../patientSatisfactionEngine';
+import type { SurveyDomain } from '../patientSatisfactionEngine';
 
 // Helper: build a full set of HCAHPS responses (all 21 questions)
 function buildFullResponses(likertVal: 1 | 2 | 3 | 4, yesNo: 0 | 1, rating10: number, nps: number): Record<string, number> {

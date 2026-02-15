@@ -677,7 +677,7 @@ export class TreatmentResponsePredictor {
   }
 
   private generateExplanation(
-    patient: PatientTreatmentProfile,
+    _patient: PatientTreatmentProfile,
     treatment: TreatmentInput,
     features: number[],
     model: GBTModel,

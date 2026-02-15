@@ -319,14 +319,21 @@ class ApiClient {
 }
 
 export class ApiRequestError extends Error {
+  readonly status: number;
+  readonly code?: string;
+  readonly requestId?: string;
+
   constructor(
     message: string,
-    public readonly status: number,
-    public readonly code?: string,
-    public readonly requestId?: string
+    status: number,
+    code?: string,
+    requestId?: string
   ) {
     super(message);
     this.name = 'ApiRequestError';
+    this.status = status;
+    this.code = code;
+    this.requestId = requestId;
   }
 }
 

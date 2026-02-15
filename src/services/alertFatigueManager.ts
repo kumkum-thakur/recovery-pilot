@@ -255,7 +255,7 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
   // Check learned suppressions (high override rate)
   const learnedKey = `${alert.category}_${alert.priority}`;
   const learned = state.learnedSuppressions.get(learnedKey);
-  if (learned && learned.overrideRate > 0.85 && learned.sampleSize >= 20 && alert.priority !== AlertPriority.HIGH) {
+  if (learned && learned.overrideRate > 0.85 && learned.sampleSize >= 20 && (alert.priority as string) !== AlertPriority.HIGH) {
     return { suppress: true, reason: SuppressionReason.HIGH_OVERRIDE_RATE };
   }
 

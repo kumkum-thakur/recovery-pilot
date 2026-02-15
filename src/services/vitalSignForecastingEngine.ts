@@ -584,7 +584,7 @@ function detectTriggers(readings: VitalReading[]): ClinicalTrigger[] {
     const prev = readings[readings.length - 2];
     const changeRate = Math.abs(latest.value - prev.value);
     const timeHours = (new Date(latest.timestamp).getTime() - new Date(prev.timestamp).getTime()) / (1000 * 60 * 60);
-    const _ratePerHour = timeHours > 0 ? changeRate / timeHours : 0;
+    void (timeHours > 0 ? changeRate / timeHours : 0);
 
     const rapidChangeThresholds: Record<string, number> = {
       [VitalType.HEART_RATE]: 30,

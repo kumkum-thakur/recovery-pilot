@@ -159,7 +159,7 @@ async function createTriageActionItem(triageData: {
     triageText: triageData.analysisText,
     aiConfidenceScore: triageData.confidenceScore,
     // Assign to doctor if relationship exists
-    doctorId: activeRelationship?.doctorId,
+    doctorId: activeRelationship?.doctorId as string | undefined,
   };
 
   // Save to persistence

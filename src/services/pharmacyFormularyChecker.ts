@@ -448,7 +448,7 @@ export function createPharmacyFormularyChecker(): PharmacyFormularyChecker {
     const copay = Math.round(((drug.copayRange.min + drug.copayRange.max) / 2) * unitMultiplier);
     const retailMultiplier = drug.tier === FormularyTier.TIER_1_GENERIC ? 2.5 : drug.tier === FormularyTier.TIER_2_PREFERRED_BRAND ? 3.5 : drug.tier === FormularyTier.TIER_3_NON_PREFERRED ? 5 : 8;
     const retail = Math.round(copay * retailMultiplier);
-    const _daysUsed = daysSupply; // used for proportional calc context
+    void daysSupply; // used for proportional calc context
 
     return { copay, retail, savings: retail - copay };
   }

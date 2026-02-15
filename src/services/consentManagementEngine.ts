@@ -587,7 +587,7 @@ export function createConsentManagementEngine(): ConsentManagementEngine {
     }
 
     // Check capacity for surgical/anesthesia/blood
-    const needsCapacity = [ConsentType.SURGICAL, ConsentType.ANESTHESIA, ConsentType.BLOOD_PRODUCTS, ConsentType.RESEARCH].includes(record.consentType);
+    const needsCapacity = ([ConsentType.SURGICAL, ConsentType.ANESTHESIA, ConsentType.BLOOD_PRODUCTS, ConsentType.RESEARCH] as ConsentType[]).includes(record.consentType);
     if (needsCapacity && !record.capacityAssessment) {
       issues.push('Capacity assessment not documented');
     }
