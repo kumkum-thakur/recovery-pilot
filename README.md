@@ -21,6 +21,9 @@ RecoveryPilot is a full-stack healthcare platform spanning a React 19 frontend, 
 
 > **145,000+ lines of TypeScript** | **40+ peer-reviewed clinical algorithms** | **14 pure-TypeScript ML models** | **92 test files / 2,700+ test cases** | **Multi-region compliance (DPDPA, HIPAA, UK GDPR)** | **Zero external ML dependencies**
 
+> [!CAUTION]
+> **Clinical Disclaimer:** RecoveryPilot is a demonstration and research platform. It is **not** certified for production clinical use and has not received regulatory approval (FDA, CE, etc.). All clinical algorithms are implemented from peer-reviewed literature for educational and research purposes. **Never use this software as a substitute for professional medical judgment.** Always consult qualified healthcare professionals for actual medical decisions.
+
 ---
 
 ## Table of Contents
