@@ -82,6 +82,12 @@ spec:
           containers:
             - name: pg-backup
               image: postgres:17-alpine
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                runAsUser: 999
+                capabilities:
+                  drop: ["ALL"]
               env:
                 - name: PGHOST
                   valueFrom:
@@ -155,6 +161,12 @@ spec:
           containers:
             - name: audit-archiver
               image: recovery-pilot/api:latest
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                runAsUser: 1000
+                capabilities:
+                  drop: ["ALL"]
               command: ["node", "dist/jobs/archiveAuditLogs.js"]
               env:
                 - name: ARCHIVE_DAYS_OLD
