@@ -1,0 +1,65 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature. We welcome ideas from developers, clinicians, researchers, and patients.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this feature relate to?
+      options:
+        - Patient Experience
+        - Doctor Workflow
+        - Admin / Management
+        - Clinical Algorithm (new or improved)
+        - ML Model (new or improved)
+        - Backend API
+        - Infrastructure / DevOps
+        - Accessibility
+        - Internationalization / Localization
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature solve? Who benefits?
+      placeholder: As a [doctor/patient/developer], I want to ... so that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How should this work? Include mockups, references, or pseudocode if helpful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered other approaches?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Willing to Contribute?
+      description: Would you like to implement this yourself?
+      options:
+        - "Yes, I'd like to submit a PR"
+        - "I can help with testing or review"
+        - "No, just suggesting"
+    validations:
+      required: false

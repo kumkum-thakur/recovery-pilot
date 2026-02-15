@@ -1,0 +1,69 @@
+name: Bug Report
+description: Report a bug in RecoveryPilot
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please fill in as much detail as possible.
+
+        **If this is a security vulnerability, do NOT open an issue.** See [SECURITY.md](https://github.com/kumkum-thakur/recovery-pilot/blob/main/SECURITY.md) for responsible disclosure.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the platform is affected?
+      options:
+        - Frontend (Patient Dashboard)
+        - Frontend (Doctor Dashboard)
+        - Frontend (Admin Dashboard)
+        - Clinical Algorithm
+        - ML Model
+        - Backend API
+        - Infrastructure / Deployment
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear, concise description of the bug.
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Your environment details.
+      placeholder: |
+        - OS: [e.g. macOS 15, Ubuntu 24.04, Windows 11]
+        - Browser: [e.g. Chrome 131, Firefox 133]
+        - Node.js version: [e.g. 22.11.0]
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: Paste any relevant error logs, console output, or screenshots.
+    validations:
+      required: false

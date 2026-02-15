@@ -1,0 +1,83 @@
+name: Clinical Algorithm Proposal
+description: Propose a new clinical scoring system or algorithm
+labels: ["clinical", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        RecoveryPilot requires every clinical algorithm to be traceable to peer-reviewed literature. Please provide the evidence base for your proposal.
+
+  - type: input
+    id: algorithm_name
+    attributes:
+      label: Algorithm Name
+      description: The official name of the scoring system or algorithm.
+      placeholder: e.g. "APACHE II Score", "Braden Scale"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: clinical_domain
+    attributes:
+      label: Clinical Domain
+      description: What area of post-operative care does this cover?
+      options:
+        - Sepsis / Infection
+        - Venous Thromboembolism
+        - Fall Risk
+        - Nutrition
+        - Pain Management
+        - Wound Healing
+        - Glucose Management
+        - Antibiotic Stewardship
+        - Cardiovascular
+        - Respiratory
+        - Renal
+        - Mental Health / Delirium
+        - Readmission Risk
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: citation
+    attributes:
+      label: Primary Citation
+      description: The original peer-reviewed publication. Include DOI if available.
+      placeholder: |
+        Author(s). Title. Journal. Year;Volume(Issue):Pages.
+        DOI: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation Evidence
+      description: Published validation studies, sample sizes, sensitivity/specificity data.
+      placeholder: |
+        - Validated in N=X,XXX patients
+        - Sensitivity: XX%, Specificity: XX%
+        - AUROC: X.XX
+    validations:
+      required: true
+
+  - type: textarea
+    id: scoring
+    attributes:
+      label: Scoring Criteria
+      description: How is the score calculated? List the variables, weights, and thresholds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: clinical_action
+    attributes:
+      label: Clinical Action Thresholds
+      description: What actions should be triggered at different score levels?
+      placeholder: |
+        - Score 0-2: Low risk, routine monitoring
+        - Score 3-5: Moderate risk, increase monitoring frequency
+        - Score 6+: High risk, escalate to physician
+    validations:
+      required: true

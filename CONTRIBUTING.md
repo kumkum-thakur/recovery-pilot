@@ -1,6 +1,27 @@
 # Contributing to RecoveryPilot
 
-Thank you for your interest in contributing.
+Thank you for your interest in contributing to RecoveryPilot! We welcome contributions from developers, clinicians, researchers, and students.
+
+## Maintainers
+
+| Name | GitHub | Role |
+|------|--------|------|
+| **Kumkum Thakur** | [@kumkum-thakur](https://github.com/kumkum-thakur) | Project Lead |
+| **Divya Mohan** | [@divyamohan1993](https://github.com/divyamohan1993) | Co-Lead, Backend & Infrastructure |
+
+## How You Can Contribute
+
+RecoveryPilot sits at the intersection of software engineering and clinical medicine. Different backgrounds bring different strengths:
+
+| If you are a... | You can help with... | Start here |
+|-----------------|---------------------|------------|
+| **Frontend Developer** | React components, UI/UX, accessibility, responsive design | `src/components/`, `src/pages/` |
+| **Backend Developer** | Express routes, middleware, database, job queues | `server/src/` |
+| **ML / Data Scientist** | Pure-TypeScript ML models, algorithm improvement | `src/services/mlModels/` |
+| **DevOps Engineer** | Kubernetes, Terraform, CI/CD, monitoring | `infrastructure/`, `.github/workflows/` |
+| **Clinician / Researcher** | Clinical algorithm proposals, validation data, evidence review | `src/services/` (clinical engines) |
+| **Student** | Documentation, tests, good-first-issue bugs | Issues labeled `good first issue` |
+| **Anyone** | Bug reports, feature requests, documentation fixes | [Issues](https://github.com/kumkum-thakur/recovery-pilot/issues) |
 
 ## Getting Started
 
@@ -10,33 +31,50 @@ Thank you for your interest in contributing.
 4. Install dependencies: `npm install`
 5. Start the dev server: `npm run dev`
 
+### Backend Development
+
+```bash
+cd server
+npm install
+npm run dev        # Starts Express server with hot-reload (tsx watch)
+npm run typecheck  # TypeScript type checking
+npm run test       # Run server tests
+```
+
+The backend uses Express 5, PostgreSQL (via Knex), Redis (via ioredis), and BullMQ for job queues.
+
 ## Code Standards
 
-- TypeScript strict mode is enforced
-- Use functional React components with hooks
+- TypeScript strict mode is enforced across both frontend and backend
+- Use functional React components with hooks (frontend)
 - Named exports preferred over default exports
-- TailwindCSS for styling
+- TailwindCSS for styling (frontend)
+- Zod for request validation (backend)
+- Pino for structured logging (backend)
 
 ## Clinical Algorithm Requirements
 
 All clinical algorithms must:
 
-1. Cite a peer-reviewed source in code comments
-2. Use published scoring criteria exactly as published
-3. Include tests with known clinical outcomes
-4. Be documented in docs/ALGORITHMS.md
+1. **Cite a peer-reviewed source** in code comments (journal, year, DOI)
+2. **Use published scoring criteria** exactly as published -- do not invent thresholds
+3. **Include tests** with known clinical outcomes from the literature
+4. **Be documented** in `docs/ALGORITHMS.md` with the full scoring breakdown
+
+Use the [Clinical Algorithm Proposal](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=clinical_algorithm.yml) issue template to propose new algorithms.
 
 ## Test Requirements
 
 - All new features must include tests
 - All bug fixes must include a regression test
-- Run before submitting: `npm run test && npm run lint`
+- Frontend: `npm run test && npm run lint`
+- Backend: `cd server && npm run test && npm run typecheck`
 
 ## Pull Request Process
 
-1. Ensure all tests pass
-2. Ensure linting passes
-3. Write a clear PR description
+1. Ensure all tests pass (frontend and backend)
+2. Ensure linting and type checking pass
+3. Fill out the PR template completely
 4. Link related issues
 5. Request review from a maintainer
 
@@ -44,11 +82,24 @@ All clinical algorithms must:
 
 Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`
 
+## Areas of Contribution
+
+| Area | Description | Key Files |
+|------|-------------|-----------|
+| Clinical Algorithms | Implement validated scoring systems | `src/services/` |
+| ML Models | Pure TypeScript ML implementations | `src/services/mlModels/` |
+| Frontend UI | React components and pages | `src/components/`, `src/pages/` |
+| Backend API | Express routes and middleware | `server/src/routes/`, `server/src/middleware/` |
+| Infrastructure | Kubernetes, Terraform, monitoring | `infrastructure/` |
+| Documentation | Clinical docs, API reference | `docs/` |
+| Testing | Unit, integration, property-based | `src/test/`, `server/src/` |
+
 ## Reporting Issues
 
-- Bugs: open a GitHub issue with reproduction steps
-- Features: open an issue labeled `enhancement`
-- Security: see SECURITY.md (do not open a public issue)
+- **Bugs**: Use the [Bug Report](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=bug_report.yml) template
+- **Features**: Use the [Feature Request](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=feature_request.yml) template
+- **Clinical algorithms**: Use the [Clinical Algorithm Proposal](https://github.com/kumkum-thakur/recovery-pilot/issues/new?template=clinical_algorithm.yml) template
+- **Security vulnerabilities**: See [SECURITY.md](SECURITY.md) -- do **not** open a public issue
 
 ## License
 
