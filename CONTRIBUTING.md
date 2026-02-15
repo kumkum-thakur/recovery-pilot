@@ -71,7 +71,7 @@ Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore
 | Area | Description | Key Files |
 |------|-------------|-----------|
 | Clinical Algorithms | Implement validated scoring systems | `src/services/` |
-| ML Models | Pure TypeScript ML implementations | `src/services/*Model*.ts`, `src/services/*Engine*.ts` |
+| ML Models | Pure TypeScript ML implementations | `src/services/mlModels/` |
 | Frontend UI | React components and pages | `src/components/`, `src/pages/` |
 | Backend API | Express routes and middleware | `server/src/routes/`, `server/src/middleware/` |
 | Infrastructure | Kubernetes, Terraform, monitoring | `infrastructure/` |

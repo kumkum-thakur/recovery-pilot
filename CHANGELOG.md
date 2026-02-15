@@ -108,7 +108,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Zustand state management (7 primary + 15 feature stores)
 - Vite/Rolldown build system
 - TailwindCSS with medical/gamification theme
-- 259 test files with 2,727 test cases
+- 92 test files with 2,700+ test cases
 - Property-based testing with fast-check
 - Deterministic seed data (5 seeds) for reproducible testing
 - Automated deployment scripts (autoconfig.sh, autoconfig.bat, autodeploy-k8s.sh)
