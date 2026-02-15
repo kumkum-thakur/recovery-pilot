@@ -1,20 +1,25 @@
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version 1.0.0" />
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" />
-  <img src="https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript" alt="TypeScript 5.9" />
   <img src="https://img.shields.io/badge/React-19-blue?logo=react" alt="React 19" />
-  <img src="https://img.shields.io/badge/Tests-2727%20passing-brightgreen" alt="Tests" />
-  <img src="https://img.shields.io/badge/Clinical%20Algorithms-40%2B-orange" alt="Clinical Algorithms" />
-  <img src="https://img.shields.io/badge/ML%20Models-14-purple" alt="ML Models" />
+  <img src="https://img.shields.io/badge/Express-5-black?logo=express" alt="Express 5" />
+  <img src="https://img.shields.io/badge/PostgreSQL-17-blue?logo=postgresql" alt="PostgreSQL 17" />
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D22-green?logo=node.js" alt="Node.js >= 22" />
+  <img src="https://img.shields.io/badge/Clinical%20Algorithms-40%2B-orange" alt="Clinical Algorithms 40+" />
+  <img src="https://img.shields.io/badge/ML%20Models-14-purple" alt="ML Models 14" />
+  <img src="https://img.shields.io/badge/Tests-2700%2B%20passing-brightgreen" alt="Tests" />
 </p>
 
 # RecoveryPilot
 
 **Autonomous Post-Operative Care Orchestrator**
 
-RecoveryPilot is a clinically-grounded, AI-powered healthcare platform that actively manages post-operative recovery logistics. Unlike passive telehealth applications, RecoveryPilot proactively orchestrates patient recovery through evidence-based algorithms, real-time clinical decision support, and gamified patient engagement -- while keeping doctors informed through intelligent triage workflows.
+Over 300 million surgical procedures are performed worldwide every year. For most patients, recovery means a printed instruction sheet and a follow-up appointment weeks away. RecoveryPilot replaces that gap with active, intelligent orchestration -- evidence-based algorithms that monitor, predict, and intervene throughout the recovery journey, while keeping the physician in command of every clinical decision.
 
-> **140,000+ lines of TypeScript** | **40+ validated clinical algorithms** | **14 pure-TypeScript ML models** | **259 test files / 2,727 test cases** | **Zero external ML dependencies**
+RecoveryPilot is a full-stack healthcare platform spanning a React 19 frontend, an Express 5 API backend with PostgreSQL and Redis, multi-region Kubernetes infrastructure, and compliance enforcement for three regulatory regimes (DPDPA, HIPAA, UK GDPR) -- all in a single monorepo.
+
+> **145,000+ lines of TypeScript** | **40+ peer-reviewed clinical algorithms** | **14 pure-TypeScript ML models** | **92 test files / 2,700+ test cases** | **Multi-region compliance (DPDPA, HIPAA, UK GDPR)** | **Zero external ML dependencies**
 
 ---
 
@@ -29,9 +34,9 @@ RecoveryPilot is a clinically-grounded, AI-powered healthcare platform that acti
 - [Quick Start](#quick-start)
 - [Deployment](#deployment)
 - [Testing](#testing)
+- [Security and Compliance](#security-and-compliance)
 - [Documentation](#documentation)
 - [Project Structure](#project-structure)
-- [Security](#security)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
@@ -42,54 +47,73 @@ RecoveryPilot is a clinically-grounded, AI-powered healthcare platform that acti
 
 | Aspect | Traditional Telehealth | RecoveryPilot |
 |--------|----------------------|---------------|
-| Patient interaction | Passive (patient initiates) | **Active orchestration** (system initiates tasks) |
+| Patient interaction | Passive (patient initiates) | **Active orchestration** (system initiates tasks, missions, check-ins) |
 | Clinical scoring | Manual lookup tables | **40+ automated scoring systems** with self-learning calibration |
 | ML models | Cloud API dependencies | **14 pure-TypeScript models** with zero external ML libraries |
 | Evidence base | Undocumented heuristics | **Every algorithm traced to peer-reviewed literature** |
 | Patient engagement | Notifications | **Gamified mission system** with streaks, badges, XP, leaderboards |
 | Doctor workflow | Manual review queues | **AI-triaged inbox** with confidence scores and one-click approve/reject |
+| Compliance | Single-region | **DPDPA + HIPAA + UK GDPR** with automated enforcement and data residency |
+| Infrastructure | Monolithic SaaS | **Full-stack monorepo** with Express 5, PostgreSQL 17, Redis, Kubernetes |
 
 ---
 
 ## Architecture Overview
 
 ```
-+---------------------------------------------------------------------+
-|                        RecoveryPilot Platform                        |
-+---------------------------------------------------------------------+
-|                                                                     |
-|  +------------------+  +------------------+  +------------------+   |
-|  |   Patient App    |  |   Doctor App     |  |   Admin App      |   |
-|  |  (Mobile-First)  |  |  (Desktop-Opt)   |  |  (Management)    |   |
-|  +--------+---------+  +--------+---------+  +--------+---------+   |
-|           |                     |                     |             |
-|  +--------+---------------------+---------------------+--------+   |
-|  |                    React 19 + Zustand                        |   |
-|  |              (7 Primary + 15 Feature Stores)                 |   |
-|  +------------------------------+-------------------------------+   |
-|                                 |                                   |
-|  +------------------------------+-------------------------------+   |
-|  |                      Service Layer (80+)                     |   |
-|  |                                                              |   |
-|  |  +--Clinical Decision--+  +--ML Models (14)--+              |   |
-|  |  | Sepsis (qSOFA/SOFA) |  | Logistic Regr.   |              |   |
-|  |  | DVT (Caprini/Wells) |  | Decision Trees   |              |   |
-|  |  | Falls (Morse/H-II)  |  | K-Means          |              |   |
-|  |  | Nutrition (NRS/MUST)|  | Bayesian Nets    |              |   |
-|  |  | SSI (NNIS/CDC)      |  | TF-IDF NLP       |              |   |
-|  |  | Glucose (ADA)       |  | Anomaly Detect   |              |   |
-|  |  | Antibiotics (IDSA)  |  | Time-Series      |              |   |
-|  |  | Pain Protocols      |  | Self-Learning    |              |   |
-|  |  +--------------------+  +------------------+              |   |
-|  |                                                              |   |
-|  |  +--Agent Workflows----+  +--Data Layer------+              |   |
-|  |  | Gemini Vision API   |  | FHIR Compliance  |              |   |
-|  |  | Triage Automation   |  | Audit Logging    |              |   |
-|  |  | Refill Engine       |  | Consent Mgmt     |              |   |
-|  |  | Mission Generation  |  | Export (CSV/JSON) |              |   |
-|  |  +--------------------+  +------------------+              |   |
-|  +--------------------------------------------------------------+   |
-+---------------------------------------------------------------------+
++-------------------------------------------------------------------------+
+|                          CLIENT APPLICATIONS                            |
+|  +------------------+  +------------------+  +------------------+       |
+|  |   Patient App    |  |   Doctor App     |  |   Admin App      |       |
+|  |  (Mobile-First)  |  |  (Desktop-Opt)   |  |  (Management)    |       |
+|  +--------+---------+  +--------+---------+  +--------+---------+       |
++-----------|---------------------|---------------------|------------------+
+            |                     |                     |
++-----------|---------------------|---------------------|------------------+
+|  +--------v---------------------v---------------------v---------+       |
+|  |                 React 19 + Zustand State Layer                |       |
+|  |               (7 Primary + 15 Feature Stores)                 |       |
+|  +---------------------------------------------------------------+       |
+|  |              Frontend Service Layer (80+ Modules)             |       |
+|  |  Clinical Decision (8)  |  ML Models (14)  |  Agent Workflows |       |
+|  +---------------------------------------------------------------+       |
+|                             FRONTEND                                     |
++----------------------------------+---------------------------------------+
+                                   | REST API
++----------------------------------v---------------------------------------+
+|                              BACKEND                                     |
+|  +---------------------------------------------------------------+       |
+|  |          Express 5 API Server (Node.js 22, Cluster Mode)      |       |
+|  +---------------------------------------------------------------+       |
+|  | Auth Routes | Patient Routes | Clinical Routes | Admin Routes |       |
+|  | Compliance Routes | Health Probes (/health, /ready, /startup) |       |
+|  +---------------------------------------------------------------+       |
+|  |                    Middleware Pipeline                         |       |
+|  | Helmet | Passport.js | Audit Logger | Rate Limiter | Zod     |       |
+|  +---------------------------------------------------------------+       |
+|  |             BullMQ Job Queues (5 Async Queues)                |       |
+|  | Image Analysis | Notifications | Data Export | Compliance     |       |
+|  +---------------------------------------------------------------+       |
++----------------------------------+---------------------------------------+
+                                   |
++----------------------------------v---------------------------------------+
+|                            DATA LAYER                                    |
+|  +--------------+  +-----------+  +----------+  +------------------+    |
+|  | PostgreSQL   |  | Redis     |  | AWS S3   |  | AWS KMS /        |    |
+|  | Primary +    |  | 4 DBs:    |  | Medical  |  | Secrets Manager  |    |
+|  | Read Replica |  | Session,  |  | Images,  |  | Encryption Keys  |    |
+|  |              |  | Cache,    |  | Audit,   |  |                  |    |
+|  |              |  | RateLimit,|  | Backups  |  |                  |    |
+|  |              |  | Queue     |  |          |  |                  |    |
+|  +--------------+  +-----------+  +----------+  +------------------+    |
++----------------------------------+---------------------------------------+
+                                   |
++----------------------------------v---------------------------------------+
+|                          INFRASTRUCTURE                                  |
+|  Kubernetes (3 Regional Overlays: India, US, UK)                        |
+|  Terraform (AWS IaC) | Prometheus + Grafana | Nginx (TLS)               |
+|  Docker Compose | Backup/DR (RTO 4h, RPO 1h)                           |
++--------------------------------------------------------------------------+
 ```
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architectural breakdown.
@@ -215,7 +239,7 @@ For the full algorithm reference with mathematical formulas and implementation d
 
 ## Machine Learning Models
 
-All 14 ML models are implemented in **pure TypeScript** with zero external ML/AI library dependencies. Each model uses well-established statistical and machine learning techniques.
+All 14 ML models are implemented in **pure TypeScript** with zero external ML/AI library dependencies. Each model lives in `src/services/mlModels/` and uses well-established statistical and machine learning techniques.
 
 | Model | Technique | Source Literature | Purpose |
 |-------|-----------|-------------------|---------|
@@ -242,7 +266,7 @@ All 14 ML models are implemented in **pure TypeScript** with zero external ML/AI
 
 ### For Patients
 - **Daily Recovery Missions** -- AI-generated tasks (photo uploads, medication checks, exercise logs) with due dates
-- **Wound Photo Analysis** -- Real Google Gemini Vision API analyzes surgical wound photos with confidence scores
+- **Wound Photo Analysis** -- Google Gemini Vision API analyzes surgical wound photos with confidence scores
 - **Gamification** -- Streaks, XP points, 5 badge categories with rarity tiers, leaderboard, challenges
 - **Pain Tracking** -- Log pain levels with body-map, trigger tracking, and trend analysis
 - **Vital Signs** -- Track heart rate, BP, temperature, SpO2, respiratory rate with NEWS2 scoring
@@ -265,31 +289,65 @@ All 14 ML models are implemented in **pure TypeScript** with zero external ML/AI
 
 ### For Administrators
 - **User Management** -- Role-based access control (patient, doctor, admin)
-- **Audit Logging** -- Immutable, timestamped log of all clinical actions
+- **Audit Logging** -- Immutable, hash-chained, timestamped log of all clinical actions
 - **FHIR Compliance** -- HL7 FHIR R4 resource generation and export
 - **Data Export** -- JSON, CSV, FHIR bundle export with patient anonymization
-- **Consent Management** -- Digital consent workflows with version tracking
+- **Consent Management** -- Digital consent workflows with version tracking and granular consent types
 - **Quality Metrics** -- HCAHPS scores, readmission rates, outcome dashboards
+- **Compliance Management** -- DPDPA, HIPAA, UK GDPR enforcement with erasure and portability APIs
 
 ---
 
 ## Technology Stack
 
+### Frontend
+
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
 | UI Framework | React | 19.2.0 | Component-based UI with hooks |
 | Language | TypeScript | 5.9.3 | Strict mode, type-safe codebase |
-| State Management | Zustand | 5.0 | 7 primary + 15 feature stores |
-| Routing | React Router | 7.13 | Client-side SPA routing |
-| Styling | TailwindCSS | 4.1 | Utility-first responsive design |
-| Animations | Framer Motion | 12.29 | Smooth UI transitions |
-| Icons | Lucide React | 0.563 | 500+ medical/UI icons |
-| Build Tool | Vite (Rolldown) | 7.2.5 | Production-optimized bundling |
-| Testing | Vitest | 4.0 | Unit, integration, E2E tests |
-| Component Testing | React Testing Library | 16.3 | DOM testing utilities |
-| Property Testing | fast-check | 4.5 | Property-based test generation |
-| AI Integration | Google Gemini Vision API | - | Wound image analysis |
-| Linting | ESLint + TypeScript-ESLint | 9.39 | Code quality enforcement |
+| State Management | Zustand | 5.0.10 | 7 primary + 15 feature stores |
+| Routing | React Router | 7.13.0 | Client-side SPA routing |
+| Styling | TailwindCSS | 4.1.18 | Utility-first responsive design |
+| Animations | Framer Motion | 12.29.2 | Smooth UI transitions |
+| Icons | Lucide React | 0.563.0 | Medical and UI iconography |
+| Build Tool | Vite (Rolldown) | 7.2.5 | Rust-powered production bundling |
+| Testing | Vitest | 4.0.18 | Unit, integration, E2E tests |
+| Component Testing | React Testing Library | 16.3.2 | DOM testing utilities |
+| Property Testing | fast-check | 4.5.3 | Property-based test generation |
+| AI Integration | Google Gemini Vision API | -- | Wound image analysis |
+| Linting | ESLint + TypeScript-ESLint | 9.39.1 | Code quality enforcement |
+
+### Backend
+
+| Layer | Technology | Version | Purpose |
+|-------|-----------|---------|---------|
+| API Framework | Express | 5.1.0 | HTTP server with cluster mode |
+| Runtime | Node.js | >= 22.0.0 | Server-side JavaScript runtime |
+| Database | PostgreSQL | 17 | Primary data store with read replicas |
+| Query Builder | Knex | 3.1.0 | SQL query builder and migrations |
+| Cache / Sessions | Redis (ioredis) | 5.6.0 | 4-database architecture (session, cache, rate-limit, queue) |
+| Job Queue | BullMQ | 5.30.1 | 5 async processing queues |
+| Authentication | Passport.js + JWT | 0.7.0 | Strategy-based auth with token rotation |
+| Password Hashing | Argon2 | 0.41.1 | Argon2id with bcrypt migration path |
+| 2FA | otplib (TOTP) | 12.0.1 | RFC 6238 time-based one-time passwords |
+| Validation | Zod | 3.24.4 | Runtime schema validation on all endpoints |
+| Logging | Pino | 9.6.0 | Structured JSON logging with PHI redaction |
+| Security Headers | Helmet | 8.1.0 | CSP, HSTS, X-Frame-Options, etc. |
+| Rate Limiting | express-rate-limit | 7.5.0 | 3-tier DDoS and abuse protection |
+| Encryption | Node.js crypto | -- | AES-256-GCM field-level encryption |
+| Cloud Storage | AWS SDK v3 (S3, KMS, Secrets Manager) | 3.x | Medical images, audit logs, backups |
+
+### Infrastructure
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Orchestration | Kubernetes | Multi-region deployment with 3 regional overlays |
+| IaC | Terraform | AWS infrastructure provisioning |
+| Reverse Proxy | Nginx | TLS termination, security headers, rate limiting |
+| Containers | Docker Compose | Local production simulation |
+| Monitoring | Prometheus + Grafana | Metrics collection, dashboards, 20+ alert rules |
+| Backup/DR | Automated policies | RTO 4 hours, RPO 1 hour |
 
 ---
 
@@ -316,10 +374,9 @@ cd recovery-pilot
 autoconfig.bat
 ```
 
-### Option 2: Manual Setup
+### Option 2: Manual Setup (Frontend)
 
 ```bash
-# Clone
 git clone https://github.com/kumkum-thakur/recovery-pilot.git
 cd recovery-pilot
 
@@ -335,6 +392,26 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Option 3: Full-Stack Development
+
+The backend requires PostgreSQL 17+ and Redis 7+, or use Docker Compose:
+
+```bash
+# Start infrastructure services
+docker compose -f infrastructure/docker-compose.production.yaml up -d
+
+# Install and start the backend
+cd server
+npm install
+cp .env.example .env
+# Edit .env with your database, Redis, and AWS credentials
+npm run dev
+
+# In a separate terminal, start the frontend
+cd ..
+npm run dev
+```
 
 ### Default Credentials
 
@@ -371,6 +448,40 @@ This idempotently:
 5. Sets up UFW firewall
 6. Creates auto-update cron job (5-minute intervals)
 
+### Kubernetes Multi-Region
+
+```bash
+# One-click deployment
+chmod +x autodeploy-k8s.sh
+./autodeploy-k8s.sh
+
+# Or manually with kubectl
+kubectl apply -k infrastructure/kubernetes/base/
+
+# Apply a regional compliance overlay
+kubectl apply -k infrastructure/kubernetes/overlays/india/
+```
+
+Three regional overlays enforce data residency and compliance:
+
+| Region | Overlay | Compliance Regime | AWS Region |
+|--------|---------|-------------------|------------|
+| India | `overlays/india/` | DPDPA | ap-south-1 |
+| United States | `overlays/us/` | HIPAA | us-east-1 |
+| United Kingdom | `overlays/uk/` | UK GDPR | eu-west-2 |
+
+### Docker Compose (Production)
+
+```bash
+docker compose -f infrastructure/docker-compose.production.yaml up -d
+```
+
+Starts PostgreSQL 17, Redis 7, the API server, and monitoring services.
+
+### Monitoring
+
+Prometheus scrapes metrics every 15 seconds. 20+ alert rules cover critical conditions including API error rates, database connection exhaustion, Redis memory pressure, queue backlog growth, and authentication failures.
+
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed deployment guides.
 
 ---
@@ -383,19 +494,87 @@ npm run test:ui           # Interactive test UI
 npm run test:coverage     # Coverage report
 ```
 
-### Test Suite Breakdown
+### Test Suite Overview
 
-| Category | Files | Tests | What It Validates |
-|----------|-------|-------|-------------------|
-| Unit Tests | 180+ | 2,000+ | Individual service/component logic |
-| Integration Tests | 40+ | 400+ | Cross-service interactions |
-| E2E Workflow Tests | 10+ | 100+ | Full patient/doctor workflows |
-| Property-Based Tests | 15+ | 200+ | Invariant verification with randomized inputs |
-| Clinical Validation | 5 | 100+ | Algorithm correctness against known outcomes |
+**92 test files** across **2,700+ test cases** covering every layer of the platform:
 
-Tests use deterministic seed data (seeds: 42, 137, 256, 389, 501) for reproducible clinical scenarios.
+| Category | Files | What It Validates |
+|----------|-------|-------------------|
+| Clinical Validation | 1 | 18 clinical algorithms across 5 deterministic seed rounds (160+ cases) |
+| ML Model Validation | 1 | 13 ML models with cross-model consistency and doctor-in-the-loop learning |
+| ML Model Unit Tests | 11 | Individual ML model logic (recovery prediction, clustering, NLP, Bayesian networks, etc.) |
+| Service Unit Tests | 35 | Individual service logic (sepsis, DVT, falls, nutrition, SSI, glucose, antibiotics, etc.) |
+| Integration Tests | 3 | Store interactions, auth flows, data persistence, cross-service workflows |
+| E2E Workflows | 1 | Full admin-doctor-patient lifecycle, multi-user isolation |
+| Component Tests | 11 | React component rendering, user interaction, error boundaries |
+| Store Tests | 10 | Zustand store logic, streaks, timeouts, feature stores |
+| Page Tests | 2 | Doctor dashboard and login page rendering |
+| Medical Review Tests | 4 | AI image analysis, storage systems, property-based testing |
+| Infrastructure | 1 | Build system, persistence, auth system verification |
+| Configuration | 1 | Tailwind, dependencies, project scripts |
+| Property-Based | 2 | Randomized invariant verification (fast-check) |
+
+Tests use deterministic seed data (seeds: 42, 137, 256, 389, 501) with 50 synthetic patient records per round for reproducible clinical scenarios.
 
 See [docs/TESTING.md](docs/TESTING.md) for testing philosophy and guides.
+
+---
+
+## Security and Compliance
+
+RecoveryPilot implements defense-in-depth security across every layer and is architected for three regulatory compliance regimes simultaneously.
+
+### Authentication and Authorization
+
+| Control | Implementation |
+|---------|----------------|
+| Password hashing | Argon2id (OWASP recommended) with automatic bcrypt migration |
+| Token management | JWT access (15min) + refresh (7d) with rotation and blacklisting |
+| Multi-factor auth | TOTP (RFC 6238) via otplib |
+| Session control | Redis-backed, max 5 concurrent sessions, IP and user-agent binding |
+| Account lockout | 5 failed attempts triggers lockout |
+| Role-based access | 3 roles (patient, doctor, admin) with route-level enforcement via Passport.js |
+| Data ownership | Patients see own data only; doctors see assigned patients only |
+
+### Data Protection
+
+| Control | Implementation |
+|---------|----------------|
+| Encryption at rest | AES-256-GCM with PBKDF2-SHA512 key derivation (100K iterations) |
+| Field-level encryption | 30+ PHI fields auto-encrypted (name, email, DOB, SSN, Aadhaar, NHS number, etc.) |
+| Encryption in transit | TLS 1.3 via Nginx termination with HSTS preload |
+| Audit trail | Immutable hash-chained log (SHA-256), 7-year retention, S3 Object Lock |
+| Input validation | SQL/NoSQL injection detection, XSS prevention, Zod schema validation |
+| Log redaction | PHI and credentials automatically redacted from all log output via Pino |
+| Anonymization | HMAC-SHA256 de-identification for Safe Harbor compliance |
+| Rate limiting | 3-tier: API (100/min), auth (5/15min), patient data (200/min) per IP/user |
+
+### Regulatory Compliance
+
+| Regime | Jurisdiction | Key Controls |
+|--------|-------------|--------------|
+| **DPDPA** | India | Data residency enforcement (ap-south-1), granular consent (personal, sensitive, cross-border, automated decision), right to erasure, breach notification (72h), purpose limitation |
+| **HIPAA** | United States | Minimum necessary rule, audit logging (7-year retention), access controls, PHI encryption, Safe Harbor de-identification, BAA support |
+| **UK GDPR** | United Kingdom | Right to erasure, data portability (FHIR R4 export), explicit consent, breach notification (72h), DPA compliance, lawful basis tracking |
+
+Compliance is enforced programmatically through dedicated API routes:
+
+- `POST /compliance/erasure-request` -- Right to erasure (DPDPA / UK GDPR)
+- `POST /compliance/portability-request` -- FHIR R4 data export
+- `POST /compliance/consents/:type/grant` -- Granular consent management
+- `GET /compliance/regime` -- Active compliance configuration
+
+### Infrastructure Security
+
+| Layer | Controls |
+|-------|----------|
+| Kubernetes | Network policies, pod security standards, namespace isolation, secrets encryption |
+| Nginx | TLS termination, HSTS (1-year preload), CSP, X-Frame-Options, rate limiting |
+| Monitoring | Prometheus alerting on auth failures, rate limit spikes, error rates |
+| Backup/DR | Automated backups, RTO 4 hours, RPO 1 hour |
+| Docker | Non-root containers, minimal base images |
+
+See [SECURITY.md](SECURITY.md) for the full security policy and vulnerability reporting process.
 
 ---
 
@@ -422,64 +601,72 @@ See [docs/TESTING.md](docs/TESTING.md) for testing philosophy and guides.
 ```
 recovery-pilot/
   src/
-    components/          # 37 React UI components
+    components/          # 25 React UI components
     pages/               # Page-level components (Patient, Doctor, Admin dashboards)
     stores/              # Zustand state management (7 primary + 15 feature stores)
-    services/            # 80+ service modules
-      # Clinical Decision Support
+    hooks/               # Custom React hooks
+    types/               # TypeScript type definitions (3,200+ lines)
+    services/            # 70+ service modules
+      # Clinical Decision Support (8 engines)
       sepsisEarlyWarningSystem.ts      # qSOFA, SIRS, SOFA
       dvtRiskCalculator.ts             # Caprini, Wells, Geneva
-      fallRiskAssessment.ts            # Morse, Hendrich II
+      fallRiskAssessment.ts            # Morse, Hendrich II, TUG
       nutritionalRiskScreening.ts      # NRS-2002, MUST, SGA
       ssiPredictor.ts                  # NNIS, CDC SSI, ASEPSIS
       bloodGlucoseMonitor.ts           # ADA targets, sliding scale
       antibioticStewardshipEngine.ts   # IDSA, CYP450, Sanford
       painProtocolEngine.ts            # WHO analgesic ladder
-      # ML Models (14 pure TypeScript models)
-      recoveryPredictionModel.ts       # Logistic regression + decision trees
-      riskScoringEngine.ts             # LACE, CCI, ASA composite
-      anomalyDetectionEngine.ts        # Mahalanobis, Z-score, IQR
-      sentimentAnalysisEngine.ts       # TF-IDF, medical lexicon
-      symptomCheckerModel.ts           # Bayesian probability matrix
-      selfLearningEngine.ts            # Online learning + calibration
-      drugInteractionChecker.ts        # CYP450 pathways
-      readmissionRiskPredictor.ts      # LACE + comorbidity
-      woundHealingClassifier.ts        # Healing phase classification
-      medicationAdherencePredictor.ts  # Behavioral regression
-      clinicalNLPEngine.ts             # UMLS tokenization
-      complicationBayesianNetwork.ts   # DAG inference
-      patientClusteringEngine.ts       # K-means segmentation
-      treatmentResponsePredictor.ts    # Outcome regression
-      # Agent & Workflow
-      agentService.ts                  # Triage automation
+      # Agent and Workflow Services
+      agentService.ts                  # AI triage orchestration
       geminiService.ts                 # Google Gemini Vision API
-      missionGenerationService.ts      # Mission creation
+      missionGenerationService.ts      # Recovery mission creation
+      refillEngine.ts                  # Medication refill automation
+      gamificationEngine.ts            # Streaks, XP, badges, challenges
       # And 50+ more services...
-    types/               # TypeScript type definitions (3,200+ lines)
-    hooks/               # Custom React hooks
+      mlModels/            # 14 pure-TypeScript ML models
+        recoveryPredictionModel.ts     # Logistic regression + decision trees
+        riskScoringEngine.ts           # LACE, CCI, ASA composite
+        anomalyDetectionEngine.ts      # Mahalanobis, Z-score, IQR
+        sentimentAnalysisEngine.ts     # TF-IDF, medical lexicon
+        symptomCheckerModel.ts         # Bayesian probability matrix
+        selfLearningEngine.ts          # Online learning + calibration
+        drugInteractionChecker.ts      # CYP450 pathways
+        readmissionRiskPredictor.ts    # LACE + comorbidity
+        woundHealingClassifier.ts      # Healing phase classification
+        medicationAdherencePredictor.ts  # Behavioral regression
+        clinicalNLPEngine.ts           # UMLS tokenization
+        complicationBayesianNetwork.ts # DAG inference
+        patientClusteringEngine.ts     # K-means segmentation
+        treatmentResponsePredictor.ts  # Outcome regression
     medical-review/      # AI image analysis subsystem
-    test/                # 259 test files, 2,727 test cases
+    test/                # 6 comprehensive validation suites
+    utils/               # Utility modules
+  server/
+    src/
+      routes/            # API endpoints (auth, patients, clinical, admin, compliance, health)
+      middleware/         # Security, authentication, audit logging, compliance
+      config/            # Environment, database, Redis, compliance matrix
+      utils/             # Encryption (AES-256-GCM), structured logging (Pino)
+      jobs/              # BullMQ queues (image, notification, export, compliance, clinical)
+      app.ts             # Express middleware pipeline
+      index.ts           # Cluster mode entry point
+  infrastructure/
+    kubernetes/
+      base/              # Deployments, services, ingress, network policies
+      overlays/
+        india/           # DPDPA compliance overlay (ap-south-1)
+        us/              # HIPAA compliance overlay (us-east-1)
+        uk/              # UK GDPR compliance overlay (eu-west-2)
+    terraform/           # AWS infrastructure-as-code
+    monitoring/          # Prometheus config, 20+ alerting rules
+    nginx/               # Reverse proxy, TLS, security headers
+    backup-dr/           # Backup policies, disaster recovery (RTO 4h, RPO 1h)
+    docker-compose.production.yaml
   docs/                  # Comprehensive documentation
-  server/                # Backend API server (Express + PostgreSQL + Redis)
-  infrastructure/        # Kubernetes manifests, Terraform, monitoring, Nginx
-  autoconfig.sh          # Linux/macOS automated setup & deployment
-  autodeploy-k8s.sh      # One-click Kubernetes deployment
+  autoconfig.sh          # Linux/macOS automated setup and deployment
+  autodeploy-k8s.sh      # One-click Kubernetes multi-region deployment
   autoconfig.bat         # Windows development setup
 ```
-
----
-
-## Security
-
-- **Authentication** -- Password hashing with constant-time comparison
-- **Session management** -- Automatic timeout with expiration warnings
-- **Audit logging** -- Immutable, timestamped trail of all clinical actions
-- **Data export** -- Patient anonymization for research datasets
-- **Input validation** -- Sanitized inputs across all form fields
-- **Security headers** -- X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy
-- **FHIR compliance** -- HL7 FHIR R4 resource generation
-
-See [SECURITY.md](SECURITY.md) for the security policy and vulnerability reporting process.
 
 ---
 
@@ -525,11 +712,14 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ### Technology
 - **Google Gemini Vision API** -- Wound image analysis
 - **React Team** -- UI framework
-- **Vite/Rolldown Team** -- Build tooling
+- **Vite/Rolldown Team** -- Rust-powered build tooling
+- **Express.js** -- API framework
+- **PostgreSQL** -- Primary data store
+- **Redis** -- Caching, sessions, and job queue backbone
 
 ---
 
 <p align="center">
   Built by <strong><a href="https://github.com/kumkum-thakur">Kumkum Thakur</a></strong> and <strong><a href="https://github.com/divyamohan1993">Divya Mohan</a></strong><br />
-  <sub>Every algorithm is evidence-based. Every line of code is ours.</sub>
+  <sub>Every algorithm traced to peer-reviewed literature. Every model running in pure TypeScript. Every patient action supervised by a physician.</sub>
 </p>
