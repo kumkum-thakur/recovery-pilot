@@ -25,6 +25,27 @@ vi.mock('./services/authService', () => ({
   },
 }));
 
+// Mock persistenceService to prevent async localStorage access after teardown
+vi.mock('./services/persistenceService', () => ({
+  persistenceService: {
+    getActionItems: vi.fn().mockReturnValue([]),
+    getActionItem: vi.fn().mockReturnValue(null),
+    saveActionItem: vi.fn(),
+    getMissions: vi.fn().mockReturnValue([]),
+    getMission: vi.fn().mockReturnValue(null),
+    saveMission: vi.fn(),
+    getUser: vi.fn().mockReturnValue(null),
+    saveUser: vi.fn(),
+    getAllUsers: vi.fn().mockReturnValue([]),
+    getAllMissions: vi.fn().mockReturnValue([]),
+    getConfig: vi.fn().mockReturnValue(null),
+    saveConfig: vi.fn(),
+    get: vi.fn().mockReturnValue(null),
+    set: vi.fn(),
+  },
+  PersistenceError: class PersistenceError extends Error {},
+}));
+
 describe('App Routing', () => {
   beforeEach(() => {
     // Reset user store before each test

@@ -216,7 +216,8 @@ describe('encouragingMessages', () => {
       const encouragingWords = [
         'crushed', 'amazing', 'great', 'awesome', 'perfect',
         'champion', 'boss', 'unstoppable', 'crushing', 'fire',
-        'superstar', 'legend', 'incredible', 'phenomenal'
+        'superstar', 'legend', 'incredible', 'phenomenal',
+        'champ', 'roll', 'momentum', 'healing', 'spirit',
       ];
       
       const messages = [
