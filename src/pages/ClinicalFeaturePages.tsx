@@ -191,7 +191,7 @@ export function DrugInteractionPage() {
               <InfoRow label="Severity" value={result.interaction.severity} color="text-red-600" />
               <InfoRow label="Mechanism" value={result.interaction.mechanism} />
               <InfoRow label="Confidence" value={`${(result.interaction.confidence * 100).toFixed(0)}%`} />
-              <p className="text-xs text-gray-500 mt-2">{result.interaction.recommendation}</p>
+              <p className="text-xs text-gray-500 mt-2">{result.interaction.clinicalRecommendation}</p>
             </>
           ) : (
             <p className="text-sm text-gray-500">No interaction found.</p>
@@ -230,10 +230,10 @@ export function ReadmissionRiskPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard label="HOSPITAL Score" value={`${result.hospitalScore.totalScore}/${result.hospitalScore.maxScore}`} icon={Clipboard} iconBg="bg-blue-100" iconColor="text-blue-600" />
           <StatCard label="LACE Index" value={`${result.laceIndex.totalScore}/${result.laceIndex.maxScore}`} icon={Activity} iconBg="bg-purple-100" iconColor="text-purple-600" />
-          <StatCard label="Risk Level" value={result.overallRiskLevel} icon={AlertTriangle} iconBg="bg-red-100" iconColor="text-red-600" />
+          <StatCard label="Risk Level" value={result.ensembleRiskLevel} icon={AlertTriangle} iconBg="bg-red-100" iconColor="text-red-600" />
         </div>
         <SectionCard title="Prediction Details">
-          <InfoRow label="30-Day Readmission Probability" value={`${(result.logisticPrediction.probability * 100).toFixed(1)}%`} />
+          <InfoRow label="30-Day Readmission Probability" value={`${(result.logisticRegression.probability * 100).toFixed(1)}%`} />
           <InfoRow label="HOSPITAL Risk" value={result.hospitalScore.riskLevel} />
           <InfoRow label="LACE Risk" value={result.laceIndex.riskLevel} />
         </SectionCard>
@@ -252,12 +252,14 @@ export function WoundHealingPage() {
   const result = useMemo(() => {
     const classifier = createWoundHealingClassifier();
     return classifier.assessWound({
-      woundId: 'w-001', patientId: 'demo-001', measurementDate: new Date().toISOString(),
-      lengthCm: 3.2, widthCm: 2.1, depthCm: 0.5, tissueBedComposition: { epithelial: 10, granulation: 50, slough: 30, necrotic: 10, eschar: 0 },
-      predominantTissueType: TissueType.GRANULATION, exudateType: ExudateType.SEROUS, exudateAmount: ExudateAmount.MODERATE,
+      woundId: 'w-001',
+      lengthCm: 3.2, widthCm: 2.1, depthCm: 0.5,
+      tissueType: TissueType.GRANULATION, exudateType: ExudateType.SEROUS, exudateAmount: ExudateAmount.MODERATE,
       woundEdge: WoundEdge.WELL_DEFINED, periwoundCondition: PeriwoundCondition.ERYTHEMA, painLevel: 4,
-      signsOfInfection: false, hasTunneling: false, hasUndermining: false, isOnAntibiotic: false,
-      isDiabetic: true, isSmoker: false, albumin: 3.2, hba1c: 7.5,
+      hasOdor: false, hasTunneling: false, tunnelingDepthCm: 0, hasUndermining: false, underminingCm: 0,
+      temperatureElevated: false, surroundingErythemaCm: 0, daysSinceOnset: 3, isPostSurgical: true,
+      hasInfectionSigns: false, hasBoneExposure: false, hasTendonExposure: false,
+      hasGangrene: false, gangreneExtent: 'none',
     });
   }, []);
 
@@ -266,14 +268,14 @@ export function WoundHealingPage() {
       <div className="space-y-6">
         <p className="text-sm text-gray-600">Wagner classification, Braden Scale, and PUSH Tool scoring for comprehensive wound assessment.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <StatCard label="Wagner Grade" value={result.wagnerResult.grade} icon={Target} iconBg="bg-orange-100" iconColor="text-orange-600" />
-          <StatCard label="PUSH Score" value={result.pushResult.totalScore} icon={TrendingUp} iconBg="bg-teal-100" iconColor="text-teal-600" />
-          <StatCard label="Healing Phase" value={result.healingPhase} icon={Heart} iconBg="bg-rose-100" iconColor="text-rose-600" />
+          <StatCard label="Wagner Grade" value={result.wagnerClassification.grade} icon={Target} iconBg="bg-orange-100" iconColor="text-orange-600" />
+          <StatCard label="PUSH Score" value={result.pushScore.totalScore} icon={TrendingUp} iconBg="bg-teal-100" iconColor="text-teal-600" />
+          <StatCard label="Healing Phase" value={result.decisionTreeClassification.healingPhase} icon={Heart} iconBg="bg-rose-100" iconColor="text-rose-600" />
         </div>
         <SectionCard title="Assessment Summary">
-          <InfoRow label="Wagner Description" value={result.wagnerResult.description.slice(0, 60) + '...'} />
-          <InfoRow label="Braden Score" value={`${result.bradenResult.totalScore}/${result.bradenResult.maxScore}`} />
-          <InfoRow label="Braden Risk" value={result.bradenResult.riskLevel} />
+          <InfoRow label="Wagner Description" value={result.wagnerClassification.description.slice(0, 60) + '...'} />
+          <InfoRow label="Overall Risk" value={result.overallRisk} />
+          <InfoRow label="Confidence" value={`${(result.decisionTreeClassification.confidence * 100).toFixed(0)}%`} />
         </SectionCard>
       </div>
     </PageLayout>
@@ -364,7 +366,7 @@ export function ClinicalNLPPage() {
 // 6. Complication Network Page
 // ===========================================================================
 
-import { createComplicationBayesianNetwork, RiskFactor, Complication } from '../services/mlModels/complicationBayesianNetwork';
+import { createComplicationBayesianNetwork, RiskFactor } from '../services/mlModels/complicationBayesianNetwork';
 
 export function ComplicationNetworkPage() {
   const result = useMemo(() => {
@@ -490,8 +492,8 @@ export function SepsisWarningPage() {
       gcsScore: 13, supplementalO2: true,
     };
     const labs = {
-      wbc: 14.2, lactate: 2.8, creatinine: 1.6, bilirubin: 1.1, platelets: 140,
-      pao2: 72, fio2: 0.4, bandNeutrophils: 12, glucose: 165, pco2: 30,
+      wbc: 14.2, lactate: 2.8, creatinine: 1.6, bilirubin: 1.1, plateletCount: 140,
+      pao2: 72, fio2: 0.4, urineOutput: 25,
     };
     const qsofa = sepsisEarlyWarningSystem.calculateQSOFA(vitals);
     const sirs = sepsisEarlyWarningSystem.calculateSIRS(vitals, labs);
@@ -619,9 +621,8 @@ export function PainProtocolPage() {
   const result = useMemo(() => {
     const whoStep = painProtocolEngine.determineWHOStep(7);
     const ladder = painProtocolEngine.generateWHOLadder(7, {
-      age: 65, weight: 80, renalFunction: 'moderate_impairment' as never, hepaticFunction: 'normal' as never,
-      isOpioidNaive: true, allergies: [], currentMedications: [],
-      surgeryType: 'orthopedic' as never, daysSinceSurgery: 2,
+      ageYears: 65, weightKg: 80, creatinineClearance: 45, hepaticFunction: 'normal',
+      isOpioidTolerant: false, allergies: [], currentMedications: [],
     });
     return { whoStep, ladder };
   }, []);
@@ -632,12 +633,12 @@ export function PainProtocolPage() {
         <p className="text-sm text-gray-600">WHO Analgesic Ladder, multimodal protocols, PCA pump configuration, and equianalgesic dosing.</p>
         <div className="grid grid-cols-2 gap-3">
           <StatCard label="WHO Step" value={result.whoStep} icon={Stethoscope} iconBg="bg-indigo-100" iconColor="text-indigo-600" />
-          <StatCard label="Primary Agent" value={result.ladder.primaryAgent?.drug ?? 'N/A'} icon={Pill} iconBg="bg-emerald-100" iconColor="text-emerald-600" />
+          <StatCard label="Primary Agent" value={result.ladder.medications[0]?.name ?? 'N/A'} icon={Pill} iconBg="bg-emerald-100" iconColor="text-emerald-600" />
         </div>
         <SectionCard title="WHO Ladder Protocol (Pain 7/10)">
           <InfoRow label="Step" value={result.ladder.step} />
           {result.ladder.adjuvants.slice(0, 3).map((a, i) => (
-            <InfoRow key={i} label={`Adjuvant ${i + 1}`} value={`${a.drug} ${a.dose} ${a.route}`} />
+            <InfoRow key={i} label={`Adjuvant ${i + 1}`} value={`${a.name} ${a.dose}`} />
           ))}
         </SectionCard>
       </div>
@@ -655,7 +656,7 @@ export function NutritionalScreeningPage() {
   const result = useMemo(() => {
     const bmi = nutritionalRiskScreening.calculateBMI(78, 172);
     const must = nutritionalRiskScreening.calculateMUST({
-      bmi: bmi.value, unintentionalWeightLoss: 'five_to_ten_percent' as never,
+      bmi: bmi.bmi, unplannedWeightLossPercent: 7.5,
       acutelyIll: true,
     });
     return { bmi, must };
@@ -666,7 +667,7 @@ export function NutritionalScreeningPage() {
       <div className="space-y-6">
         <p className="text-sm text-gray-600">NRS-2002, MUST, and SGA screening tools with BMR calculation and nutrition care planning.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <StatCard label="BMI" value={result.bmi.value.toFixed(1)} icon={Scale} iconBg="bg-green-100" iconColor="text-green-600" />
+          <StatCard label="BMI" value={result.bmi.bmi.toFixed(1)} icon={Scale} iconBg="bg-green-100" iconColor="text-green-600" />
           <StatCard label="BMI Category" value={result.bmi.category} icon={Activity} iconBg="bg-blue-100" iconColor="text-blue-600" />
           <StatCard label="MUST Score" value={result.must.totalScore} icon={AlertTriangle} iconBg="bg-amber-100" iconColor="text-amber-600" />
         </div>
@@ -683,24 +684,21 @@ export function NutritionalScreeningPage() {
 // 14. SSI Predictor Page
 // ===========================================================================
 
-import { ssiPredictor } from '../services/ssiPredictor';
+import { ssiPredictor, WoundClass } from '../services/ssiPredictor';
 
 export function SSIPredictorPage() {
   const result = useMemo(() => {
     const factors = ssiPredictor.identifyRiskFactors(
       {
-        patientId: 'demo-001', age: 70, bmi: 34, diabetesStatus: 'uncontrolled' as never,
-        smokingStatus: 'former' as never, immunosuppressed: false, albumin: 2.8,
-        ascScore: 3 as never, preoperativeGlucose: 180, preoperativeHba1c: 8.2,
-        mrsa: false, hasRemoteInfection: false, steroidUse: false, recentHospitalization: true,
-        radiationTherapy: false, malnutrition: true,
+        patientId: 'demo-001', age: 70, bmi: 34, asaScore: 3,
+        diabetes: true, diabetesControlled: false, smoker: false, immunosuppressed: false,
+        malnutrition: true, obesity: true, remoteInfection: false,
+        preoperativeGlucose: 180, albumin: 2.8, steroidUse: false,
+        radiationHistory: false, priorSSI: false,
       },
       {
-        procedureType: 'colon' as never, woundClass: 'clean_contaminated' as never,
-        duration: 150, emergent: false, laparoscopic: false, implant: false,
-        antibiotic: { given: true, timely: true, appropriate: true, discontinued24h: true },
-        hairRemovalMethod: 'clipping' as never, skinPrepAgent: 'chlorhexidine' as never,
-        normothermia: true, glucoseControlled: false, oxygenation: true,
+        name: 'Colon Resection', category: 'colon', woundClass: 'clean_contaminated' as WoundClass,
+        durationMinutes: 150, nhsnDurationCutoffMinutes: 180, isLaparoscopic: false, implant: false,
       },
     );
     return { factors, count: factors.length };
@@ -716,7 +714,7 @@ export function SSIPredictorPage() {
         </div>
         <SectionCard title="Identified Risk Factors">
           {result.factors.slice(0, 5).map((f, i) => (
-            <InfoRow key={i} label={f.name} value={f.category} />
+            <InfoRow key={i} label={f.name} value={f.type} />
           ))}
         </SectionCard>
       </div>
@@ -745,13 +743,13 @@ export function BloodGlucosePage() {
         <p className="text-sm text-gray-600">Glucose classification, insulin dosing, sliding scale protocols, and hypoglycemia management.</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard label="Status (245 mg/dL)" value={result.classification} icon={Beaker} iconBg="bg-red-100" iconColor="text-red-600" />
-          <StatCard label="Correction Factor" value={`1:${result.correction.factor}`} icon={Syringe} iconBg="bg-blue-100" iconColor="text-blue-600" />
-          <StatCard label="Est. HbA1c" value={`${result.hba1c.estimatedA1c.toFixed(1)}%`} icon={TestTube} iconBg="bg-purple-100" iconColor="text-purple-600" />
+          <StatCard label="Correction Factor" value={`1:${result.correction.correctionFactor}`} icon={Syringe} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Est. HbA1c" value={`${result.hba1c.estimatedHbA1c.toFixed(1)}%`} icon={TestTube} iconBg="bg-purple-100" iconColor="text-purple-600" />
         </div>
         <SectionCard title="Glucose Targets">
-          <InfoRow label="Pre-meal" value={`${result.targets.preMeal.min}-${result.targets.preMeal.max} mg/dL`} />
-          <InfoRow label="Post-meal" value={`${result.targets.postMeal.min}-${result.targets.postMeal.max} mg/dL`} />
-          <InfoRow label="Bedtime" value={`${result.targets.bedtime.min}-${result.targets.bedtime.max} mg/dL`} />
+          <InfoRow label="Pre-meal Target" value={`<${result.targets.preMealTarget} mg/dL`} />
+          <InfoRow label="General Range" value={`${result.targets.generalLow}-${result.targets.generalHigh} mg/dL`} />
+          <InfoRow label="Hypoglycemia Threshold" value={`<${result.targets.hypoglycemiaThreshold} mg/dL`} />
         </SectionCard>
       </div>
     </PageLayout>
@@ -783,8 +781,8 @@ export function AntibioticStewardshipPage() {
         {result.vanc && (
           <SectionCard title="Vancomycin Profile">
             <InfoRow label="Class" value={result.vanc.class} />
-            <InfoRow label="Spectrum" value={result.vanc.spectrum} />
-            <InfoRow label="Route" value={result.vanc.routes.join(', ')} />
+            <InfoRow label="Spectrum (Gram+)" value={result.vanc.spectrum.gramPositive} />
+            <InfoRow label="Route" value={result.vanc.route.join(', ')} />
           </SectionCard>
         )}
       </div>
@@ -818,7 +816,7 @@ export function MedicalTranslationPage() {
         </div>
         <SectionCard title="Sample Translation">
           <InfoRow label="English" value="ibuprofen 400mg twice daily" />
-          <InfoRow label="Spanish" value={result.translated.slice(0, 60)} />
+          <InfoRow label="Spanish" value={result.translated.translation.slice(0, 60)} />
         </SectionCard>
       </div>
     </PageLayout>
@@ -1056,7 +1054,7 @@ import { clinicalPathwayEngine, PATHWAY_TEMPLATES, SurgeryType as PathwaySurgery
 export function ClinicalPathwayPage() {
   const result = useMemo(() => {
     const template = clinicalPathwayEngine.getTemplate(PathwaySurgeryType.ORTHOPEDIC);
-    const pathway = template ? clinicalPathwayEngine.initializePathway('demo-001', template.surgeryType) : null;
+    const pathway = template ? clinicalPathwayEngine.initializePathway('demo-001', template.surgeryType, '2025-01-10') : null;
     return { template, pathway, templateCount: PATHWAY_TEMPLATES.length };
   }, []);
 
@@ -1095,7 +1093,7 @@ export function HandoffCommunicationPage() {
       medications: [{ name: 'morphine', dose: '4mg', route: 'IV', frequency: 'q4h' }],
       labs: [{ test: 'WBC', value: 11.2, unit: 'K/uL', timestamp: new Date().toISOString() }],
       activeProblems: ['Pain', 'Limited mobility'], pendingTasks: ['AM labs', 'PT evaluation'],
-      ivAccess: 'PIV left forearm',
+      ivAccess: 'PIV left forearm', diet: 'Regular', activity: 'Ambulate with assist',
     });
     const score = handoffCommunicationEngine.scoreCompleteness(sbar);
     return { sbar, score };
@@ -1208,7 +1206,7 @@ export function AlertFatiguePage() {
         </div>
         <SectionCard title="Insights">
           {result.insights.slice(0, 3).map((insight, i) => (
-            <p key={i} className="text-sm text-gray-600 py-1">{insight}</p>
+            <p key={i} className="text-sm text-gray-600 py-1">{insight.insight}</p>
           ))}
           {result.insights.length === 0 && <p className="text-sm text-gray-500">No insights yet. Process alerts to generate learning data.</p>}
         </SectionCard>
@@ -1363,9 +1361,14 @@ export function ClinicalDocumentPage() {
     const generator = createClinicalDocumentGenerator();
     const doc = generator.generateDischargeSummary({
       documentType: CDADocumentType.DISCHARGE_SUMMARY,
-      patient: { id: 'p-001', name: 'John Smith', mrn: 'MRN-12345', dob: '1958-03-15', gender: 'male', address: '123 Main St' },
-      author: { id: 'dr-001', name: 'Dr. Sarah Johnson', npi: '1234567890', specialty: 'Orthopedics' },
-      encounter: { id: 'enc-001', admitDate: '2025-01-10', dischargeDate: '2025-01-15', facility: 'General Hospital', department: 'Orthopedics' },
+      patientId: 'p-001',
+      patientName: { given: 'John', family: 'Smith' },
+      patientDOB: '1958-03-15',
+      patientGender: 'male',
+      patientMRN: 'MRN-12345',
+      author: { role: 'AUTHOR' as const, name: { given: 'Sarah', family: 'Johnson', prefix: 'Dr.' }, npi: '1234567890', organization: 'Orthopedics' },
+      custodian: { role: 'CUSTODIAN' as const, name: { given: 'Hospital', family: 'Admin' }, organization: 'General Hospital' },
+      encounterDate: '2025-01-10',
       sections: [],
     });
     return { doc, sectionCount: doc.sections?.length ?? 0 };
@@ -1415,9 +1418,9 @@ export function PharmacyFormularyPage() {
         <SectionCard title="Formulary Check: Metformin">
           {result.formularyCheck ? (
             <>
-              <InfoRow label="On Formulary" value={result.formularyCheck.onFormulary ? 'Yes' : 'No'} />
+              <InfoRow label="On Formulary" value={result.formularyCheck.isCovered ? 'Yes' : 'No'} />
               <InfoRow label="Tier" value={result.formularyCheck.tier} />
-              <InfoRow label="Prior Auth" value={result.formularyCheck.requiresPriorAuth ? 'Required' : 'Not Required'} />
+              <InfoRow label="Prior Auth" value={result.formularyCheck.priorAuthRequired ? 'Required' : 'Not Required'} />
             </>
           ) : (
             <p className="text-sm text-gray-500">Drug not found in formulary.</p>
@@ -1472,9 +1475,10 @@ export function ClinicalTrialPage() {
     const matcher = createClinicalTrialMatcher();
     const trials = matcher.getAllTrials();
     const matches = matcher.matchPatient({
-      age: 62, gender: 'male' as never, conditions: ['osteoarthritis', 'hypertension'],
+      patientId: 'demo-001', age: 62, gender: 'male', diagnoses: ['osteoarthritis', 'hypertension'],
       procedures: ['total_knee_arthroplasty'], medications: ['metoprolol', 'lisinopril'],
-      labValues: {}, location: { lat: 40.7128, lng: -74.006 },
+      labValues: {}, comorbidities: ['hypertension'], allergies: [],
+      location: { latitude: 40.7128, longitude: -74.006, zipCode: '10001' },
     });
     return { trialCount: trials.length, matchCount: matches.length, topMatch: matches[0] };
   }, []);
@@ -1486,13 +1490,13 @@ export function ClinicalTrialPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard label="Available Trials" value={result.trialCount} icon={FlaskConical} iconBg="bg-purple-100" iconColor="text-purple-600" />
           <StatCard label="Matches Found" value={result.matchCount} icon={Target} iconBg="bg-green-100" iconColor="text-green-600" />
-          <StatCard label="Top Match" value={result.topMatch ? `${(result.topMatch.matchScore * 100).toFixed(0)}%` : 'N/A'} icon={TrendingUp} iconBg="bg-blue-100" iconColor="text-blue-600" />
+          <StatCard label="Top Match" value={result.topMatch ? `${(result.topMatch.score * 100).toFixed(0)}%` : 'N/A'} icon={TrendingUp} iconBg="bg-blue-100" iconColor="text-blue-600" />
         </div>
         {result.topMatch && (
           <SectionCard title="Best Match">
             <InfoRow label="Trial" value={result.topMatch.trial.title.slice(0, 50) + '...'} />
             <InfoRow label="Phase" value={result.topMatch.trial.phase} />
-            <InfoRow label="Match Score" value={`${(result.topMatch.matchScore * 100).toFixed(0)}%`} />
+            <InfoRow label="Match Score" value={`${(result.topMatch.score * 100).toFixed(0)}%`} />
             <InfoRow label="Eligibility" value={result.topMatch.eligibility} />
           </SectionCard>
         )}

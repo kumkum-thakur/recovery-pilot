@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MedicalTranslationEngine } from '../medicalTranslationEngine';
-import type { Language, TermCategory, UsageContext } from '../medicalTranslationEngine';
+import type { Language, TermCategory } from '../medicalTranslationEngine';
 
 describe('MedicalTranslationEngine', () => {
   let engine: MedicalTranslationEngine;

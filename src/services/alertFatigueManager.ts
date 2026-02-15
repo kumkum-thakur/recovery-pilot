@@ -255,8 +255,19 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
   // Check learned suppressions (high override rate)
   const learnedKey = `${alert.category}_${alert.priority}`;
   const learned = state.learnedSuppressions.get(learnedKey);
-  if (learned && learned.overrideRate > 0.85 && learned.sampleSize >= 20 && alert.priority !== AlertPriority.HIGH) {
+  if (learned && learned.overrideRate > 0.85 && learned.sampleSize >= 20 && (alert.priority as string) !== AlertPriority.HIGH) {
     return { suppress: true, reason: SuppressionReason.HIGH_OVERRIDE_RATE };
+  }
+
+  // Check custom suppression rules (before time-of-day — explicit rules take precedence)
+  for (const rule of state.suppressionRules) {
+    if (!rule.active) continue;
+    if (rule.category === alert.category) {
+      if (!rule.priority || rule.priority === alert.priority) {
+        rule.suppressCount++;
+        return { suppress: true, reason: rule.reason };
+      }
+    }
   }
 
   // Time-of-day suppression
@@ -270,17 +281,6 @@ function shouldSuppress(alert: ClinicalAlert): { suppress: boolean; reason?: Sup
     const alertWeight = PRIORITY_WEIGHTS[alert.priority] ?? 1;
     if (alertWeight < minPriorityWeight) {
       return { suppress: true, reason: SuppressionReason.TIME_SUPPRESSED };
-    }
-  }
-
-  // Check custom suppression rules
-  for (const rule of state.suppressionRules) {
-    if (!rule.active) continue;
-    if (rule.category === alert.category) {
-      if (!rule.priority || rule.priority === alert.priority) {
-        rule.suppressCount++;
-        return { suppress: true, reason: rule.reason };
-      }
     }
   }
 

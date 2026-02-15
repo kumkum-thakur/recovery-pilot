@@ -160,8 +160,8 @@ export function clearAllDataAndReinitialize(): void {
 
 // Make functions available in browser console for debugging
 if (typeof window !== 'undefined') {
-  (window as any).resetAdminPassword = resetAdminPassword;
-  (window as any).clearAllDataAndReinitialize = clearAllDataAndReinitialize;
+  (window as unknown as Record<string, unknown>).resetAdminPassword = resetAdminPassword;
+  (window as unknown as Record<string, unknown>).clearAllDataAndReinitialize = clearAllDataAndReinitialize;
   
   console.log('🔧 Dev utilities loaded:');
   console.log('   - resetAdminPassword()');

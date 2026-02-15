@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CaregiverAccessSystem } from '../caregiverAccessSystem';
-import type { CaregiverRole, Permission, TaskPriority } from '../caregiverAccessSystem';
+import type { CaregiverRole } from '../caregiverAccessSystem';
 
 describe('CaregiverAccessSystem', () => {
   let system: CaregiverAccessSystem;

@@ -454,14 +454,14 @@ function linearRegression(points: Array<{ x: number; y: number }>): { slope: num
   let sumY = 0;
   let sumXY = 0;
   let sumXX = 0;
-  let sumYY = 0;
+  let _sumYY = 0;
 
   for (const p of points) {
     sumX += p.x;
     sumY += p.y;
     sumXY += p.x * p.y;
     sumXX += p.x * p.x;
-    sumYY += p.y * p.y;
+    _sumYY += p.y * p.y;
   }
 
   const denominator = n * sumXX - sumX * sumX;

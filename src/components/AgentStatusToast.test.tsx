@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { AgentStatusToast } from './AgentStatusToast';
 import type { AgentStep } from '../types';
 
@@ -203,10 +203,15 @@ describe('AgentStatusToast', () => {
     rerender(
       <AgentStatusToast steps={steps} isVisible={false} onComplete={vi.fn()} />
     );
-    
+
+    // Advance past the setTimeout(fn, 0) that triggers the exit animation
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
     // Should still be in DOM during animation
     expect(container.firstChild).not.toBeNull();
-    
+
     // The component should have the animating out class
     const toastElement = container.firstChild as HTMLElement;
     expect(toastElement.className).toContain('opacity-0');

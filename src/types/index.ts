@@ -170,7 +170,7 @@ export interface MissionModel {
   status: MissionStatus;
   dueDate: string; // ISO date string
   completedAt?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -720,7 +720,7 @@ export interface CarePlanMission {
   schedule: MissionSchedule;
   status: CarePlanMissionStatus;
   createdAt: Date;
-  metadata?: Record<string, any>; // Additional mission-specific data
+  metadata?: Record<string, unknown>; // Additional mission-specific data
 }
 
 /**
@@ -736,7 +736,7 @@ export interface CarePlanMissionModel {
   schedule: MissionScheduleModel;
   status: CarePlanMissionStatus;
   createdAt: string; // ISO date string
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -840,7 +840,7 @@ export interface CreateMissionInput {
   title: string;
   description: string;
   schedule: MissionSchedule;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**

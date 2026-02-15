@@ -1,376 +1,240 @@
 /**
  * App Routing Tests
- * 
- * Tests for the main App component routing logic.
- * 
+ *
+ * Integration tests for the main App component routing logic.
+ * Uses real authService, real persistenceService, and real seed data.
+ * No mocks — every code path exercises the actual production services.
+ *
  * Requirements: 1.1, 2.1
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import App from './App';
 import { useUserStore } from './stores/userStore';
-import { UserRole } from './types';
 import { authService } from './services/authService';
+import { persistenceService } from './services/persistenceService';
+import { reinitializeWithSeedData } from './services/seedData';
 
-// Mock authService
-vi.mock('./services/authService', () => ({
-  authService: {
-    getCurrentUser: vi.fn(),
-    isAuthenticated: vi.fn(),
-    getSessionTimeRemaining: vi.fn(() => 30 * 60 * 1000), // 30 minutes
-    login: vi.fn(),
-    logout: vi.fn(),
-    validateCredentials: vi.fn(),
-  },
-}));
+// Real seed credentials — must match src/services/seedData.ts
+const PATIENT = { username: 'divya', password: 'divya', name: 'Divya Patel' };
+const DOCTOR = { username: 'dr.smith', password: 'smith', name: 'Dr. Sarah Smith' };
+
+/** Log in a real user and sync the user store */
+async function loginAs(username: string, password: string) {
+  const user = await authService.login(username, password);
+  useUserStore.setState({ isAuthenticated: true, currentUser: user });
+  return user;
+}
 
 describe('App Routing', () => {
   beforeEach(() => {
-    // Reset user store before each test
-    useUserStore.setState({
-      currentUser: null,
-      isAuthenticated: false,
-    });
-    
-    // Reset authService mock
-    vi.mocked(authService.getCurrentUser).mockReturnValue(null);
-    
-    // Clear localStorage to reset config
-    localStorage.clear();
+    // Fresh real seed data in real localStorage for every test
+    reinitializeWithSeedData(persistenceService);
+
+    // Reset user store
+    useUserStore.setState({ currentUser: null, isAuthenticated: false });
+
+    // Fake timers so async effects (e.g. DoctorDashboard's 100ms
+    // fetchActionItems delay) don't outlive the test environment
+    vi.useFakeTimers();
   });
+
+  afterEach(async () => {
+    // Advance past the 100ms fetchActionItems delay so the async
+    // effect completes while localStorage is still available.
+    // (Cannot use runAllTimers — SessionMonitor has a recurring interval.)
+    await act(async () => {
+      vi.advanceTimersByTime(200);
+    });
+
+    cleanup();
+    vi.useRealTimers();
+    authService.logout();
+  });
+
+  // ───────── Root Route (/) ─────────
 
   describe('Root Route (/)', () => {
     it('should redirect unauthenticated users to /login', () => {
       render(<App />);
-      
-      // Should show login page content
+
       expect(screen.getByText('RecoveryPilot')).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
 
-    it('should redirect authenticated patient to /patient', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Test Patient',
-        role: UserRole.PATIENT,
-        streakCount: 5,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated patient to /patient', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       render(<App />);
-      
-      // Should show patient dashboard content
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
     });
 
-    it('should redirect authenticated doctor to /doctor', () => {
-      const testUser = {
-        id: 'doctor-1',
-        name: 'Test Doctor',
-        role: UserRole.DOCTOR,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated doctor to /doctor', async () => {
+      await loginAs(DOCTOR.username, DOCTOR.password);
 
       render(<App />);
-      
-      // Should show doctor dashboard content
+
       expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
   });
 
+  // ───────── Login Route (/login) ─────────
+
   describe('Login Route (/login)', () => {
     it('should show login page when not authenticated', () => {
-      // Set initial URL to /login
       window.history.pushState({}, '', '/login');
-      
       render(<App />);
-      
+
       expect(screen.getByText('RecoveryPilot')).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.getByLabelText('Username')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
     });
 
-    it('should redirect authenticated patient to /patient from /login', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Test Patient',
-        role: UserRole.PATIENT,
-        streakCount: 3,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated patient to /patient from /login', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       window.history.pushState({}, '', '/login');
       render(<App />);
-      
-      // Should redirect to patient dashboard
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
       expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
     });
 
-    it('should redirect authenticated doctor to /doctor from /login', () => {
-      const testUser = {
-        id: 'doctor-1',
-        name: 'Test Doctor',
-        role: UserRole.DOCTOR,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated doctor to /doctor from /login', async () => {
+      await loginAs(DOCTOR.username, DOCTOR.password);
 
       window.history.pushState({}, '', '/login');
       render(<App />);
-      
-      // Should redirect to doctor dashboard
+
       expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
     });
   });
+
+  // ───────── Patient Route (/patient) ─────────
 
   describe('Patient Route (/patient)', () => {
-    it('should show patient dashboard for authenticated patient', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Divya Patel',
-        role: UserRole.PATIENT,
-        streakCount: 7,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should show patient dashboard for authenticated patient', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       window.history.pushState({}, '', '/patient');
       render(<App />);
-      
-      expect(screen.getByText(/Welcome back, Divya Patel/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
     });
 
     it('should redirect unauthenticated user to /login', () => {
       window.history.pushState({}, '', '/patient');
       render(<App />);
-      
-      // Should redirect to login
+
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
     });
 
-    it('should redirect doctor to /doctor when accessing /patient', () => {
-      const testUser = {
-        id: 'doctor-1',
-        name: 'Dr. Smith',
-        role: UserRole.DOCTOR,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect doctor to /doctor when accessing /patient', async () => {
+      await loginAs(DOCTOR.username, DOCTOR.password);
 
       window.history.pushState({}, '', '/patient');
       render(<App />);
-      
-      // Should redirect to doctor dashboard
+
       expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByText(/Welcome back/i)).not.toBeInTheDocument();
     });
   });
+
+  // ───────── Doctor Route (/doctor) ─────────
 
   describe('Doctor Route (/doctor)', () => {
-    it('should show doctor dashboard for authenticated doctor', () => {
-      const testUser = {
-        id: 'doctor-1',
-        name: 'Dr. Sarah Smith',
-        role: UserRole.DOCTOR,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should show doctor dashboard for authenticated doctor', async () => {
+      await loginAs(DOCTOR.username, DOCTOR.password);
 
       window.history.pushState({}, '', '/doctor');
       render(<App />);
-      
+
       expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
 
     it('should redirect unauthenticated user to /login', () => {
       window.history.pushState({}, '', '/doctor');
       render(<App />);
-      
-      // Should redirect to login
+
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
       expect(screen.queryByText('Doctor Dashboard')).not.toBeInTheDocument();
     });
 
-    it('should redirect patient to /patient when accessing /doctor', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Divya Patel',
-        role: UserRole.PATIENT,
-        streakCount: 5,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect patient to /patient when accessing /doctor', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       window.history.pushState({}, '', '/doctor');
       render(<App />);
-      
-      // Should redirect to patient dashboard
-      expect(screen.getByText(/Welcome back, Divya Patel/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
       expect(screen.queryByText('Doctor Dashboard')).not.toBeInTheDocument();
     });
   });
+
+  // ───────── Invalid Routes ─────────
 
   describe('Invalid Routes', () => {
     it('should redirect to root for unknown routes', () => {
       window.history.pushState({}, '', '/unknown-route');
       render(<App />);
-      
-      // Should redirect to login (via root redirect)
+
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
 
-    it('should redirect authenticated patient to /patient for unknown routes', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Test Patient',
-        role: UserRole.PATIENT,
-        streakCount: 0,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated patient to /patient for unknown routes', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       window.history.pushState({}, '', '/some-invalid-path');
       render(<App />);
-      
-      // Should redirect to patient dashboard
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
     });
 
-    it('should redirect authenticated doctor to /doctor for unknown routes', () => {
-      const testUser = {
-        id: 'doctor-1',
-        name: 'Test Doctor',
-        role: UserRole.DOCTOR,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect authenticated doctor to /doctor for unknown routes', async () => {
+      await loginAs(DOCTOR.username, DOCTOR.password);
 
       window.history.pushState({}, '', '/another-invalid-path');
       render(<App />);
-      
-      // Should redirect to doctor dashboard
+
       expect(screen.getAllByText('Triage Dashboard').length).toBeGreaterThanOrEqual(1);
     });
   });
 
+  // ───────── Navigation Guards ─────────
+
   describe('Navigation Guards', () => {
-    it('should maintain authentication state across route changes', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Test Patient',
-        role: UserRole.PATIENT,
-        streakCount: 5,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should maintain authentication state across route changes', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       const { rerender } = render(<App />);
-      
-      // Should show patient dashboard
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
-      
-      // Simulate navigation by changing URL
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
+
+      // Simulate navigation
       window.history.pushState({}, '', '/patient');
       rerender(<App />);
-      
-      // Should still show patient dashboard
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
     });
 
-    it('should redirect to login after logout', () => {
-      const testUser = {
-        id: 'patient-1',
-        name: 'Test Patient',
-        role: UserRole.PATIENT,
-        streakCount: 5,
-      };
-      
-      useUserStore.setState({
-        isAuthenticated: true,
-        currentUser: testUser,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(testUser);
+    it('should redirect to login after logout', async () => {
+      await loginAs(PATIENT.username, PATIENT.password);
 
       const { rerender } = render(<App />);
-      
-      // Should show patient dashboard
-      expect(screen.getByText(/Welcome back, Test Patient/i)).toBeInTheDocument();
-      
-      // Simulate logout
-      useUserStore.setState({
-        isAuthenticated: false,
-        currentUser: null,
-      });
-      
-      vi.mocked(authService.getCurrentUser).mockReturnValue(null);
-      
+
+      expect(screen.getByText(new RegExp(`Welcome back, ${PATIENT.name}`, 'i'))).toBeInTheDocument();
+
+      // Real logout
+      authService.logout();
+      useUserStore.setState({ isAuthenticated: false, currentUser: null });
+
       rerender(<App />);
-      
-      // Should redirect to login
+
       expect(screen.getByRole('heading', { name: 'Sign In' })).toBeInTheDocument();
     });
   });

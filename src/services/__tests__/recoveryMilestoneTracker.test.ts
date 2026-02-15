@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   RecoveryMilestoneTracker,
+} from '../recoveryMilestoneTracker';
+import type {
   SurgeryType,
   MilestoneCategory,
   PatientFactors,
-  DeviationStatus,
 } from '../recoveryMilestoneTracker';
 
 describe('RecoveryMilestoneTracker', () => {

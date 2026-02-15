@@ -25,16 +25,6 @@
 
 import { describe, test, expect, beforeAll } from 'vitest';
 
-// Test data generators (will exist at ../test/realWorldTestData)
-import {
-  generateRealisticPatients,
-  generateDoctors,
-  generatePatientDoctorMappings,
-  generateRealisticVitals,
-  generateRealisticMedications,
-  createRng,
-} from './realWorldTestData';
-
 // ML Models
 import {
   RecoveryPredictionModel,
@@ -55,11 +45,10 @@ import {
   type PatientDemographics,
   type SurgicalFactors,
   type ComplianceData,
+  type MoodLevel,
 } from '../services/mlModels/riskScoringEngine';
 
 import {
-  AnomalyDetectionEngine,
-  createAnomalyDetectionEngine,
   buildBaseline,
   detectVitalSignAnomalies,
   classifyAnomaly,
@@ -83,6 +72,7 @@ import {
   ExudateAmount,
   WoundEdge,
   PeriwoundCondition,
+  type WoundAssessment,
 } from '../services/mlModels/woundHealingClassifier';
 
 import {
@@ -91,6 +81,7 @@ import {
   RiskLevel,
   AdmissionType,
   ProcedureType,
+  type PatientProfile,
 } from '../services/mlModels/readmissionRiskPredictor';
 
 import {
@@ -111,6 +102,7 @@ import {
 import {
   ComplicationBayesianNetwork,
   createComplicationBayesianNetwork,
+  Complication,
 } from '../services/mlModels/complicationBayesianNetwork';
 
 import {
@@ -435,7 +427,7 @@ describe('Risk Scoring Engine - Medical Validation', () => {
           daysActiveLastWeek: 6,
           symptomReportsLast7Days: 2,
           symptomReportsLast30Days: 8,
-          moodScores: [4, 4, 5, 4, 3] as const,
+          moodScores: [4, 4, 5, 4, 3] as MoodLevel[],
           sleepQualityScore: 7,
         },
       };
@@ -787,7 +779,7 @@ describe('Anomaly Detection Engine - Medical Validation', () => {
 // ============================================================================
 
 describe('Drug Interaction Checker - Medical Validation', () => {
-  describe.each(SEEDS)('Round with seed %i', (seed) => {
+  describe.each(SEEDS)('Round with seed %i', (_seed) => {
     let checker: DrugInteractionChecker;
 
     beforeAll(() => {
@@ -897,18 +889,7 @@ describe('Wound Healing Classifier - Medical Validation', () => {
       rng = seededRng(seed);
     });
 
-    function createWoundAssessment(overrides: Partial<{
-      lengthCm: number; widthCm: number; depthCm: number;
-      tissueType: string; exudateType: string; exudateAmount: string;
-      woundEdge: string; periwoundCondition: string; hasOdor: boolean;
-      hasTunneling: boolean; tunnelingDepthCm: number;
-      hasUndermining: boolean; underminingCm: number;
-      painLevel: number; temperatureElevated: boolean;
-      surroundingErythemaCm: number; daysSinceOnset: number;
-      isPostSurgical: boolean; hasInfectionSigns: boolean;
-      hasBoneExposure: boolean; hasTendonExposure: boolean;
-      hasGangrene: boolean; gangreneExtent: string;
-    }> = {}) {
+    function createWoundAssessment(overrides: Partial<WoundAssessment> = {}) {
       return {
         woundId: `wound-${seed}-${Math.floor(rng() * 10000)}`,
         lengthCm: 3,
@@ -1041,20 +1022,7 @@ describe('Readmission Risk Predictor - Medical Validation', () => {
       rng = seededRng(seed);
     });
 
-    function createPatientProfile(overrides: Partial<{
-      patientId: string; age: number; gender: string;
-      hemoglobinAtDischarge: number; sodiumAtDischarge: number;
-      hasOncologyDiagnosis: boolean; procedureType: string;
-      admissionType: string; lengthOfStayDays: number;
-      previousAdmissions6Months: number; emergencyVisits6Months: number;
-      charlsonComorbidityIndex: number; comorbidities: string[];
-      dischargeDisposition: string; insuranceType: string;
-      livesAlone: boolean; hasCaregiver: boolean;
-      medicationCount: number; hasFollowUpScheduled: boolean;
-      bmi: number; isSmoker: boolean;
-      hasDiabetes: boolean; hasHeartFailure: boolean;
-      hasCOPD: boolean; hasRenalDisease: boolean;
-    }> = {}) {
+    function createPatientProfile(overrides: Partial<PatientProfile> = {}) {
       return {
         patientId: `readmit-${seed}-${Math.floor(rng() * 10000)}`,
         age: 55,
@@ -1301,7 +1269,7 @@ describe('Medication Adherence Predictor - Medical Validation', () => {
       });
 
       const result = predictor.predict(depressedProfile);
-      const barrierTypes = result.identifiedBarriers.map((b) => b.barrier);
+      void result.identifiedBarriers.map((b) => b.barrier);
 
       // At least some expected barriers should be identified
       expect(
@@ -1527,7 +1495,7 @@ describe('Clinical NLP Engine - Medical Validation', () => {
 // ============================================================================
 
 describe('Complication Bayesian Network - Medical Validation', () => {
-  describe.each(SEEDS)('Round with seed %i', (seed) => {
+  describe.each(SEEDS)('Round with seed %i', (_seed) => {
     let network: ComplicationBayesianNetwork;
 
     beforeAll(() => {
@@ -1544,8 +1512,8 @@ describe('Complication Bayesian Network - Medical Validation', () => {
         { variable: 'major_surgery' as const, value: true },
       ];
 
-      const smokerSSI = network.queryComplication('surgical_site_infection' as any, smokerEvidence);
-      const nonSmokerSSI = network.queryComplication('surgical_site_infection' as any, nonSmokerEvidence);
+      const smokerSSI = network.queryComplication(Complication.SSI, smokerEvidence);
+      const nonSmokerSSI = network.queryComplication(Complication.SSI, nonSmokerEvidence);
 
       expect(
         smokerSSI.probabilityTrue,
@@ -1565,8 +1533,8 @@ describe('Complication Bayesian Network - Medical Validation', () => {
         { variable: 'major_surgery' as const, value: true },
       ];
 
-      const diabeticDehiscence = network.queryComplication('wound_dehiscence' as any, diabeticEvidence);
-      const nonDiabeticDehiscence = network.queryComplication('wound_dehiscence' as any, nonDiabeticEvidence);
+      const diabeticDehiscence = network.queryComplication(Complication.DEHISCENCE, diabeticEvidence);
+      const nonDiabeticDehiscence = network.queryComplication(Complication.DEHISCENCE, nonDiabeticEvidence);
 
       expect(
         diabeticDehiscence.probabilityTrue,
@@ -1857,13 +1825,12 @@ describe('Cross-Model Validation - Consistency Checks', () => {
   describe.each(SEEDS)('Round with seed %i', (seed) => {
     let recoveryModel: RecoveryPredictionModel;
     let riskEngine: RiskScoringEngine;
-    let rng: () => number;
 
     beforeAll(() => {
       const result = createTrainedModel();
       recoveryModel = result.model;
       riskEngine = createRiskScoringEngine();
-      rng = seededRng(seed);
+      void seededRng(seed);
     });
 
     test('if recovery prediction says DELAYED, risk score should not be LOW', () => {
@@ -1958,7 +1925,7 @@ describe('Cross-Model Validation - Consistency Checks', () => {
             daysActiveLastWeek: 3,
             symptomReportsLast7Days: 5,
             symptomReportsLast30Days: 15,
-            moodScores: [2, 2, 1, 2, 3] as const,
+            moodScores: [2, 2, 1, 2, 3] as MoodLevel[],
           },
         };
 
@@ -2255,7 +2222,7 @@ describe('Doctor-in-the-Loop Verification', () => {
         daysActiveLastWeek: 5,
         symptomReportsLast7Days: 3,
         symptomReportsLast30Days: 10,
-        moodScores: [3, 3, 4, 3, 3] as const,
+        moodScores: [3, 3, 4, 3, 3] as MoodLevel[],
       },
     };
 

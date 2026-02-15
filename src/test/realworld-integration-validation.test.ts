@@ -8,13 +8,12 @@
  * Each section runs 5 rounds with different seeds for statistical confidence.
  */
 
-import { describe, test, expect, beforeAll, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, beforeAll } from 'vitest';
 import {
   generateRealisticPatients,
   generateDoctors,
   generatePatientDoctorMappings,
   generateRealisticMedications,
-  generateFullTestDataset,
   createRng,
 } from './realWorldTestData';
 
@@ -41,9 +40,6 @@ import {
   MissionType,
   MissionStatus,
   CarePlanStatus,
-  STORAGE_KEYS,
-  ENHANCEMENT_STORAGE_KEYS,
-  CARE_PLAN_STORAGE_KEYS,
   RecurrenceType,
 } from '../types';
 
@@ -65,21 +61,10 @@ const GENERAL_SURGERIES: SurgeryType[] = [
   SurgeryType.HERNIA_REPAIR,
 ];
 
-const CARDIAC_OB_SURGERIES: SurgeryType[] = [
-  SurgeryType.CARDIAC_BYPASS,
-  SurgeryType.CESAREAN_SECTION,
-];
-
 function getSurgeryCategory(surgeryType: SurgeryType): 'orthopedic' | 'general' | 'cardiac_ob' {
   if ((ORTHOPEDIC_SURGERIES as string[]).includes(surgeryType)) return 'orthopedic';
   if ((GENERAL_SURGERIES as string[]).includes(surgeryType)) return 'general';
   return 'cardiac_ob';
-}
-
-function getDoctorIndexForSurgery(surgeryType: SurgeryType): number {
-  if ((ORTHOPEDIC_SURGERIES as string[]).includes(surgeryType)) return 0;
-  if ((GENERAL_SURGERIES as string[]).includes(surgeryType)) return 1;
-  return 2;
 }
 
 // =============================================================================
@@ -176,7 +161,7 @@ function setupRound(seed: number): RoundData {
   const mappings = generatePatientDoctorMappings(patients, doctors);
 
   // Create doctor users via the userManagementService
-  const createdDoctors: UserModel[] = doctors.map((d, idx) =>
+  const createdDoctors: UserModel[] = doctors.map((d, _idx) =>
     userManagementService.createUser(
       {
         username: d.username + '_' + seed,
@@ -211,7 +196,7 @@ function setupRound(seed: number): RoundData {
   }
 
   // Assign patients to doctors
-  const relationships: PatientDoctorRelationship[] = mappings.map((m, i) =>
+  const relationships: PatientDoctorRelationship[] = mappings.map((_, i) =>
     userManagementService.assignPatientToDoctor(
       createdPatients[i].id,
       createdDoctors[patientToDoctorIndex[i]].id,
@@ -1368,13 +1353,12 @@ describe('Section 11: End-to-End Crisis Scenario (Sepsis Developing)', () => {
       let round: RoundData;
       let crisisPatient: UserModel;
       let crisisDoctor: UserModel;
-      let crisisPatientData: PatientRecord;
 
       beforeAll(() => {
         round = setupRound(seed);
         // Choose the first patient as the crisis patient
         crisisPatient = round.createdPatients[0];
-        crisisPatientData = round.patients[0];
+        void round.patients[0];
         const doctorIdx = round.patientToDoctorIndex[0];
         crisisDoctor = round.createdDoctors[doctorIdx];
       });

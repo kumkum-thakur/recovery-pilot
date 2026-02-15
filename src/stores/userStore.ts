@@ -72,19 +72,14 @@ export const useUserStore = create<IUserStore>((set, get) => ({
    * Requirements: 1.1, 1.2, 2.1, 2.2
    */
   login: async (credentials: { username: string; password: string }) => {
-    try {
-      // Authenticate via AuthService
-      const user = await authService.login(credentials.username, credentials.password);
-      
-      // Update store state
-      set({
-        currentUser: user,
-        isAuthenticated: true,
-      });
-    } catch (error) {
-      // Re-throw authentication errors
-      throw error;
-    }
+    // Authenticate via AuthService
+    const user = await authService.login(credentials.username, credentials.password);
+
+    // Update store state
+    set({
+      currentUser: user,
+      isAuthenticated: true,
+    });
   },
 
   /**

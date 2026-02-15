@@ -1,0 +1,110 @@
+# RecoveryPilot Frontend (Nginx serving React SPA)
+# Static assets served via CDN; this handles origin requests
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recovery-pilot-frontend
+  namespace: recovery-pilot
+  labels:
+    app: recovery-pilot
+    component: frontend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: recovery-pilot
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: recovery-pilot
+        component: frontend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+      containers:
+        - name: nginx
+          image: recovery-pilot/frontend:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: run
+              mountPath: /var/run
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recovery-pilot-frontend
+  namespace: recovery-pilot
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+  selector:
+    app: recovery-pilot
+    component: frontend
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: recovery-pilot-frontend-hpa
+  namespace: recovery-pilot
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: recovery-pilot-frontend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

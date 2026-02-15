@@ -165,7 +165,7 @@ describe('ClinicalPathwayEngine', () => {
     });
 
     it('should detect unfinished milestones as deviations by post-op day', () => {
-      let pathway = clinicalPathwayEngine.initializePathway('pt-009', SurgeryType.COLORECTAL, '2024-12-01')!;
+      const pathway = clinicalPathwayEngine.initializePathway('pt-009', SurgeryType.COLORECTAL, '2024-12-01')!;
       // Simulate: pre-op milestones should be done before intra-op (day >= 0)
       // Leave all as NOT_STARTED and check day 2
       const deviations = clinicalPathwayEngine.detectDeviations(pathway, 2);

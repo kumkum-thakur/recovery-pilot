@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PatientEducationEngine } from '../patientEducationEngine';
-import type { ReadingLevel, RecoveryPhase } from '../patientEducationEngine';
 
 describe('PatientEducationEngine', () => {
   let engine: PatientEducationEngine;

@@ -81,7 +81,7 @@ export interface MorseFallScaleResult {
 
 export interface HendrichIIInput {
   confusion: boolean;              // 4 points
-  symptomatic depression: boolean; // 2 points
+  symptomaticDepression: boolean; // 2 points
   alteredElimination: boolean;     // 1 point
   dizzinessVertigo: boolean;       // 1 point
   genderMale: boolean;             // 1 point
@@ -258,7 +258,7 @@ function calculateMorseFallScale(input: MorseFallScaleInput): MorseFallScaleResu
 function calculateHendrichII(input: HendrichIIInput): HendrichIIResult {
   const components: Record<string, number> = {
     confusion: input.confusion ? 4 : 0,
-    symptomaticDepression: input['symptomatic depression'] ? 2 : 0,
+    symptomaticDepression: input.symptomaticDepression ? 2 : 0,
     alteredElimination: input.alteredElimination ? 1 : 0,
     dizzinessVertigo: input.dizzinessVertigo ? 1 : 0,
     genderMale: input.genderMale ? 1 : 0,
@@ -731,7 +731,7 @@ class FallRiskAssessmentService {
 
       const hendrichInput: HendrichIIInput = {
         confusion: isHighRisk && i % 3 === 0,
-        'symptomatic depression': i % 8 === 0,
+        symptomaticDepression: i % 8 === 0,
         alteredElimination: i % 4 === 0,
         dizzinessVertigo: isHighRisk && i % 2 === 0,
         genderMale: i % 2 === 0,

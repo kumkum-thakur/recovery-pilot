@@ -234,7 +234,6 @@ interface InlineCarePlanFormProps {
  */
 function InlineCarePlanForm({
   patientId,
-  doctorId: _doctorId,
   initialData,
   onSave,
   onCancel,

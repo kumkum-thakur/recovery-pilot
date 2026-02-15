@@ -1,0 +1,53 @@
+# Dependencies
+node_modules
+server/node_modules
+
+# Build outputs
+dist
+server/dist
+
+# Development files
+.git
+.github
+.claude
+.kiro
+.vscode
+.idea
+
+# Environment files (never include secrets in images)
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+
+# Documentation (not needed in container)
+docs/
+*.md
+!README.md
+LICENSE
+
+# Tests
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+coverage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Terraform state
+**/*.tfstate
+**/*.tfstate.backup
+.terraform
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/

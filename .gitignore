@@ -25,7 +25,10 @@ lerna-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+server/.env
+server/.env.*
 !.env.example
+!server/.env.example
 *.pem
 *.key
 *.p12

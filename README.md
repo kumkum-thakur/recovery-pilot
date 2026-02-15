@@ -460,9 +460,11 @@ recovery-pilot/
     medical-review/      # AI image analysis subsystem
     test/                # 259 test files, 2,727 test cases
   docs/                  # Comprehensive documentation
-  scripts/               # Utility scripts
-  autoconfig.sh          # Linux/macOS automated setup
-  autoconfig.bat         # Windows automated setup
+  server/                # Backend API server (Express + PostgreSQL + Redis)
+  infrastructure/        # Kubernetes manifests, Terraform, monitoring, Nginx
+  autoconfig.sh          # Linux/macOS automated setup & deployment
+  autodeploy-k8s.sh      # One-click Kubernetes deployment
+  autoconfig.bat         # Windows development setup
 ```
 
 ---

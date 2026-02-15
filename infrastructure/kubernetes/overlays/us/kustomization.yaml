@@ -1,0 +1,56 @@
+# US Deployment Overlay
+# Region: us-east-1 (N. Virginia)
+# Compliance: HIPAA, HITECH Act, 21st Century Cures Act, 42 CFR Part 2
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: recovery-pilot-us
+
+resources:
+  - ../../base
+
+patches:
+  - target:
+      kind: ConfigMap
+      name: recovery-pilot-config
+    patch: |
+      - op: add
+        path: /data/DEPLOYMENT_REGION
+        value: "us-east-1"
+      - op: add
+        path: /data/COMPLIANCE_REGIME
+        value: "HIPAA"
+      - op: add
+        path: /data/DATA_RESIDENCY_REGION
+        value: "us-east-1"
+      - op: add
+        path: /data/AWS_REGION
+        value: "us-east-1"
+      - op: add
+        path: /data/SMS_PROVIDER
+        value: "twilio"
+
+  - target:
+      kind: Deployment
+      name: recovery-pilot-api
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 3
+
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: recovery-pilot-api-hpa
+    patch: |
+      - op: replace
+        path: /spec/minReplicas
+        value: 3
+      - op: replace
+        path: /spec/maxReplicas
+        value: 15
+
+commonLabels:
+  region: us
+  compliance: hipaa
+  environment: production

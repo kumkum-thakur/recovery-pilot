@@ -1,0 +1,196 @@
+# Docker Compose for local production simulation
+# Mirrors the Kubernetes deployment locally for testing
+#
+# NOT for actual production use - use K8s manifests instead
+
+services:
+  # PostgreSQL Primary
+  postgres-primary:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: recovery_pilot
+      POSTGRES_USER: rp_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_in_production}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/migrations:/docker-entrypoint-initdb.d
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=768MB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=128MB"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "wal_level=replica"
+      - "-c"
+      - "max_wal_size=1GB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      - "-c"
+      - "log_min_duration_statement=1000"
+      - "-c"
+      - "log_checkpoints=on"
+      - "-c"
+      - "log_connections=on"
+      - "-c"
+      - "log_disconnections=on"
+      - "-c"
+      - "ssl=off"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rp_app -d recovery_pilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+
+  # PostgreSQL Read Replica
+  postgres-replica:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: recovery_pilot
+      POSTGRES_USER: rp_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_in_production}
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  # Redis Cluster (6-node for production simulation)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command:
+      - "redis-server"
+      - "--maxmemory"
+      - "512mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+      - "--appendonly"
+      - "yes"
+      - "--appendfsync"
+      - "everysec"
+      - "--tcp-keepalive"
+      - "60"
+      - "--timeout"
+      - "300"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  # API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    ports:
+      - "3000:3000"
+      - "9090:9090"
+    environment:
+      NODE_ENV: production
+      DB_PRIMARY_HOST: postgres-primary
+      DB_PRIMARY_PORT: 5432
+      DB_PRIMARY_NAME: recovery_pilot
+      DB_PRIMARY_USER: rp_app
+      DB_PRIMARY_PASSWORD: ${DB_PASSWORD:-change_in_production}
+      DB_PRIMARY_SSL: "false"
+      DB_REPLICA_HOSTS: postgres-replica
+      REDIS_PRIMARY_HOST: redis
+      REDIS_PRIMARY_PORT: 6379
+      REDIS_PRIMARY_TLS: "false"
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-change-in-production-32chars}
+      SESSION_SECRET: ${SESSION_SECRET:-local-dev-session-change-in-production-32ch}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      DEPLOYMENT_REGION: ap-south-1
+      COMPLIANCE_REGIME: DPDPA
+      LOG_LEVEL: info
+      METRICS_ENABLED: "true"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    ports:
+      - "80:8080"
+    depends_on:
+      - api
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

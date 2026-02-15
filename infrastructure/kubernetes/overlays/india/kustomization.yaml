@@ -1,0 +1,61 @@
+# India Deployment Overlay
+# Region: ap-south-1 (Mumbai)
+# Compliance: DPDPA 2023, IT Act 2000, ABDM Health Data Management Policy
+# Data Residency: All patient data MUST remain within India
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: recovery-pilot-india
+
+resources:
+  - ../../base
+
+patches:
+  - target:
+      kind: ConfigMap
+      name: recovery-pilot-config
+    patch: |
+      - op: add
+        path: /data/DEPLOYMENT_REGION
+        value: "ap-south-1"
+      - op: add
+        path: /data/COMPLIANCE_REGIME
+        value: "DPDPA"
+      - op: add
+        path: /data/DATA_RESIDENCY_REGION
+        value: "ap-south-1"
+      - op: add
+        path: /data/AWS_REGION
+        value: "ap-south-1"
+      - op: add
+        path: /data/SMS_PROVIDER
+        value: "msg91"
+      - op: replace
+        path: /data/CORS_CREDENTIALS
+        value: "true"
+
+  # Scale for India: primary market, higher traffic
+  - target:
+      kind: Deployment
+      name: recovery-pilot-api
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 5
+
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: recovery-pilot-api-hpa
+    patch: |
+      - op: replace
+        path: /spec/minReplicas
+        value: 5
+      - op: replace
+        path: /spec/maxReplicas
+        value: 30
+
+commonLabels:
+  region: india
+  compliance: dpdpa
+  environment: production

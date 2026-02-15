@@ -47,8 +47,8 @@ export function MissionStream() {
   const [showTriageResult, setShowTriageResult] = useState(false);
   
   // State for celebration overlay
-  const [_showCelebration, setShowCelebration] = useState(false);
-  const [_celebrationMessage, setCelebrationMessage] = useState<string>('');
+  const [, setShowCelebration] = useState(false);
+  const [, setCelebrationMessage] = useState<string>('');
   
   // State for workflow error handling
   const [workflowError, setWorkflowError] = useState<Error | null>(null);

@@ -76,16 +76,23 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
   // Handle visibility changes
   useEffect(() => {
     if (isVisible) {
-      setShouldRender(true);
-      setIsAnimatingOut(false);
+      queueMicrotask(() => {
+        setShouldRender(true);
+        setIsAnimatingOut(false);
+      });
     } else if (shouldRender) {
       // Start exit animation
-      setIsAnimatingOut(true);
+      const animTimer = setTimeout(() => {
+        setIsAnimatingOut(true);
+      }, 0);
       // Remove from DOM after animation completes
       const timer = setTimeout(() => {
         setShouldRender(false);
       }, 300); // Match animation duration
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(animTimer);
+        clearTimeout(timer);
+      };
     }
   }, [isVisible, shouldRender]);
 
@@ -124,7 +131,7 @@ export function AgentStatusToast({ steps, isVisible, onComplete, onRetry }: Agen
 
         {/* Steps list */}
         <div className="space-y-2">
-          {steps.map((step, _index) => {
+          {steps.map((step) => {
             const { Icon, className, animate } = getStepIcon(step.status);
             
             return (

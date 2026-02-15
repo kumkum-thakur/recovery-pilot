@@ -153,7 +153,7 @@ export interface AuditLogEntry {
   actorId: string;              // Who performed the action
   actorType: ActorType;         // 'patient', 'doctor', 'system'
   resourceId: string;           // What was affected (imageId, reviewId, etc.)
-  eventData: Record<string, any>; // Event-specific data
+  eventData: Record<string, unknown>; // Event-specific data
   immutable: true;              // Flag indicating immutability
 }
 

@@ -11,7 +11,6 @@ import {
   GaitType,
   MentalStatusType,
   TUGRiskCategory,
-  InterventionPriority,
   HIGH_RISK_MEDICATIONS,
 } from '../fallRiskAssessment';
 import type {
@@ -45,7 +44,7 @@ function makeHighRiskMorse(): MorseFallScaleInput {
 function makeLowRiskHendrich(): HendrichIIInput {
   return {
     confusion: false,
-    'symptomatic depression': false,
+    symptomaticDepression: false,
     alteredElimination: false,
     dizzinessVertigo: false,
     genderMale: false,
@@ -166,7 +165,7 @@ describe('FallRiskAssessment', () => {
 
     it('should use threshold of 5 for high risk', () => {
       // Confusion(4) + depression(2) = 6 >= 5
-      const input = { ...makeLowRiskHendrich(), confusion: true, 'symptomatic depression': true };
+      const input = { ...makeLowRiskHendrich(), confusion: true, symptomaticDepression: true };
       const result = calculateHendrichII(input);
       expect(result.totalScore).toBe(6);
       expect(result.highRisk).toBe(true);

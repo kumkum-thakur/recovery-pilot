@@ -588,7 +588,7 @@ class NutritionalRiskScreeningService {
 
   generateNutritionPlan(
     patientId: string,
-    anthro: PatientAnthropometrics,
+    _anthro: PatientAnthropometrics,
     nrs2002: NRS2002Result,
     caloricNeeds: CaloricNeedsResult,
     canEatOrally: boolean,
@@ -660,7 +660,7 @@ class NutritionalRiskScreeningService {
     return plan;
   }
 
-  recordOutcome(patientId: string, lengthOfStay: number, readmitted: boolean, woundHealingDays: number): void {
+  recordOutcome(_patientId: string, lengthOfStay: number, readmitted: boolean, woundHealingDays: number): void {
     this.learningData.outcomes++;
 
     const n = this.learningData.outcomes;

@@ -1,0 +1,249 @@
+# RecoveryPilot API Server Deployment
+# Scaled for 2M patients/day with horizontal pod autoscaling
+#
+# Capacity planning:
+# - 2M patients/day = ~23 req/sec sustained
+# - Peak (5x burst): ~115 req/sec
+# - Each pod handles ~2,000 req/sec
+# - Min 3 pods for HA, max 20 pods for burst
+# - Total capacity: 40,000 req/sec (well above 5x peak)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recovery-pilot-api
+  namespace: recovery-pilot
+  labels:
+    app: recovery-pilot
+    component: api
+    version: v1
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: recovery-pilot
+      component: api
+  template:
+    metadata:
+      labels:
+        app: recovery-pilot
+        component: api
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: recovery-pilot-api
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: recovery-pilot
+              component: api
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: [recovery-pilot]
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: api
+          image: recovery-pilot/api:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: recovery-pilot-secrets
+            - configMapRef:
+                name: recovery-pilot-config
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: CLUSTER_WORKERS
+              value: "0"  # Auto-detect CPUs
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 15
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+              readOnly: false
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 100Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recovery-pilot-api
+  namespace: recovery-pilot
+  labels:
+    app: recovery-pilot
+    component: api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app: recovery-pilot
+    component: api
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: recovery-pilot-api
+  namespace: recovery-pilot
+  labels:
+    app: recovery-pilot
+  annotations:
+    # For AWS IRSA (IAM Roles for Service Accounts)
+    eks.amazonaws.com/role-arn: ""
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: recovery-pilot-api-hpa
+  namespace: recovery-pilot
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: recovery-pilot-api
+  minReplicas: 3
+  maxReplicas: 20
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+        - type: Pods
+          value: 4
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: http_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "1000"
+
+---
+# Pod Disruption Budget - ensure at least 2 pods always running
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: recovery-pilot-api-pdb
+  namespace: recovery-pilot
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: recovery-pilot
+      component: api

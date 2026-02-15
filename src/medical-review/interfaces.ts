@@ -149,7 +149,7 @@ export interface AuditLogSystem {
     actorId: string,
     actorType: ActorType,
     resourceId: string,
-    eventData: Record<string, any>
+    eventData: Record<string, unknown>
   ): Promise<AuditLogEntry>;
   
   // Retrieve audit trail for a resource

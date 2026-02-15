@@ -516,7 +516,7 @@ function analyzeTrend(values: LabValue[]): TrendAnalysis {
   const sumY = ys.reduce((a, b) => a + b, 0);
   const sumXY = xs.reduce((a, x, i) => a + x * ys[i], 0);
   const sumX2 = xs.reduce((a, x) => a + x * x, 0);
-  const sumY2 = ys.reduce((a, y) => a + y * y, 0);
+  void ys.reduce((a, y) => a + y * y, 0);
 
   const denominator = n * sumX2 - sumX * sumX;
   const slope = denominator !== 0 ? (n * sumXY - sumX * sumY) / denominator : 0;
@@ -614,7 +614,7 @@ function calculateCorrectedCalcium(totalCalcium: number, albumin: number): Calcu
   };
 }
 
-function calculateEGFR(creatinine: number, age: number, sex: string, isBlack: boolean = false): CalculatedValue {
+function calculateEGFR(creatinine: number, age: number, sex: string, _isBlack: boolean = false): CalculatedValue {
   // CKD-EPI 2021 formula (race-free)
   // For female: 142 * min(SCr/0.7, 1)^(-0.241) * max(SCr/0.7, 1)^(-1.200) * 0.9938^Age * 1.012
   // For male: 142 * min(SCr/0.9, 1)^(-0.302) * max(SCr/0.9, 1)^(-1.200) * 0.9938^Age
@@ -669,7 +669,7 @@ function interpretHepaticPanel(results: InterpretedResult[]): PanelInterpretatio
   const alp = results.find(r => r.testCode === 'ALP');
   const tbil = results.find(r => r.testCode === 'TBIL');
   const dbil = results.find(r => r.testCode === 'DBIL');
-  const ggt = results.find(r => r.testCode === 'GGT');
+  void results.find(r => r.testCode === 'GGT');
   const alb = results.find(r => r.testCode === 'ALB');
 
   let pattern = 'Normal';

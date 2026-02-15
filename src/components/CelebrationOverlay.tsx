@@ -15,7 +15,7 @@
  * @param onComplete - Callback when animation completes and overlay dismisses
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getStreakMilestoneMessage } from '../utils/encouragingMessages';
 
@@ -67,24 +67,31 @@ export function CelebrationOverlay({
   message,
   onComplete,
 }: CelebrationOverlayProps) {
-  const [confetti, setConfetti] = useState<ReturnType<typeof generateConfetti>>([]);
   const isMilestone = isStreakMilestone(streakCount);
-  
-  // Generate confetti when overlay becomes visible
+  const confettiSeedRef = useRef(0);
+
+  // Increment seed when overlay becomes visible to regenerate confetti
+  if (isVisible) {
+    confettiSeedRef.current += 1;
+  }
+
+  const confetti = useMemo(() => {
+    if (!isVisible) return [];
+    const confettiCount = isMilestone ? 100 : 50;
+    return generateConfetti(confettiCount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible, isMilestone, confettiSeedRef.current]);
+
+  // Auto-dismiss after 2 seconds
   useEffect(() => {
     if (isVisible) {
-      // More confetti for milestones
-      const confettiCount = isMilestone ? 100 : 50;
-      setConfetti(generateConfetti(confettiCount));
-      
-      // Auto-dismiss after 2 seconds
       const timer = setTimeout(() => {
         onComplete();
       }, 2000);
-      
+
       return () => clearTimeout(timer);
     }
-  }, [isVisible, isMilestone, onComplete]);
+  }, [isVisible, onComplete]);
 
   return (
     <AnimatePresence>

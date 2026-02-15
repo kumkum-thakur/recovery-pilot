@@ -169,7 +169,7 @@ describe('QualityMetricsEngine', () => {
       }));
 
       const chart = qualityMetricsEngine.generateSPCChart('readmit-30', periodicRates);
-      const shiftSignals = chart.signals.filter(s => s.signal === SPCSignal.SHIFT);
+      void chart.signals.filter(s => s.signal === SPCSignal.SHIFT);
       // May or may not detect shift depending on center line calculation
       expect(chart.signals.length).toBeGreaterThanOrEqual(0);
     });

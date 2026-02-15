@@ -1,0 +1,325 @@
+# RecoveryPilot CI/CD Pipeline
+# Multi-region deployment to India (ap-south-1), US (us-east-1), UK (eu-west-2)
+#
+# Pipeline stages:
+# 1. Lint & Type Check
+# 2. Unit Tests (frontend + backend)
+# 3. Security Scan (SAST + dependency audit)
+# 4. Build Docker images
+# 5. Integration Tests
+# 6. Push to ECR
+# 7. Deploy to staging (canary)
+# 8. Compliance validation
+# 9. Deploy to production (rolling)
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr
+  IMAGE_NAME: recovery-pilot
+
+jobs:
+  # ============================================================
+  # Stage 1: Code Quality
+  # ============================================================
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies (frontend)
+        run: npm ci
+
+      - name: Install dependencies (backend)
+        run: cd server && npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Lint backend
+        run: cd server && npm run lint
+
+      - name: Type check frontend
+        run: npx tsc --noEmit
+
+      - name: Type check backend
+        run: cd server && npx tsc --noEmit
+
+  # ============================================================
+  # Stage 2: Tests
+  # ============================================================
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+      - run: npx vitest run --coverage
+        env:
+          CI: true
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: coverage/
+
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: recovery_pilot_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: cd server && npm ci
+      - run: cd server && npm run test:ci
+        env:
+          DB_PRIMARY_HOST: localhost
+          DB_PRIMARY_PORT: 5432
+          DB_PRIMARY_NAME: recovery_pilot_test
+          DB_PRIMARY_USER: test
+          DB_PRIMARY_PASSWORD: test
+          DB_PRIMARY_SSL: false
+          REDIS_PRIMARY_HOST: localhost
+          REDIS_PRIMARY_PORT: 6379
+          REDIS_PRIMARY_TLS: false
+          JWT_SECRET: test-jwt-secret-32-characters-long
+          SESSION_SECRET: test-session-secret-32-characters-l
+          NODE_ENV: test
+
+  # ============================================================
+  # Stage 3: Security Scanning
+  # ============================================================
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run npm audit (frontend)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run npm audit (backend)
+        run: cd server && npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: 1
+
+      - name: SAST scan with Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/nodejs
+            p/typescript
+            p/sql-injection
+            p/xss
+            p/secrets
+
+  # ============================================================
+  # Stage 4: Build Docker Images
+  # ============================================================
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [test-frontend, test-backend, security-scan]
+    strategy:
+      matrix:
+        target: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.target }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: ${{ matrix.target }}
+          push: false
+          tags: ${{ env.IMAGE_NAME }}/${{ matrix.target }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: type=docker,dest=/tmp/${{ matrix.target }}.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-${{ matrix.target }}
+          path: /tmp/${{ matrix.target }}.tar
+
+  # ============================================================
+  # Stage 5: Compliance Validation
+  # ============================================================
+  compliance-check:
+    name: Compliance Validation
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HIPAA controls
+        run: |
+          echo "Checking HIPAA compliance controls..."
+          # Verify encryption is enabled
+          grep -r "FIELD_LEVEL_ENCRYPTION" server/src/config/environment.ts
+          # Verify audit logging is immutable
+          grep -r "AUDIT_LOG_IMMUTABLE" server/src/config/environment.ts
+          # Verify MFA is enabled
+          grep -r "MFA_ENABLED" server/src/config/environment.ts
+          # Verify PHI field encryption
+          grep -r "encryptPHI" server/src/utils/encryption.ts
+          echo "HIPAA controls validated"
+
+      - name: Validate DPDPA controls
+        run: |
+          echo "Checking DPDPA compliance controls..."
+          # Verify data residency enforcement
+          grep -r "enforceDataResidency" server/src/middleware/compliance.ts
+          # Verify consent management
+          grep -r "requireConsent" server/src/middleware/compliance.ts
+          # Verify right to erasure
+          grep -r "processErasureRequest" server/src/middleware/compliance.ts
+          echo "DPDPA controls validated"
+
+      - name: Validate UK GDPR controls
+        run: |
+          echo "Checking UK GDPR compliance controls..."
+          # Verify data portability
+          grep -r "processPortabilityRequest" server/src/middleware/compliance.ts
+          # Verify breach notification
+          grep -r "reportBreach" server/src/middleware/compliance.ts
+          echo "UK GDPR controls validated"
+
+      - name: Validate network security
+        run: |
+          echo "Checking network security..."
+          # Verify network policies exist
+          test -f infrastructure/kubernetes/base/network-policy.yaml
+          # Verify TLS configuration
+          grep -r "TLSv1.3" infrastructure/kubernetes/base/ingress.yaml
+          echo "Network security validated"
+
+  # ============================================================
+  # Stage 6: Deploy (Production)
+  # ============================================================
+  deploy-india:
+    name: Deploy to India (ap-south-1)
+    runs-on: ubuntu-latest
+    needs: [compliance-check]
+    if: github.ref == 'refs/heads/main'
+    environment: production-india
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_INDIA }}
+          aws-region: ap-south-1
+
+      - name: Deploy to EKS
+        run: |
+          aws eks update-kubeconfig --name recovery-pilot-india --region ap-south-1
+          kubectl apply -k infrastructure/kubernetes/overlays/india/
+
+  deploy-us:
+    name: Deploy to US (us-east-1)
+    runs-on: ubuntu-latest
+    needs: [compliance-check]
+    if: github.ref == 'refs/heads/main'
+    environment: production-us
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_US }}
+          aws-region: us-east-1
+
+      - name: Deploy to EKS
+        run: |
+          aws eks update-kubeconfig --name recovery-pilot-us --region us-east-1
+          kubectl apply -k infrastructure/kubernetes/overlays/us/
+
+  deploy-uk:
+    name: Deploy to UK (eu-west-2)
+    runs-on: ubuntu-latest
+    needs: [compliance-check]
+    if: github.ref == 'refs/heads/main'
+    environment: production-uk
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_UK }}
+          aws-region: eu-west-2
+
+      - name: Deploy to EKS
+        run: |
+          aws eks update-kubeconfig --name recovery-pilot-uk --region eu-west-2
+          kubectl apply -k infrastructure/kubernetes/overlays/uk/

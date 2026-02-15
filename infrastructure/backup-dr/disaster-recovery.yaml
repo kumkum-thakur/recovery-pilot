@@ -1,0 +1,77 @@
+# Disaster Recovery Configuration
+# Multi-region failover for RecoveryPilot healthcare platform
+#
+# Strategy: Warm Standby (RTO: 4 hours, RPO: 1 hour)
+#
+# Primary-DR Region Mapping:
+# - India: ap-south-1 (Mumbai) → ap-south-2 (Hyderabad)
+# - US: us-east-1 (N. Virginia) → us-west-2 (Oregon)
+# - UK: eu-west-2 (London) → eu-west-1 (Ireland)
+#
+# Data residency is maintained: India data stays in India,
+# US data stays in US, UK data stays in UK.
+
+---
+# Route 53 Health Check for automatic failover
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: disaster-recovery-config
+  namespace: recovery-pilot
+data:
+  DR_STRATEGY: "warm-standby"
+  RTO_HOURS: "4"
+  RPO_HOURS: "1"
+
+  # Primary regions
+  PRIMARY_REGION_INDIA: "ap-south-1"
+  PRIMARY_REGION_US: "us-east-1"
+  PRIMARY_REGION_UK: "eu-west-2"
+
+  # DR regions (same country for data residency)
+  DR_REGION_INDIA: "ap-south-2"
+  DR_REGION_US: "us-west-2"
+  DR_REGION_UK: "eu-west-1"
+
+  # Failover configuration
+  HEALTH_CHECK_INTERVAL_SECONDS: "30"
+  HEALTH_CHECK_FAILURE_THRESHOLD: "3"
+  FAILOVER_AUTOMATIC: "true"
+  FAILBACK_AUTOMATIC: "false"  # Manual failback to prevent split-brain
+
+  # RDS cross-region read replica configuration
+  RDS_REPLICA_INDIA_DR: "rp-db-india-dr.xxxxx.ap-south-2.rds.amazonaws.com"
+  RDS_REPLICA_US_DR: "rp-db-us-dr.xxxxx.us-west-2.rds.amazonaws.com"
+  RDS_REPLICA_UK_DR: "rp-db-uk-dr.xxxxx.eu-west-1.rds.amazonaws.com"
+
+  # S3 cross-region replication
+  S3_REPLICATION_ENABLED: "true"
+  S3_REPLICATION_ROLE: "arn:aws:iam::role/s3-replication-role"
+
+  # ElastiCache Global Datastore
+  REDIS_GLOBAL_DATASTORE: "true"
+  REDIS_DR_AUTO_FAILOVER: "true"
+
+  # Recovery procedures (automated runbook)
+  RECOVERY_STEPS: |
+    1. DNS failover triggered by Route 53 health check failure
+    2. Promote RDS read replica to standalone in DR region
+    3. Promote ElastiCache Global Datastore secondary to primary
+    4. Scale up EKS node group in DR region
+    5. Verify application health checks passing
+    6. Send notification to ops team
+    7. Monitor for 30 minutes before declaring DR complete
+    8. Update compliance audit log with DR event
+
+  # Compliance notification
+  NOTIFY_ON_FAILOVER: |
+    - ops-team@recoverypilot.health
+    - compliance@recoverypilot.health
+    - security@recoverypilot.health
+
+  # DR testing schedule
+  DR_TEST_SCHEDULE: |
+    Monthly: Automated failover simulation (non-production)
+    Quarterly: Full DR drill with production-like load
+    Annual: Business continuity review and plan update
+    Post-incident: DR plan review after any outage >30 minutes

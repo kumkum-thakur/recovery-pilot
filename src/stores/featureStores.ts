@@ -1113,7 +1113,7 @@ export const useGamificationStore = create<GamificationStoreState>((set, get) =>
   // Actions
   // ============================================================================
 
-  awardXP: (amount, _reason) => {
+  awardXP: (amount) => {
     const { xp, level } = get();
     const newXP = xp + amount;
 

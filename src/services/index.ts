@@ -130,28 +130,28 @@ export type { ModelWeights, PatientFeatures, PredictionRecord, PredictionResult 
 // ============================================================================
 
 // ML Models - Drug Interaction Checker
-export { drugInteractionChecker } from './mlModels/drugInteractionChecker';
+export { DrugInteractionChecker as drugInteractionChecker } from './mlModels/drugInteractionChecker';
 
 // ML Models - Readmission Risk Predictor
-export { readmissionRiskPredictor } from './mlModels/readmissionRiskPredictor';
+export { ReadmissionRiskPredictor as readmissionRiskPredictor } from './mlModels/readmissionRiskPredictor';
 
 // ML Models - Wound Healing Classifier
-export { woundHealingClassifier } from './mlModels/woundHealingClassifier';
+export { WoundHealingClassifier as woundHealingClassifier } from './mlModels/woundHealingClassifier';
 
 // ML Models - Medication Adherence Predictor
-export { medicationAdherencePredictor } from './mlModels/medicationAdherencePredictor';
+export { MedicationAdherencePredictor as medicationAdherencePredictor } from './mlModels/medicationAdherencePredictor';
 
 // ML Models - Clinical NLP Engine
-export { clinicalNLPEngine } from './mlModels/clinicalNLPEngine';
+export { ClinicalNLPEngine as clinicalNLPEngine } from './mlModels/clinicalNLPEngine';
 
 // ML Models - Complication Bayesian Network
-export { complicationBayesianNetwork } from './mlModels/complicationBayesianNetwork';
+export { ComplicationBayesianNetwork as complicationBayesianNetwork } from './mlModels/complicationBayesianNetwork';
 
 // ML Models - Patient Clustering Engine
-export { patientClusteringEngine } from './mlModels/patientClusteringEngine';
+export { PatientClusteringEngine as patientClusteringEngine } from './mlModels/patientClusteringEngine';
 
 // ML Models - Treatment Response Predictor
-export { treatmentResponsePredictor } from './mlModels/treatmentResponsePredictor';
+export { TreatmentResponsePredictor as treatmentResponsePredictor } from './mlModels/treatmentResponsePredictor';
 
 // ============================================================================
 // Clinical Decision Support (8 features)
@@ -170,14 +170,14 @@ export { antibioticStewardshipEngine } from './antibioticStewardshipEngine';
 // Patient Engagement (8 features)
 // ============================================================================
 
-export { medicalTranslationEngine } from './medicalTranslationEngine';
-export { patientEducationEngine } from './patientEducationEngine';
-export { caregiverAccessSystem } from './caregiverAccessSystem';
-export { appointmentSchedulingEngine } from './appointmentSchedulingEngine';
-export { recoveryMilestoneTracker } from './recoveryMilestoneTracker';
-export { patientSatisfactionEngine } from './patientSatisfactionEngine';
-export { symptomPatternRecognition } from './symptomPatternRecognition';
-export { rehabilitationProtocolEngine } from './rehabilitationProtocolEngine';
+export { MedicalTranslationEngine as medicalTranslationEngine } from './medicalTranslationEngine';
+export { PatientEducationEngine as patientEducationEngine } from './patientEducationEngine';
+export { CaregiverAccessSystem as caregiverAccessSystem } from './caregiverAccessSystem';
+export { AppointmentSchedulingEngine as appointmentSchedulingEngine } from './appointmentSchedulingEngine';
+export { RecoveryMilestoneTracker as recoveryMilestoneTracker } from './recoveryMilestoneTracker';
+export { PatientSatisfactionEngine as patientSatisfactionEngine } from './patientSatisfactionEngine';
+export { SymptomPatternRecognition as symptomPatternRecognition } from './symptomPatternRecognition';
+export { RehabilitationProtocolEngine as rehabilitationProtocolEngine } from './rehabilitationProtocolEngine';
 
 // ============================================================================
 // Clinical Operations (8 features)
@@ -196,11 +196,11 @@ export { staffWorkloadBalancer } from './staffWorkloadBalancer';
 // Data & Integration (8 features)
 // ============================================================================
 
-export { fhirResourceEngine } from './fhirResourceEngine';
-export { clinicalDocumentGenerator } from './clinicalDocumentGenerator';
-export { pharmacyFormularyChecker } from './pharmacyFormularyChecker';
-export { sdohScreener } from './sdohScreener';
-export { clinicalTrialMatcher } from './clinicalTrialMatcher';
-export { populationHealthAnalytics } from './populationHealthAnalytics';
-export { predictiveStaffingModel } from './predictiveStaffingModel';
-export { consentManagementEngine } from './consentManagementEngine';
+export { createFHIRResourceEngine as fhirResourceEngine } from './fhirResourceEngine';
+export { createClinicalDocumentGenerator as clinicalDocumentGenerator } from './clinicalDocumentGenerator';
+export { createPharmacyFormularyChecker as pharmacyFormularyChecker } from './pharmacyFormularyChecker';
+export { createSDOHScreener as sdohScreener } from './sdohScreener';
+export { createClinicalTrialMatcher as clinicalTrialMatcher } from './clinicalTrialMatcher';
+export { createPopulationHealthAnalytics as populationHealthAnalytics } from './populationHealthAnalytics';
+export { createPredictiveStaffingModel as predictiveStaffingModel } from './predictiveStaffingModel';
+export { createConsentManagementEngine as consentManagementEngine } from './consentManagementEngine';

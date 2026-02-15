@@ -261,7 +261,7 @@ describe('ConfigStore', () => {
   describe('Persistence Integration', () => {
     it('should maintain scenario across store resets', () => {
       // Set scenario
-      let store = useConfigStore.getState();
+      const store = useConfigStore.getState();
       store.setDemoScenario(DemoScenario.SCENARIO_RISK_DETECTED);
       
       // Simulate app restart by loading config
@@ -276,7 +276,7 @@ describe('ConfigStore', () => {
 
     it('should maintain mock delay across store resets', () => {
       // Set delay
-      let store = useConfigStore.getState();
+      const store = useConfigStore.getState();
       store.setMockDelay(2500);
       
       // Simulate app restart by loading config
