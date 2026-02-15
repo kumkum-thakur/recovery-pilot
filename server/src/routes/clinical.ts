@@ -69,7 +69,7 @@ clinicalRouter.post(
   async (req: Request, res: Response) => {
     try {
       const authReq = req as AuthenticatedRequest;
-      const { itemId } = req.params;
+      const itemId = req.params['itemId'] as string;
       const body = triageDecisionSchema.parse(req.body);
 
       const db = getWriteDb();

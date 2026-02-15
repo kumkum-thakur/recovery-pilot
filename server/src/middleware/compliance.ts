@@ -145,8 +145,6 @@ function getConsentMessage(consentType: ConsentType): string {
  * Blocks cross-border data transfers unless explicitly authorized.
  */
 export function enforceDataResidency(req: Request, res: Response, next: NextFunction): void {
-  const compliance = COMPLIANCE_CONFIG[env.COMPLIANCE_REGIME];
-
   // Check if request is attempting cross-border data access
   const requestRegion = req.headers['x-request-region'] as string;
 
@@ -159,7 +157,7 @@ export function enforceDataResidency(req: Request, res: Response, next: NextFunc
     }, 'Cross-border data access attempt');
 
     // DPDPA: Cross-border transfers restricted
-    if (env.COMPLIANCE_REGIME === 'DPDPA' && compliance.crossBorderTransfer === 'restricted') {
+    if (env.COMPLIANCE_REGIME === 'DPDPA' && COMPLIANCE_CONFIG.DPDPA.crossBorderTransfer === 'restricted') {
       void writeAuditLog({
         eventType: AuditEventType.CROSS_BORDER_TRANSFER,
         userId: (req as Request & { userId?: string }).userId ?? 'unknown',

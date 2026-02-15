@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
-import pinoHttp from 'pino-http';
+import { type IncomingMessage } from 'http';
+import { type ServerResponse } from 'http';
+import { pinoHttp } from 'pino-http';
 import { logger } from './utils/logger.js';
 import { env } from './config/environment.js';
 import {
@@ -57,12 +59,12 @@ export function createApp(): express.Application {
   app.use(pinoHttp({
     logger,
     autoLogging: {
-      ignore: (req) => {
+      ignore: (req: IncomingMessage) => {
         // Don't log health checks to reduce noise
         return req.url === '/health' || req.url === '/ready';
       },
     },
-    customLogLevel: (_req, res) => {
+    customLogLevel: (_req: IncomingMessage, res: ServerResponse) => {
       if (res.statusCode >= 500) return 'error';
       if (res.statusCode >= 400) return 'warn';
       return 'info';

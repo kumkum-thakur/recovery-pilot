@@ -86,7 +86,7 @@ export function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp' | 'i
     expiresIn: env.JWT_EXPIRY,
     issuer: env.JWT_ISSUER,
     algorithm: 'HS256',
-  });
+  } as jwt.SignOptions);
 }
 
 export function generateRefreshToken(payload: { sub: string; sessionId: string }): string {
@@ -94,7 +94,7 @@ export function generateRefreshToken(payload: { sub: string; sessionId: string }
     expiresIn: env.JWT_REFRESH_EXPIRY,
     issuer: env.JWT_ISSUER,
     algorithm: 'HS256',
-  });
+  } as jwt.SignOptions);
 }
 
 export function verifyToken(token: string): JWTPayload {

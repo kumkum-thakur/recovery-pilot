@@ -56,7 +56,6 @@ export const helmetMiddleware = helmet({
   originAgentCluster: true,
   permittedCrossDomainPolicies: { permittedPolicies: 'none' },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-  xContentTypeOptions: true,
   xFrameOptions: { action: 'deny' },
 });
 

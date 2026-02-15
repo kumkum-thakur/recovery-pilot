@@ -21,7 +21,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
 
       // Try cache first
       const cached = await cache.getOrSet(
@@ -114,7 +114,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
       const days = parseInt(req.query['days'] as string) || 7;
       const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
@@ -157,7 +157,7 @@ patientRouter.post(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
       const body = vitalSchema.parse(req.body);
 
       const db = getWriteDb();
@@ -199,7 +199,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
       const status = req.query['status'] as string;
 
       const db = getReadDb();
@@ -227,7 +227,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
 
       const carePlans = await cache.getOrSet(
         `patient:${patientId}:care-plans`,
@@ -254,7 +254,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
 
       const medications = await getReadDb()('medications')
         .where({ patient_id: patientId, is_active: true })
@@ -274,7 +274,7 @@ patientRouter.get(
   requireDataAccess('patientId'),
   async (req: Request, res: Response) => {
     try {
-      const { patientId } = req.params;
+      const patientId = req.params['patientId'] as string;
       const page = parseInt(req.query['page'] as string) || 1;
       const limit = Math.min(parseInt(req.query['limit'] as string) || 50, 100);
 

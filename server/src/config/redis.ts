@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import { Redis, type RedisOptions, type ClusterNode } from 'ioredis';
 import { env } from './environment.js';
 import { logger } from '../utils/logger.js';
 
@@ -17,7 +17,7 @@ import { logger } from '../utils/logger.js';
  * - DB 3: BullMQ job queues
  */
 
-function createRedisOptions(db: number): Redis.RedisOptions {
+function createRedisOptions(db: number): RedisOptions {
   return {
     host: env.REDIS_PRIMARY_HOST,
     port: env.REDIS_PRIMARY_PORT,
@@ -42,7 +42,7 @@ function createRedisOptions(db: number): Redis.RedisOptions {
   };
 }
 
-function _createClusterOptions(): Redis.ClusterNode[] {
+export function createClusterOptions(): ClusterNode[] {
   return env.REDIS_CLUSTER_NODES
     .split(',')
     .map(node => {
@@ -67,7 +67,7 @@ export const queueRedis = new Redis(createRedisOptions(3));
 function attachHandlers(client: Redis, name: string): void {
   client.on('connect', () => logger.info({ component: 'redis', name }, 'Redis connecting'));
   client.on('ready', () => logger.info({ component: 'redis', name }, 'Redis ready'));
-  client.on('error', (err) => logger.error({ component: 'redis', name, err }, 'Redis error'));
+  client.on('error', (err: Error) => logger.error({ component: 'redis', name, err }, 'Redis error'));
   client.on('close', () => logger.warn({ component: 'redis', name }, 'Redis connection closed'));
   client.on('reconnecting', () => logger.info({ component: 'redis', name }, 'Redis reconnecting'));
 }
@@ -129,7 +129,7 @@ export class CacheManager {
     const keys = await this.redis.keys(`${env.REDIS_KEY_PREFIX}${pattern}`);
     if (keys.length === 0) return 0;
     // Remove prefix before deleting (ioredis adds it back)
-    const cleanKeys = keys.map(k => k.replace(env.REDIS_KEY_PREFIX, ''));
+    const cleanKeys = keys.map((k: string) => k.replace(env.REDIS_KEY_PREFIX, ''));
     return this.redis.del(...cleanKeys);
   }
 
