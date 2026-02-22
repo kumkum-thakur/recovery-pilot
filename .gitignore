@@ -63,3 +63,13 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+# Package manager lock files (using npm)
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
+
+# Playwright MCP screenshots
+.playwright-mcp/
+pitch-slide*.png
+slide*.png

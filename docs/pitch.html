@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecoveryPilot — Investor Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════
+     RESET & BASE
+     ═══════════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --cream: #e8e4dc;
+    --accent: #00d4aa;
+    --accent-glow: #00ffcc;
+    --danger: #ff4757;
+    --warm: #ff6b35;
+    --gold: #ffd700;
+    --muted: #6b7280;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+  }
+
+  /* ═══════════════════════════════════════════
+     SLIDE SYSTEM
+     ═══════════════════════════════════════════ */
+  .slide {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 6rem;
+    position: relative;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+
+  .slide-inner {
+    max-width: 1200px;
+    width: 100%;
+    z-index: 2;
+    position: relative;
+  }
+
+  /* Slide number */
+  .slide-num {
+    position: absolute;
+    top: 2.5rem;
+    right: 3rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    z-index: 5;
+  }
+
+  /* ═══════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════ */
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .subhead {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    line-height: 1.6;
+    color: var(--cream);
+    max-width: 600px;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .stat-huge {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(4rem, 10vw, 9rem);
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  .accent-text {
+    color: var(--accent);
+  }
+
+  .danger-text {
+    color: var(--danger);
+  }
+
+  .warm-text {
+    color: var(--warm);
+  }
+
+  .gold-text {
+    color: var(--gold);
+  }
+
+  /* ═══════════════════════════════════════════
+     BACKGROUNDS & ATMOSPHERE
+     ═══════════════════════════════════════════ */
+  .grain-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════
+     CARDS & GLASS
+     ═══════════════════════════════════════════ */
+  .glass-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 2rem;
+    backdrop-filter: blur(20px);
+  }
+
+  .metric-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .metric-card .stat-huge {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  /* ═══════════════════════════════════════════
+     CHARTS (Pure CSS)
+     ═══════════════════════════════════════════ */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    height: 220px;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--glass-border);
+    position: relative;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    position: relative;
+    height: 100%;
+  }
+
+  .bar {
+    width: 100%;
+    max-width: 60px;
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    transition: height 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-value {
+    position: absolute;
+    top: -1.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* Donut chart */
+  .donut-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+
+  .donut-chart {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .donut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .donut-center .stat-huge {
+    font-size: 2.5rem;
+  }
+
+  /* ═══════════════════════════════════════════
+     GRID LAYOUTS
+     ═══════════════════════════════════════════ */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1.5rem; }
+
+  .flex-center { display: flex; align-items: center; justify-content: center; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .gap-4 { gap: 2rem; }
+  .gap-6 { gap: 3rem; }
+  .mt-3 { margin-top: 1.5rem; }
+  .mt-4 { margin-top: 2rem; }
+  .mt-6 { margin-top: 3rem; }
+  .mb-2 { margin-bottom: 1rem; }
+  .mb-4 { margin-bottom: 2rem; }
+
+  /* ═══════════════════════════════════════════
+     COMPARISON TABLE
+     ═══════════════════════════════════════════ */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .comp-table th {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .comp-table td {
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    vertical-align: middle;
+    font-weight: 300;
+  }
+
+  .comp-table tr:last-child td { border-bottom: none; }
+
+  .comp-table .feature-col {
+    font-weight: 500;
+    color: var(--cream);
+    width: 30%;
+  }
+
+  .comp-table .them-col {
+    color: var(--muted);
+    width: 35%;
+  }
+
+  .comp-table .us-col {
+    color: var(--accent);
+    font-weight: 500;
+    width: 35%;
+  }
+
+  .check { color: var(--accent); font-size: 1.1rem; }
+  .cross { color: var(--danger); font-size: 1.1rem; opacity: 0.6; }
+
+  /* ═══════════════════════════════════════════
+     TIMELINE
+     ═══════════════════════════════════════════ */
+  .timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 2rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--glass-border), var(--accent), var(--accent-glow));
+  }
+
+  .timeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .timeline-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--black);
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
+  }
+
+  .timeline-dot.future {
+    background: var(--glass-border);
+    box-shadow: none;
+  }
+
+  .timeline-text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: center;
+    max-width: 120px;
+  }
+
+  .timeline-year {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  /* ═══════════════════════════════════════════
+     ARCHITECTURE DIAGRAM
+     ═══════════════════════════════════════════ */
+  .arch-layer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .arch-box {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .arch-box.patient {
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+    color: var(--accent);
+  }
+
+  .arch-box.ai {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    color: var(--warm);
+  }
+
+  .arch-box.doctor {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #818cf8;
+  }
+
+  .arch-box.infra {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    color: var(--muted);
+  }
+
+  .arch-connector {
+    text-align: center;
+    color: var(--muted);
+    font-size: 1.2rem;
+    line-height: 1;
+    margin: 0.25rem 0;
+    opacity: 0.4;
+  }
+
+  /* ═══════════════════════════════════════════
+     TEAM CARDS
+     ═══════════════════════════════════════════ */
+  .team-card {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .team-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), rgba(0,212,170,0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--black);
+    border: 2px solid rgba(0, 212, 170, 0.3);
+  }
+
+  .team-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .team-role {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .team-bio {
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ═══════════════════════════════════════════
+     PILL / TAG
+     ═══════════════════════════════════════════ */
+  .pill {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    border: 1px solid var(--glass-border);
+    color: var(--muted);
+  }
+
+  .pill.accent {
+    border-color: rgba(0, 212, 170, 0.3);
+    color: var(--accent);
+    background: rgba(0, 212, 170, 0.05);
+  }
+
+  /* ═══════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.25; }
+  }
+
+  @keyframes countUp {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slideRight {
+    from { width: 0; }
+  }
+
+  .anim-fade-up {
+    opacity: 0;
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .anim-delay-1 { animation-delay: 0.15s; }
+  .anim-delay-2 { animation-delay: 0.3s; }
+  .anim-delay-3 { animation-delay: 0.45s; }
+  .anim-delay-4 { animation-delay: 0.6s; }
+  .anim-delay-5 { animation-delay: 0.75s; }
+  .anim-delay-6 { animation-delay: 0.9s; }
+
+  /* Scroll-triggered animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ═══════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════ */
+  .slide-nav {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--glass-border);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+
+  .nav-dot:hover,
+  .nav-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(0, 212, 170, 0.5);
+    transform: scale(1.4);
+  }
+
+  /* ═══════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════ */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+    z-index: 200;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 212, 170, 0.5);
+  }
+
+  /* ═══════════════════════════════════════════
+     HORIZONTAL BARS (mini chart)
+     ═══════════════════════════════════════════ */
+  .h-bar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .h-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .h-bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    width: 140px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .h-bar-track {
+    flex: 1;
+    height: 24px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .h-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-right: 0.75rem;
+    justify-content: flex-end;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--white);
+    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ═══════════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    .slide { padding: 3rem 2rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .slide-nav { display: none; }
+    .comp-table { font-size: 0.8rem; }
+    .comp-table th, .comp-table td { padding: 0.6rem 0.75rem; }
+    .timeline { flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+    .timeline::before { display: none; }
+    .bar-chart { height: 160px; }
+  }
+
+  @media (max-width: 600px) {
+    .slide { padding: 2rem 1.25rem; }
+    .headline { font-size: 2.2rem; }
+    .stat-huge { font-size: 3rem; }
+    .bar-chart { gap: 0.5rem; }
+  }
+
+  /* Print styles */
+  @media print {
+    .slide { page-break-after: always; min-height: auto; padding: 2rem; }
+    .grain-overlay, .slide-nav, .progress-bar { display: none; }
+    .bg-glow, .bg-grid { display: none; }
+    body { background: white; color: black; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Film grain overlay for texture -->
+<div class="grain-overlay"></div>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Navigation dots -->
+<nav class="slide-nav" id="slideNav"></nav>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-1">
+  <div class="bg-glow" style="width:800px;height:800px;background:radial-gradient(circle,rgba(0,212,170,0.15),transparent 70%);top:-20%;right:-15%;animation:pulse-glow 6s ease-in-out infinite;"></div>
+  <div class="bg-grid"></div>
+  <span class="slide-num">01 / 10</span>
+
+  <div class="slide-inner" style="text-align:center;">
+    <div class="anim-fade-up" style="margin-bottom:2rem;">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="margin-bottom:1rem;">
+        <rect width="80" height="80" rx="20" fill="url(#logoGrad)" fill-opacity="0.1" stroke="url(#logoGrad)" stroke-width="1.5"/>
+        <path d="M24 40 L34 28 L34 52 Z" fill="#00d4aa"/>
+        <path d="M40 28 L56 40 L40 52 Z" fill="#00d4aa" fill-opacity="0.5"/>
+        <circle cx="40" cy="40" r="4" fill="#00d4aa"/>
+        <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#00d4aa"/><stop offset="1" stop-color="#00ffcc"/></linearGradient></defs>
+      </svg>
+    </div>
+
+    <h1 class="headline anim-fade-up anim-delay-1" style="margin-bottom:1.5rem;">
+      Recovery<span class="accent-text">Pilot</span>
+    </h1>
+
+    <p class="subhead anim-fade-up anim-delay-2" style="margin:0 auto 3rem;max-width:500px;">
+      The autonomous post-operative care<br>orchestrator that never sleeps.
+    </p>
+
+    <div class="anim-fade-up anim-delay-3" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <span class="pill accent">AI-Powered</span>
+      <span class="pill accent">Evidence-Based</span>
+      <span class="pill accent">HIPAA + GDPR + DPDPA</span>
+    </div>
+
+    <div class="anim-fade-up anim-delay-4" style="margin-top:4rem;color:var(--muted);font-size:0.85rem;font-weight:300;">
+      <p>Kumkum Thakur &amp; Divya Mohan</p>
+      <p style="font-family:var(--font-mono);font-size:0.7rem;margin-top:0.5rem;letter-spacing:0.1em;">SEED ROUND &mdash; 2026</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 2 — PROBLEM / OPPORTUNITY
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-2">
+  <div class="bg-glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(255,71,87,0.12),transparent 70%);bottom:-10%;left:-10%;"></div>
+  <span class="slide-num">02 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">The Problem</span>
+
+    <h2 class="headline reveal" style="margin-bottom:2.5rem;">
+      Surgery ends.<br>
+      <span class="danger-text">Silence begins.</span>
+    </h2>
+
+    <div class="grid-3 mt-4">
+      <div class="glass-card metric-card reveal">
+        <div class="stat-huge">310M</div>
+        <div class="stat-label">Surgeries performed yearly</div>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.5rem;">SOURCE: LANCET COMMISSION</div>
+      </div>
+
+      <div class="glass-card metric-card reveal" style="animation-delay:0.15s">
+        <div class="stat-huge" style="background:linear-gradient(135deg,var(--danger),#ff6b81);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">1 in 4</div>
+        <div class="stat-label">Patients face complications</div>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.5rem;">SOURCE: BMJ GLOBAL HEALTH</div>
+      </div>
+
+      <div class="glass-card metric-card reveal" style="animation-delay:0.3s">
+        <div class="stat-huge" style="background:linear-gradient(135deg,var(--warm),#ffa502);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$42B</div>
+        <div class="stat-label">Annual cost of readmissions</div>
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.5rem;">SOURCE: CMS / HCUP DATA</div>
+      </div>
+    </div>
+
+    <div class="glass-card reveal mt-6" style="max-width:700px;">
+      <p style="font-weight:300;font-size:1.1rem;line-height:1.7;color:var(--cream);">
+        Today, patients leave surgery with a
+        <span class="danger-text" style="font-weight:500;">printed instruction sheet</span>
+        and a follow-up
+        <span class="danger-text" style="font-weight:500;">weeks away</span>.
+        In between? Nothing.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 3 — VALUE PROPOSITION
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-3">
+  <div class="bg-glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(0,212,170,0.1),transparent 70%);top:10%;right:-20%;"></div>
+  <span class="slide-num">03 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">The Solution</span>
+
+    <h2 class="headline reveal" style="margin-bottom:1rem;">
+      Active orchestration.<br>
+      <span class="accent-text">Not passive waiting.</span>
+    </h2>
+
+    <p class="subhead reveal mt-3" style="margin-bottom:3rem;">
+      RecoveryPilot replaces silence with intelligence.
+    </p>
+
+    <div class="grid-3 gap-4">
+      <div class="glass-card reveal">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">&#x1F3AF;</div>
+        <h3 style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:0.5rem;">For Patients</h3>
+        <p style="font-weight:300;color:var(--muted);line-height:1.6;font-size:0.9rem;">
+          Daily AI missions. Wound photo analysis.<br>
+          Gamified streaks. Pain tracking.<br>
+          Recovery feels guided, not lonely.
+        </p>
+      </div>
+
+      <div class="glass-card reveal" style="transition-delay:0.1s;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">&#x1FA7A;</div>
+        <h3 style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:0.5rem;">For Doctors</h3>
+        <p style="font-weight:300;color:var(--muted);line-height:1.6;font-size:0.9rem;">
+          AI-triaged inbox. One-click decisions.<br>
+          40+ clinical scoring systems.<br>
+          Physicians stay in command.
+        </p>
+      </div>
+
+      <div class="glass-card reveal" style="transition-delay:0.2s;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">&#x1F3E5;</div>
+        <h3 style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:0.5rem;">For Hospitals</h3>
+        <p style="font-weight:300;color:var(--muted);line-height:1.6;font-size:0.9rem;">
+          Fewer readmissions. Lower liability.<br>
+          HIPAA, GDPR, DPDPA compliant.<br>
+          Better HCAHPS scores.
+        </p>
+      </div>
+    </div>
+
+    <!-- Impact bar -->
+    <div class="glass-card reveal mt-6" style="text-align:center;">
+      <div style="display:flex;justify-content:center;gap:4rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:2.2rem;color:var(--accent);">38%</div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;">READMISSION REDUCTION</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--muted);">TARGET</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:2.2rem;color:var(--accent);">2.1x</div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;">PATIENT ENGAGEMENT</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--muted);">VS STANDARD CARE</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:2.2rem;color:var(--accent);">70%</div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;">FASTER TRIAGE</div>
+          <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--muted);">FOR CLINICIANS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 4 — UNDERLYING MAGIC
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-4">
+  <div class="bg-glow" style="width:900px;height:900px;background:radial-gradient(circle,rgba(255,107,53,0.08),transparent 70%);top:-30%;left:50%;transform:translateX(-50%);"></div>
+  <div class="bg-grid"></div>
+  <span class="slide-num">04 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">The Technology</span>
+
+    <h2 class="headline reveal" style="margin-bottom:2.5rem;">
+      Pure TypeScript.<br>
+      <span class="warm-text">Zero ML dependencies.</span>
+    </h2>
+
+    <!-- Architecture Diagram -->
+    <div class="glass-card reveal" style="padding:2rem 1.5rem;margin-bottom:2rem;">
+      <div style="text-align:center;">
+        <div class="arch-layer">
+          <div class="arch-box patient">Patient App</div>
+          <div class="arch-box patient">Wearables</div>
+          <div class="arch-box doctor">Doctor Dashboard</div>
+          <div class="arch-box infra">Admin Panel</div>
+        </div>
+        <div class="arch-connector">&#x25BC;</div>
+        <div class="arch-layer">
+          <div class="arch-box ai" style="flex:1;max-width:500px;">
+            14 ML Models &mdash; Self-Learning Engine &mdash; 40+ Clinical Algorithms
+          </div>
+        </div>
+        <div class="arch-connector">&#x25BC;</div>
+        <div class="arch-layer">
+          <div class="arch-box infra">PostgreSQL 17</div>
+          <div class="arch-box infra">Redis Cluster</div>
+          <div class="arch-box infra">BullMQ Queues</div>
+          <div class="arch-box infra">AWS S3 + KMS</div>
+        </div>
+        <div class="arch-connector">&#x25BC;</div>
+        <div class="arch-layer">
+          <div class="arch-box infra" style="font-size:0.6rem;">K8s &mdash; India</div>
+          <div class="arch-box infra" style="font-size:0.6rem;">K8s &mdash; US</div>
+          <div class="arch-box infra" style="font-size:0.6rem;">K8s &mdash; UK</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key tech stats -->
+    <div class="grid-4">
+      <div class="glass-card metric-card reveal">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--warm);">14</div>
+        <div class="stat-label" style="font-size:0.8rem;">ML Models<br><small style="color:var(--muted);">Pure TypeScript</small></div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.1s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--warm);">40+</div>
+        <div class="stat-label" style="font-size:0.8rem;">Clinical Algorithms<br><small style="color:var(--muted);">Peer-Reviewed</small></div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.2s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--warm);">145K+</div>
+        <div class="stat-label" style="font-size:0.8rem;">Lines of Code<br><small style="color:var(--muted);">TypeScript</small></div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.3s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--warm);">2,700+</div>
+        <div class="stat-label" style="font-size:0.8rem;">Test Cases<br><small style="color:var(--muted);">Passing</small></div>
+      </div>
+    </div>
+
+    <div class="reveal mt-4" style="text-align:center;">
+      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);letter-spacing:0.05em;">
+        Self-learning models adjust from doctor feedback.<br>
+        Every algorithm cited to published research.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 5 — BUSINESS MODEL
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-5">
+  <div class="bg-glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(0,212,170,0.1),transparent 70%);bottom:0;left:0;"></div>
+  <span class="slide-num">05 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">Business Model</span>
+
+    <h2 class="headline reveal" style="margin-bottom:3rem;">
+      SaaS per bed.<br>
+      <span class="accent-text">Scales with hospitals.</span>
+    </h2>
+
+    <div class="grid-3 gap-4">
+      <!-- Tier 1 -->
+      <div class="glass-card reveal" style="text-align:center;padding:2.5rem 1.5rem;">
+        <div class="pill" style="margin-bottom:1.5rem;">Starter</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2.5rem;margin-bottom:0.25rem;">$3</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:1.5rem;">PER BED / MONTH</div>
+        <ul style="list-style:none;text-align:left;font-size:0.85rem;font-weight:300;color:var(--cream);line-height:2;">
+          <li>&#10003; Patient missions &amp; tracking</li>
+          <li>&#10003; Basic clinical scoring</li>
+          <li>&#10003; Single-region deployment</li>
+          <li style="color:var(--muted);">&#x2013; Advanced ML models</li>
+        </ul>
+      </div>
+
+      <!-- Tier 2 — highlighted -->
+      <div class="glass-card reveal" style="text-align:center;padding:2.5rem 1.5rem;border-color:rgba(0,212,170,0.3);position:relative;transition-delay:0.1s;">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--black);font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.8rem;border-radius:100px;letter-spacing:0.1em;font-weight:700;">POPULAR</div>
+        <div class="pill accent" style="margin-bottom:1.5rem;">Professional</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2.5rem;margin-bottom:0.25rem;color:var(--accent);">$8</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:1.5rem;">PER BED / MONTH</div>
+        <ul style="list-style:none;text-align:left;font-size:0.85rem;font-weight:300;color:var(--cream);line-height:2;">
+          <li>&#10003; All Starter features</li>
+          <li>&#10003; 14 ML prediction models</li>
+          <li>&#10003; AI wound photo analysis</li>
+          <li>&#10003; Multi-region compliance</li>
+        </ul>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="glass-card reveal" style="text-align:center;padding:2.5rem 1.5rem;transition-delay:0.2s;">
+        <div class="pill" style="margin-bottom:1.5rem;">Enterprise</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:2.5rem;margin-bottom:0.25rem;">Custom</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:1.5rem;">VOLUME PRICING</div>
+        <ul style="list-style:none;text-align:left;font-size:0.85rem;font-weight:300;color:var(--cream);line-height:2;">
+          <li>&#10003; All Professional features</li>
+          <li>&#10003; On-premise deployment</li>
+          <li>&#10003; Custom algorithm tuning</li>
+          <li>&#10003; Dedicated support &amp; SLA</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="reveal mt-4" style="text-align:center;">
+      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);">
+        Average hospital: 150 surgical beds &times; $8 = <span class="accent-text" style="font-weight:500;">$14,400/year per facility</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 6 — GO-TO-MARKET PLAN
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-6">
+  <div class="bg-glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(99,102,241,0.1),transparent 70%);top:-20%;right:-10%;"></div>
+  <span class="slide-num">06 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">Go-To-Market</span>
+
+    <h2 class="headline reveal" style="margin-bottom:3rem;">
+      Land in orthopedics.<br>
+      <span style="color:#818cf8;">Expand across departments.</span>
+    </h2>
+
+    <div class="grid-2 gap-6">
+      <!-- Left: Strategy -->
+      <div>
+        <div class="glass-card reveal mb-4">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem;">PHASE 1 &mdash; BEACHHEAD</div>
+          <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:0.5rem;">Orthopedic Surgery Centers</h3>
+          <p style="font-weight:300;color:var(--muted);font-size:0.85rem;line-height:1.6;">
+            High volume. Predictable recovery paths.<br>
+            Strong ROI from reduced readmissions.
+          </p>
+        </div>
+
+        <div class="glass-card reveal mb-4" style="transition-delay:0.1s;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem;">PHASE 2 &mdash; EXPANSION</div>
+          <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:0.5rem;">Multi-Department Hospital Systems</h3>
+          <p style="font-weight:300;color:var(--muted);font-size:0.85rem;line-height:1.6;">
+            Cardiac, general, bariatric surgery.<br>
+            Cross-sell within existing accounts.
+          </p>
+        </div>
+
+        <div class="glass-card reveal" style="transition-delay:0.2s;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem;">PHASE 3 &mdash; INTERNATIONAL</div>
+          <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:0.5rem;">Multi-Region Compliance</h3>
+          <p style="font-weight:300;color:var(--muted);font-size:0.85rem;line-height:1.6;">
+            Built-in HIPAA, GDPR, DPDPA.<br>
+            Deploy in US, UK, India on day one.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Funnel -->
+      <div class="reveal" style="display:flex;flex-direction:column;justify-content:center;transition-delay:0.3s;">
+        <div class="glass-card" style="padding:2rem;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--muted);margin-bottom:1.5rem;">ACQUISITION FUNNEL</div>
+
+          <div class="h-bar-group">
+            <div class="h-bar-row">
+              <div class="h-bar-label">Conference Leads</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:linear-gradient(90deg,rgba(0,212,170,0.2),rgba(0,212,170,0.5));">1,000</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label">Demo Requests</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:30%;background:linear-gradient(90deg,rgba(0,212,170,0.3),rgba(0,212,170,0.6));">300</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label">Pilot Programs</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:10%;background:linear-gradient(90deg,rgba(0,212,170,0.4),rgba(0,212,170,0.8));">100</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label">Contracts</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:5%;background:linear-gradient(90deg,var(--accent),var(--accent-glow));">50</div></div>
+            </div>
+          </div>
+
+          <div style="margin-top:1.5rem;text-align:center;">
+            <span style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--accent);">5%</span>
+            <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);margin-left:0.5rem;">LEAD-TO-CONTRACT (YEAR 1)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 7 — COMPETITIVE ANALYSIS
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-7">
+  <div class="bg-glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(255,215,0,0.06),transparent 70%);bottom:-20%;right:-10%;"></div>
+  <span class="slide-num">07 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">Competitive Landscape</span>
+
+    <h2 class="headline reveal" style="margin-bottom:3rem;">
+      They notify.<br>
+      <span class="gold-text">We orchestrate.</span>
+    </h2>
+
+    <div class="glass-card reveal">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Traditional Telehealth</th>
+            <th>RecoveryPilot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature-col">Patient Interaction</td>
+            <td class="them-col">Passive &mdash; patient initiates</td>
+            <td class="us-col"><span class="check">&#10003;</span> Active AI missions daily</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Clinical Scoring</td>
+            <td class="them-col">Manual lookup tables</td>
+            <td class="us-col"><span class="check">&#10003;</span> 40+ automated algorithms</td>
+          </tr>
+          <tr>
+            <td class="feature-col">ML Models</td>
+            <td class="them-col">Cloud API dependency</td>
+            <td class="us-col"><span class="check">&#10003;</span> 14 pure-TypeScript, zero deps</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Evidence Base</td>
+            <td class="them-col">Undocumented heuristics</td>
+            <td class="us-col"><span class="check">&#10003;</span> Every threshold peer-reviewed</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Patient Engagement</td>
+            <td class="them-col">Push notifications</td>
+            <td class="us-col"><span class="check">&#10003;</span> Gamified missions &amp; streaks</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Doctor Workflow</td>
+            <td class="them-col">Manual review queues</td>
+            <td class="us-col"><span class="check">&#10003;</span> AI-triaged, one-click approve</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Compliance</td>
+            <td class="them-col">Single-region HIPAA</td>
+            <td class="us-col"><span class="check">&#10003;</span> HIPAA + GDPR + DPDPA</td>
+          </tr>
+          <tr>
+            <td class="feature-col">Scale Architecture</td>
+            <td class="them-col">~50K patients</td>
+            <td class="us-col"><span class="check">&#10003;</span> 2M patients/day capacity</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="reveal mt-4" style="text-align:center;">
+      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);">
+        No competitor combines clinical rigor + patient gamification + multi-region compliance.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 8 — MANAGEMENT TEAM
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-8">
+  <div class="bg-glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,170,0.08),transparent 70%);top:20%;left:50%;transform:translateX(-50%);"></div>
+  <span class="slide-num">08 / 10</span>
+
+  <div class="slide-inner" style="text-align:center;">
+    <span class="label reveal">The Team</span>
+
+    <h2 class="headline reveal" style="margin-bottom:3rem;">
+      Two builders.<br>
+      <span class="accent-text">One mission.</span>
+    </h2>
+
+    <div class="grid-2 gap-6" style="max-width:800px;margin:0 auto;">
+      <div class="glass-card team-card reveal">
+        <div class="team-avatar">KT</div>
+        <div class="team-name">Kumkum Thakur</div>
+        <div class="team-role">Co-Founder &amp; Project Lead</div>
+        <p class="team-bio">
+          Full-stack engineer. Clinical algorithm design.<br>
+          40+ evidence-based scoring systems built.<br>
+          Patient engagement &amp; gamification architect.
+        </p>
+      </div>
+
+      <div class="glass-card team-card reveal" style="transition-delay:0.15s;">
+        <div class="team-avatar">DM</div>
+        <div class="team-name">Divya Mohan</div>
+        <div class="team-role">Co-Founder &amp; Infrastructure Lead</div>
+        <p class="team-bio">
+          Backend &amp; infrastructure engineering.<br>
+          Multi-region K8s. Security &amp; compliance.<br>
+          Built platform for 2M patients/day scale.
+        </p>
+      </div>
+    </div>
+
+    <div class="reveal mt-6" style="max-width:700px;margin-left:auto;margin-right:auto;">
+      <div class="glass-card" style="padding:1.5rem 2rem;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:0.75rem;">WHAT WE'VE BUILT TOGETHER</div>
+        <div style="display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;">
+          <div>
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;">577</div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">COMMITS</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;">145K</div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">LINES OF CODE</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;">92</div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">TEST FILES</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;">80+</div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">SERVICE MODULES</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal mt-4">
+      <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;">
+        HIRING: Chief Medical Officer &bull; VP Sales (HealthTech) &bull; ML Engineer
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 9 — FINANCIAL PROJECTIONS
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-9">
+  <div class="bg-glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(0,212,170,0.1),transparent 70%);bottom:-10%;left:-10%;"></div>
+  <div class="bg-grid"></div>
+  <span class="slide-num">09 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">Financial Projections</span>
+
+    <h2 class="headline reveal" style="margin-bottom:0.5rem;">
+      Bottom-up math.<br>
+      <span class="accent-text">Not fairy tales.</span>
+    </h2>
+
+    <p class="reveal" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);margin-bottom:2.5rem;letter-spacing:0.05em;">
+      Based on $8/bed/month &bull; 150 avg surgical beds &bull; 5% conversion
+    </p>
+
+    <!-- Revenue bar chart -->
+    <div class="glass-card reveal" style="padding:2.5rem 2rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;">ANNUAL RECURRING REVENUE</span>
+        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;">3-YEAR PROJECTION</span>
+      </div>
+
+      <div class="bar-chart">
+        <div class="bar-group">
+          <div class="bar" style="height:36px;background:linear-gradient(180deg,var(--accent),rgba(0,212,170,0.3));">
+            <div class="bar-value">$720K</div>
+          </div>
+          <div class="bar-label">Year 1<br><span style="color:var(--cream);">50 hospitals</span></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" style="height:100px;background:linear-gradient(180deg,var(--accent),rgba(0,212,170,0.4));">
+            <div class="bar-value">$2.9M</div>
+          </div>
+          <div class="bar-label">Year 2<br><span style="color:var(--cream);">200 hospitals</span></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar" style="height:190px;background:linear-gradient(180deg,var(--accent-glow),var(--accent));">
+            <div class="bar-value">$8.6M</div>
+          </div>
+          <div class="bar-label">Year 3<br><span style="color:var(--cream);">600 hospitals</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="grid-4 mt-4">
+      <div class="glass-card metric-card reveal">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--accent);">50</div>
+        <div class="stat-label" style="font-size:0.75rem;">Hospitals Y1</div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.1s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--accent);">92%</div>
+        <div class="stat-label" style="font-size:0.75rem;">Gross Margin</div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.2s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--accent);">$14.4K</div>
+        <div class="stat-label" style="font-size:0.75rem;">ACV per Hospital</div>
+      </div>
+      <div class="glass-card metric-card reveal" style="transition-delay:0.3s;">
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--accent);">&lt;18</div>
+        <div class="stat-label" style="font-size:0.75rem;">Months to Break-Even</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDE 10 — CURRENT STATUS & USE OF FUNDS
+     ═══════════════════════════════════════════════════ -->
+<section class="slide" id="slide-10">
+  <div class="bg-glow" style="width:900px;height:900px;background:radial-gradient(circle,rgba(0,212,170,0.12),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:pulse-glow 6s ease-in-out infinite;"></div>
+  <span class="slide-num">10 / 10</span>
+
+  <div class="slide-inner">
+    <span class="label reveal">The Ask</span>
+
+    <h2 class="headline reveal" style="margin-bottom:1rem;">
+      Raising <span class="accent-text">$2.5M</span> seed.<br>
+      Product is built.
+    </h2>
+
+    <p class="subhead reveal mb-4" style="max-width:500px;">
+      We need fuel, not proof of concept.
+    </p>
+
+    <div class="grid-2 gap-6">
+      <!-- Left: Current Status -->
+      <div>
+        <div class="glass-card reveal" style="margin-bottom:1.5rem;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:1.25rem;">ACCOMPLISHED</div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">Full-stack platform &mdash; 145K lines</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">14 ML models, 40+ algorithms</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">2,700+ tests passing</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">Multi-region K8s deployment ready</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">3-jurisdiction compliance built in</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="check" style="font-size:1.2rem;">&#10003;</span>
+              <span style="font-weight:300;font-size:0.9rem;">CI/CD pipeline with security scanning</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Use of Funds -->
+      <div>
+        <div class="glass-card reveal" style="transition-delay:0.15s;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--accent);margin-bottom:1.25rem;">USE OF $2.5M SEED</div>
+          <div class="h-bar-group">
+            <div class="h-bar-row">
+              <div class="h-bar-label" style="width:110px;">Engineering</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:40%;background:linear-gradient(90deg,rgba(0,212,170,0.4),var(--accent));">40%</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label" style="width:110px;">Sales &amp; GTM</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:25%;background:linear-gradient(90deg,rgba(99,102,241,0.4),#818cf8);">25%</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label" style="width:110px;">Clinical Trials</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:20%;background:linear-gradient(90deg,rgba(255,107,53,0.4),var(--warm));">20%</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label" style="width:110px;">Regulatory</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:10%;background:linear-gradient(90deg,rgba(255,215,0,0.4),var(--gold));">10%</div></div>
+            </div>
+            <div class="h-bar-row">
+              <div class="h-bar-label" style="width:110px;">Operations</div>
+              <div class="h-bar-track"><div class="h-bar-fill" style="width:5%;background:linear-gradient(90deg,rgba(255,255,255,0.1),rgba(255,255,255,0.3));">5%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="glass-card reveal mt-4">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;color:var(--muted);margin-bottom:1.5rem;text-align:center;">18-MONTH ROADMAP</div>
+      <div class="timeline">
+        <div class="timeline-node">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">Now</div>
+          <div class="timeline-text">MVP Complete<br>145K lines shipped</div>
+        </div>
+        <div class="timeline-node">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">Q3 2026</div>
+          <div class="timeline-text">Pilot hospitals<br>Clinical validation</div>
+        </div>
+        <div class="timeline-node">
+          <div class="timeline-dot future"></div>
+          <div class="timeline-year">Q1 2027</div>
+          <div class="timeline-text">FDA 510(k) filing<br>CE marking</div>
+        </div>
+        <div class="timeline-node">
+          <div class="timeline-dot future"></div>
+          <div class="timeline-year">Q3 2027</div>
+          <div class="timeline-text">Commercial launch<br>50 hospitals target</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="reveal mt-6" style="text-align:center;">
+      <p style="font-family:var(--font-display);font-weight:700;font-size:1.5rem;margin-bottom:0.5rem;">
+        The future of recovery is <span class="accent-text">active</span>.
+      </p>
+      <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;">
+        Let's talk. &mdash; contact@dmj.one
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ── Scroll-triggered reveal animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Navigation dots ──
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('slideNav');
+
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot';
+    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    dot.addEventListener('click', () => {
+      slide.scrollIntoView({ behavior: 'smooth' });
+    });
+    nav.appendChild(dot);
+  });
+
+  const navDots = nav.querySelectorAll('.nav-dot');
+
+  // ── Active slide tracking ──
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const index = Array.from(slides).indexOf(entry.target);
+        navDots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(slide => slideObserver.observe(slide));
+
+  // ── Progress bar ──
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }, { passive: true });
+
+  // ── Keyboard navigation ──
+  document.addEventListener('keydown', (e) => {
+    const currentSlide = Math.round(window.scrollY / window.innerHeight);
+
+    if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      const next = Math.min(currentSlide + 1, slides.length - 1);
+      slides[next].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault();
+      const prev = Math.max(currentSlide - 1, 0);
+      slides[prev].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
