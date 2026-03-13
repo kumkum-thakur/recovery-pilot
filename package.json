@@ -1,15 +1,18 @@
 {
   "name": "recovery-pilot",
+  "packageManager": "pnpm@10.30.1",
   "version": "1.0.0",
   "description": "Autonomous post-operative care orchestrator with 40+ clinical algorithms and 14 pure-TypeScript ML models",
   "author": "Kumkum Thakur <kumkum-thakur@users.noreply.github.com>",
   "contributors": [
     {
       "name": "Kumkum Thakur",
+      "packageManager": "pnpm@10.30.1",
       "url": "https://github.com/kumkum-thakur"
     },
     {
       "name": "Divya Mohan",
+      "packageManager": "pnpm@10.30.1",
       "url": "https://github.com/divyamohan1993"
     }
   ],
